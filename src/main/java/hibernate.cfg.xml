@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-configuration PUBLIC
+        "-//Hibernate/Hibernate Configuration DTD 3.0//EN"
+        "http://www.hibernate.org/dtd/hibernate-configuration-3.0.dtd">
+
+<hibernate-configuration>
+	<session-factory>
+
+
+
+
+
+
+		<!-- 数据库连接配置 -->
+		<property name="connection.driver_class">com.mysql.jdbc.Driver</property>
+		<property name="connection.url">jdbc:mysql://localhost:3306/gameproject?useSSL=true&amp;serverTimezone=UTC&amp;characterEncoding=utf-8</property>
+		<property name="connection.username">root</property>
+		<property name="connection.password">123456</property>
+		<property name="dialect">org.hibernate.dialect.MySQL5InnoDBDialect</property>
+		<property name="show_sql">true</property>
+
+		<!-- Drop and re-create the database schema on startup,用create只能再数据库中没有表的时候用，要是有，就会删除原有的表，建新的 -->
+		<property name="hbm2ddl.auto">update</property>
+
+		<mapping class="com.hc.logic.domain.PlayerEntity" />
+		<mapping class="com.hc.logic.domain.GoodsEntity" />
+		<mapping class="com.hc.logic.domain.Equip" />
+	</session-factory>
+</hibernate-configuration>

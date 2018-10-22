@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<monsters>
+	<monster id="1">
+		<name>麻雀【1】</name>
+		<description>我是一只灰色的麻雀，整天叽叽喳喳的</description>
+		<hp>10</hp>
+		<attack>0</attack>                                            <!-- 攻击力 -->
+		<exp>5</exp>                                                  <!-- 击杀获得的经验 -->
+	</monster>
+
+	<monster id="2">
+		<name>树妖【2】</name>
+		<description>俺是一只树妖，从不害人，你信吗</description>
+		<hp>40</hp>
+		<attack>5</attack>
+		<exp>15</exp>
+	</monster>
+
+
+
+
+
+</monsters>

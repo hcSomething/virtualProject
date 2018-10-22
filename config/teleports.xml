@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<teleports>
+	<teleport id="1">
+		<description>新手村【2】</description>
+	</teleport>
+
+	<teleport id="2">
+		<description>出生地【1】</description>
+	</teleport>
+
+	<teleport id="3">
+		<description>青云镇【3】</description>
+	</teleport>
+
+
+
+
+
+</teleports>

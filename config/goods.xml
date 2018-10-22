@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<goods>          <!-- 物品类型，1：丹药类；2：装备类；3：武器 -->
+	<good id="1">                                                      <!-- 物品id -->
+		<type>1</type>                                                    <!-- 类型id，用来需分不同种类的物品 -->
+		<name>太乙丹【1】</name>                                           <!-- 物品名称 -->
+		<description>恢复类丹药，在一定时间内持续恢复法力</description>      <!-- 物品介绍 -->
+		<continue>10</continue>                                           <!-- 使用后效果持续时间, 对于非药品类，这个属性的意思是最大耐久度 -->
+		<mp>5</mp>                                                        <!-- 每次恢复法力 -->
+		<hp>0</hp>                                                        <!-- 每次恢复血量 -->
+		<protect>0</protect>                                              <!-- 增加防御 -->
+		<attack>0</attack>                                                <!-- 增加攻击 -->
+		<superposition>99</superposition>                                 <!-- 在背包的一个格子中的可叠加数量 -->
+		<price>0</price>                                                  <!-- 价格(待续) -->
+	</good>
+
+	<good id="2">
+		<type>1</type>
+		<name>灵石【2】</name>
+		<description>恢复类，在一定时间内持续恢复血量</description>
+		<continue>10</continue>
+		<mp>0</mp>
+		<hp>5</hp>
+		<protect>0</protect>
+		<attack>0</attack>
+		<superposition>99</superposition>
+		<price>0</price>
+	</good>
+
+	<good id="3">
+		<type>2</type>
+		<name>铠甲【3】</name>
+		<description>防御型铠甲，能有效减少伤害</description>
+		<continue>3</continue>                                    <!-- 耐久度 -->
+		<mp>0</mp>
+		<hp>0</hp>
+		<protect>15</protect>
+		<attack>0</attack>
+		<superposition>1</superposition>
+		<price>0</price>
+	</good>
+
+	<good id="4">
+		<type>3</type>
+		<name>诛仙剑【4】</name>
+		<description>神器，极大的增加杀伤力</description>
+		<continue>10</continue>
+		<mp>0</mp>
+		<hp>0</hp>
+		<protect>15</protect>
+		<attack>40</attack>
+		<superposition>1</superposition>
+		<price>0</price>
+	</good>
+
+
+
+</goods>

@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<skills>
+	<skill id="1">
+		<name>平砍【1】</name>                                    <!-- 技能名 -->
+		<description>普通攻击，只是向前挥动武器</description>      <!-- 技能描述 -->
+		<cd>5</cd>                                                <!-- 冷却时间 -->
+		<attack>5</attack>                                        <!-- 对对手造成的伤害 -->
+		<protect>0</protect>                                      <!-- 技能对自身有什么保护(待续)，0：没有 -->
+		<mp>2</mp>                                                <!-- 消耗法力 -->
+		<continue>0</continue>                                    <!-- 技能持续时间 -->
+		<weapon>4</weapon>                                        <!-- 使用该技能需要的武器(物品id), 0表示不需要 -->
+	</skill>
+
+	<skill id="2">
+		<name>青云剑诀【2】</name>
+		<description>很厉害的内功，学会之后，前途不可限量</description>
+		<cd>20</cd>
+		<attack>20</attack>
+		<protect>0</protect>
+		<mp>20</mp>
+		<continue>0</continue>
+		<weapon>4</weapon>
+	</skill>
+
+	<skill id="3">
+		<name>护盾【3】</name>
+		<description>在一定时间内，减少伤害</description>
+		<cd>20</cd>
+		<attack>0</attack>
+		<protect>30</protect>
+		<mp>10</mp>
+		<continue>10</continue>
+		<weapon>0</weapon>
+	</skill>
+
+</skills>

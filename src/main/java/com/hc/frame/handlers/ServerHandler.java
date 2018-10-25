@@ -26,18 +26,14 @@ public class ServerHandler extends ChannelInboundHandlerAdapter{
 		Session session = new Session();
 		session.setChannel(ctx.channel());
 		//防止了新建的客户端覆盖以前客户端的channel
-		//Context.put(ctx.channel(), session);
 		Context.addChannel2Session(ctx.channel(), session);
-		System.out.println("这是serever handler channelActive方法");
-		//System.out.println("channeactive中的ctx " + ctx.channel() + session.toString());
-		Context.channelToString();
-		//System.out.println("channel2Session的大小" + channel2Session.size());
+		System.out.println("这是serever handler channelActive方法");		
+		Context.channelToString();		
 	}
 	
 	@Override
 	public void channelRead(ChannelHandlerContext ctx, Object msg) {
 		ByteBuf mesg = (ByteBuf)msg;
-		System.out.println("服务器channelRead");
 		String order = "";
 		try {
 			order = EncodeAndDecode.decode(mesg);
@@ -74,13 +70,12 @@ public class ServerHandler extends ChannelInboundHandlerAdapter{
 			
 			//执行登出操作, 在线程池中做
 			//new LogOut(pl).updateDB(pl);;
+			System.out.println( "------------task前");
 			Context.getTaskProducer().addTask(new LogOut(pl));
+			System.out.println( "------------task后");
 
 		}		
-		
-		
-
-		
+	
 		System.out.println( "用户【" + name + "】已关闭连接");
 		//客户端断开连接时，就要将这个channel-session从Context中删除，session已经存放在player中
 		Context.deleteChannel2Session(ctx.channel());

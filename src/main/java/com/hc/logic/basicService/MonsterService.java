@@ -1,9 +1,12 @@
 package com.hc.logic.basicService;
 
+import org.springframework.stereotype.Component;
+
 import com.hc.frame.Context;
 import com.hc.logic.base.Session;
 import com.hc.logic.config.MonstConfig;
 
+@Component
 public class MonsterService {
 	
 	/**

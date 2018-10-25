@@ -6,7 +6,7 @@ public class GoodsConfig {
 	private int typeId;            //类型id
 	private String name;           //物品名 
 	private String description;    //物品描述
-	private int continueT;         //使用后，效果持续时间
+	private int continueT;         //使用后，效果持续时间；对于武器装备，则是耐久度
 	private int mp;                //每次增加法力
 	private int hp;                //每次增加血量
 	private int protect;           //增加防御

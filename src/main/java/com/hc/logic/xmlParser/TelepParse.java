@@ -10,16 +10,23 @@ import org.dom4j.Document;
 import org.dom4j.DocumentException;
 import org.dom4j.Element;
 import org.dom4j.io.SAXReader;
+import org.springframework.stereotype.Component;
 
 import com.hc.logic.config.TelepConfig;
 
 
-
+@Component
 public class TelepParse implements ParseXml{
 
 	private List<TelepConfig> telepList = null;
 	private TelepConfig telep = null;
 
+	public TelepParse() {
+		
+		File file = new File("config/teleports.xml");
+		parse(file);
+	}
+	
 
 	@Override
 	public void parse(File file) {

@@ -5,7 +5,16 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.annotation.PostConstruct;
+
+import org.springframework.beans.factory.InitializingBean;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextAware;
+import org.springframework.context.annotation.DependsOn;
+import org.springframework.stereotype.Component;
+
 import com.hc.frame.Context;
+import com.hc.frame.OnlinePlayer;
 import com.hc.frame.Scene;
 import com.hc.logic.config.MonstConfig;
 import com.hc.logic.config.NpcConfig;
@@ -26,8 +35,10 @@ import com.hc.logic.xmlParser.TelepParse;
  * @author hc
  *
  */
-public class World {
-
+@DependsOn(value="sceneParse")
+@Component
+public class World implements ApplicationContextAware{
+  //
 	//所有场景：（sceneId, scene），现在都是从配置文件中加载
 	private  Map<Integer, Scene> sceneResource = new HashMap<>();
 	//所有注册的玩家，
@@ -38,12 +49,13 @@ public class World {
 	//private List<GoodsEntity> allGoodsEntity = new ArrayList<>();
 	//所有的玩家的所有装备，无论是在背包中，还是穿上了
 	//private List<Equip> allEquip = new ArrayList<>();
-	
+	ApplicationContext context;
 
 	
 	/**
 	 * 只能有一个World实例
 	 */
+	/**
 	private static World instance = new World();
 	private World() {
 		init();
@@ -51,11 +63,22 @@ public class World {
 	public static World getInstance() {
 		return instance;
 	}
+	*/
+	public World() {
+		//init();
+	}
+	
+	@Override
+	public void setApplicationContext(ApplicationContext applicationContext) {
+		this.context = applicationContext;
+	}
 	
 	/**
-	 * 初始化操作，在服务器启动时调用，
+	 * 初始化操作，在World bean构造时被调用
 	 */
+	@PostConstruct
 	private void init() {
+		//System.out.println("这里是world的init方法");
 		String hql = "from PlayerEntity";
 		allPlayerEntity = new PlayerDaoImpl().find(hql);
 		
@@ -76,7 +99,7 @@ public class World {
 	 * bornPlace和VillageOfFrashman等硬编码场景可以删掉了
 	 */
 	public void configAllScene() {
-		SceneParse sceneP = Context.getSceneParse();
+	    SceneParse sceneP = context.getBean("sceneParse", SceneParse.class);
 		List<SceneConfig> sParseList = sceneP.getAllSceneConfig();
 		Scene scene = null;
 		for(SceneConfig sConfig : sParseList) {
@@ -138,7 +161,6 @@ public class World {
 	 * @return
 	 */
 	public Player getPlayerById(int id) {  
-		System.out.println("getPlayerByid ---" + allRegisteredPlayer.toString());
 		for(Player player : allRegisteredPlayer) {
 			if(player.getId() == id){
 				return player;

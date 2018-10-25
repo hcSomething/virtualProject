@@ -1,10 +1,12 @@
 package com.hc.logic.basicService;
+import org.springframework.stereotype.Component;
+
 import com.hc.frame.Context;
 import com.hc.frame.Scene;
 import com.hc.logic.base.Teleport;
 import com.hc.logic.creature.Player;
 
-
+@Component
 public class TransferService implements Teleport{
 
 	@Override

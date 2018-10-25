@@ -2,17 +2,20 @@ package com.hc.logic.basicService;
 
 import java.util.List;
 
+import org.springframework.stereotype.Component;
+
 import com.hc.frame.Context;
 import com.hc.logic.base.Session;
 import com.hc.logic.config.NpcConfig;
 
+@Component
 public class NpcService {
 	
 	/**
 	 * npc和player是否在同一场景
 	 * 参数 id：npc的id
 	 */
-	public boolean isOneScene(Session session, int id) {
+	public boolean isOnScene(Session session, int id) {
 		List<Integer> nSId = Context.getSceneParse().getSceneById(session.getPlayer().getSceneId()).getNpcs();
 		for(int ii : nSId) {
 			if(ii == id)

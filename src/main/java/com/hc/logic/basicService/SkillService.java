@@ -1,8 +1,9 @@
 package com.hc.logic.basicService;
 
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+
+import org.springframework.stereotype.Component;
 
 import com.hc.frame.Context;
 import com.hc.logic.base.Session;
@@ -10,6 +11,7 @@ import com.hc.logic.config.MonstConfig;
 import com.hc.logic.config.SkillConfig;
 import com.hc.logic.creature.Player;
 
+@Component
 public class SkillService {
 	
 	
@@ -21,7 +23,7 @@ public class SkillService {
 		Player player = session.getPlayer();
 		List<Integer> skills = player.getSkills();
 		StringBuilder sb = new StringBuilder();
-		sb.append("所有技能：" + "\n");
+		sb.append("所有技能：- - - - - - - - - - - - - - - - - - - - - - - - - - - - -" + "\n");
 		for(int sId : skills) {
 			SkillConfig sConfig = Context.getSkillParse().getSkillConfigById(sId);
 			sb.append("【");
@@ -33,6 +35,7 @@ public class SkillService {
 			sb.append("; 持续时间：" + sConfig.getContinueT() + "秒");
 			sb.append("】" + "\n");
 		}
+		sb.append("- - - - - - - - - - - - - - - - - - - - - - - - - - -" + "\n");
 		session.sendMessage(sb.toString());
 	}
 	

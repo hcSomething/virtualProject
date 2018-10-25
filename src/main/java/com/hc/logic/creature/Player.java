@@ -30,32 +30,8 @@ public class Player extends LiveCreature{
 
 	//是否还活着	
 	private boolean isAlive;
-    //名字
-	//private String name;
-	//密码,暂时先放在这里，以后放在实体类中
-	//private String password;
-	
-
-	//private int id;
-	//等级
-	//private int level;
-	//经验
-	//private int exp;
-
 	
 	private Session session;
-	
-	
-	//所在场景id
-	//private int sceneId;
-	//攻击力(没什么用)
-	//private int attack;
-	
-	//当前血量
-	//private int hp;
-	//当前法力
-	//private int mp;
-
 	
 	//技能id
 	private List<Integer> skills = new ArrayList<>(); 
@@ -67,15 +43,9 @@ public class Player extends LiveCreature{
 	//玩家实体
 	private PlayerEntity playerEntity;
 	
-
-	//玩家物品,初始化是在Plyer的构造方法中
-	//private GoodsEntity goodsEntity;
-
-	
 	//使用恢复类物品后，会在一定时间内持续恢复hp/mp。key：物品id，value：药品使用时间
 	private Map<Integer, Date> recoverHpMp = new HashMap<>();
 	
-
 	//背包
 	private BagService bagService;
 	
@@ -473,7 +443,7 @@ public class Player extends LiveCreature{
 		//playerEntity.getEquips().add(equ);
 		//更新goodlEntity中的背包物品字段
 		//playerEntity.getOrtherEquipsById(eId).setState(1); //1表示已装备
-		new GoodsService().doEquip(eId, playerEntity);
+		Context.getGoodsService().doEquip(eId, playerEntity);
 		
 		session.sendMessage("穿着完毕");		
 	}
@@ -499,7 +469,7 @@ public class Player extends LiveCreature{
 		getBagService().insertBag(eId, 1);
 		
 
-		new GoodsService().deEquip(eId, playerEntity);
+		Context.getGoodsService().deEquip(eId, playerEntity);
 		
 		session.sendMessage("卸下装备");
 	}
@@ -585,7 +555,7 @@ public class Player extends LiveCreature{
 		//System.out.println("addGoods " + map.size() + "to " + map.toString());
 		boolean inserted = bagService.insertBag(map); //显示		
 		if(!inserted) return false;
-		GoodsService gs = new GoodsService();
+		GoodsService gs = Context.getGoodsService();
 		for(int i = 0; i < amount; i++) {
 			gs.addGoods(playerEntity, gId);
 		}
@@ -593,37 +563,36 @@ public class Player extends LiveCreature{
 	}
 
 	/**
-	 * 删除或使用物品
+	 * 删除物品
 	 * @param gId
 	 * @param amount
 	 */
-	public void delGoods(int gId, int amount) {
+	public boolean delGoods(int gId, int amount) {
 		boolean hasDel = bagService.getGoods(gId, amount);
-		if(hasDel == false) {
-			session.sendMessage("删除失败，请检查参数");
-			return;
-		}
-		session.sendMessage("删除成功");
-		
-		//int typeID = Context.getGoodsParse().getGoodsConfigById(gId).getTypeId();
-		
-		GoodsService gs = new GoodsService();
+		if(!hasDel) return false;
+		GoodsService gs = Context.getGoodsService();
 		for(int i = 0; i < amount; i++) {
 			gs.delGoods(playerEntity, gId);
-		}
-
-		
+		}		
+		return true;		
 	}
 	
 	public BagService getBagService() {
 		return bagService;
 	}
 	
-	public Map<Integer, Date> getRecoverHpMp() {
-		return recoverHpMp;
-	}
-	public void addRecoverHpMp(int gId) {  //物品id
+	/**
+	 * 使用恢复类药品
+	 * @param gId  物品id
+	 */
+	public boolean addRecoverHpMp(int gId) {  
+		//验证是否属于恢复类物品
+		int typeId = Context.getGoodsParse().getGoodsConfigById(gId).getTypeId();
+		if(typeId != 1) return false;
+		//验证此物品数量是否足够, 并且删除
+		if(!delGoods(gId, 1)) return false;
 		this.recoverHpMp.put(gId, new Date());
+		return true;
 	}
 	/**
 	 * 获得此时hp/mp总的恢复量, 使用恢复类药品的效果持续
@@ -640,7 +609,7 @@ public class Player extends LiveCreature{
 			long dual = Context.getGoodsParse().getGoodsConfigById(gId).getContinueT() * 1000;
 			long pTime = d.getTime();
 			long nTime = new Date().getTime();
-			//验证技能是否过期
+			//验证药品是否过期
 			if((nTime - pTime) > dual) {
 				deleRed.add(gId);  
 				continue;

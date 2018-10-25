@@ -10,18 +10,25 @@ import org.dom4j.Document;
 import org.dom4j.DocumentException;
 import org.dom4j.Element;
 import org.dom4j.io.SAXReader;
+import org.springframework.stereotype.Component;
 
 import com.hc.logic.config.MonstConfig;
 import com.hc.logic.config.SceneConfig;
 
 
-
+@Component
 public class MonstParse implements ParseXml{
 	
 	private List<MonstConfig> monstList = null;
 	private MonstConfig monst = null;
 
-
+	public MonstParse() {
+		
+		File file = new File("config/monst.xml");
+		parse(file);
+	}
+	
+	
 	@Override
 	public void parse(File file) {
 		SAXReader reader = new SAXReader();

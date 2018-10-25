@@ -1,11 +1,15 @@
 package com.hc.frame;
 import java.util.*;
+
+import org.springframework.stereotype.Component;
+
 import com.hc.logic.creature.*;
 /**
  * 所有场景中的在线玩家
  * @author hc
  *
  */
+@Component
 public class OnlinePlayer {
 
 	//所有在线玩家

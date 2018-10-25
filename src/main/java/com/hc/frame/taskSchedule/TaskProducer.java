@@ -2,11 +2,14 @@ package com.hc.frame.taskSchedule;
 
 import java.util.concurrent.*;
 
+import org.springframework.stereotype.Component;
+
 /**
  * 添加任务
  * @author hc
  *
  */
+@Component
 public class TaskProducer extends TaskConsume{
 
 	//一个线程池

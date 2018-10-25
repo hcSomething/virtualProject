@@ -44,8 +44,6 @@ public enum Order {
 				session.sendMessage("命令参数不正确");
 				return;
 			}
-			//登陆时，玩家输入用户名和密码
-			//System.out.println("这里是login");
 			new Login(args[1], args[2]).login(session);
 		}
 	},
@@ -88,7 +86,7 @@ public enum Order {
 				return;
 			}
 			int sceneId = session.getPlayer().getSceneId();
-			Teleport t = new TransferService();
+			Teleport t = Context.getTransferService();
 			int tSceneId = Integer.parseInt(args[1]);
 			if(!Context.getWorld().getSceneById(sceneId).hasTelepId(tSceneId)) {
 				session.sendMessage("没有这个传送阵，不能传送");
@@ -105,10 +103,10 @@ public enum Order {
 				session.sendMessage("命令参数不正确");
 				return;
 			}
-			NpcService npcS = new NpcService();
+			NpcService npcS = Context.getNpcService();
 			int nId = Integer.parseInt(args[1]);
 			//验证npc是否在同一场景
-			if(!npcS.isOneScene(session, nId)) {
+			if(!npcS.isOnScene(session, nId)) {
 				session.sendMessage("没有这个npc");
 				return;
 			}
@@ -123,7 +121,7 @@ public enum Order {
 				session.sendMessage("命令参数不正确");
 				return;
 			}
-			new MonsterService().mDescribe(session, Integer.parseInt(args[1]));;
+			Context.getMonsterService().mDescribe(session, Integer.parseInt(args[1]));;
 		}
 	},
 	ALLSKILL("allSkill", "所有技能"){
@@ -133,7 +131,7 @@ public enum Order {
 				session.sendMessage("命令参数不正确");
 				return;
 			}
-			SkillService skillSer = new SkillService();
+			SkillService skillSer = Context.getSkillService();
 			skillSer.getAllSkill(session);
 		}
 	},
@@ -144,7 +142,7 @@ public enum Order {
 				session.sendMessage("命令参数不正确");
 				return;
 			}
-	    	SkillService skillSer = new SkillService();
+	    	SkillService skillSer = Context.getSkillService();
 	    	skillSer.doAttack(session, Integer.parseInt(args[1]), Integer.parseInt(args[2]));
 	    }
 	},
@@ -185,7 +183,7 @@ public enum Order {
 			
 		}
 	},
-	DELGOOD("delGood", "删除或使用物品"){
+	DELGOOD("delGood", "删除物品"){
 		@Override 
 		public void doService(String[] args, Session session) {
 			if(!OrderVerifyService.twoInt(args)) {
@@ -194,7 +192,9 @@ public enum Order {
 			}
 			int gId = Integer.parseInt(args[1]);
 			int amount = Integer.parseInt(args[2]);
-			session.getPlayer().delGoods(gId, amount);
+			boolean deleted = session.getPlayer().delGoods(gId, amount);
+			if(deleted) session.sendMessage("删除成功");
+			else session.sendMessage("删除失败，请检查是否有这么多物品");
 		}
 	},
 	EQUIP("equip", "穿着装备"){
@@ -217,6 +217,17 @@ public enum Order {
 			session.getPlayer().deletEquip(Integer.parseInt(args[1]));
 		}
 	},
+	ALLEQUIP("allEquip", "所有已穿着装备"){
+		@Override 
+		public void doService(String[] args, Session session) {
+			if(!OrderVerifyService.noPara(args)) {
+				session.sendMessage("命令参数不正确");
+				return;
+			}
+			String equips = Context.getGoodsService().allEquips(session.getPlayer().getPlayerEntity());
+			session.sendMessage(equips);
+		}
+	},
 	LSKILL("lSkill", "学习技能"){
 		@Override 
 		public void doService(String[] args, Session session) {
@@ -226,6 +237,19 @@ public enum Order {
 			}
 			boolean learnIt = session.getPlayer().addSkill(Integer.parseInt(args[1]));
 			if(learnIt) session.sendMessage("学习技能成功");
+		}
+	},
+	USEGOOD("useGood", "使用恢复类物品"){
+		@Override 
+		public void doService(String[] args, Session session) {
+			if(!OrderVerifyService.ontInt(args)) {
+				session.sendMessage("命令参数不正确");
+				return;
+			}
+			int gId = Integer.parseInt(args[1]);
+			boolean used = session.getPlayer().addRecoverHpMp(gId);
+			if(used) session.sendMessage("使用成功");
+			else session.sendMessage("使用失败！可能不属于药品，或者此药品已用完");
 		}
 	};
 	

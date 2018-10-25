@@ -10,16 +10,23 @@ import org.dom4j.Document;
 import org.dom4j.DocumentException;
 import org.dom4j.Element;
 import org.dom4j.io.SAXReader;
+import org.springframework.stereotype.Component;
 
 import com.hc.logic.config.NpcConfig;
 
 
-
+@Component
 public class NpcParse implements ParseXml{
 
 	private List<NpcConfig> npcList = null;
 	private NpcConfig npc = null;
 
+	public NpcParse() {
+		
+		File file = new File("config/npc.xml");
+		parse(file);
+	}
+	
 
 	@Override
 	public void parse(File file) {

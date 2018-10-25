@@ -2,13 +2,20 @@ package com.hc.frame;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import com.hc.frame.handlers.ServerHandler;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextAware;
+import org.springframework.stereotype.Component;
+
 import com.hc.frame.taskSchedule.TaskProducer;
-import com.hc.logic.base.Register;
 import com.hc.logic.base.Session;
 import com.hc.logic.base.World;
-import com.hc.logic.creature.*;
-import com.hc.logic.order.Order;
+import com.hc.logic.basicService.GoodsService;
+import com.hc.logic.basicService.MonsterService;
+import com.hc.logic.basicService.NpcService;
+import com.hc.logic.basicService.SkillService;
+import com.hc.logic.basicService.TransferService;
 import com.hc.logic.xmlParser.GoodsParse;
 import com.hc.logic.xmlParser.LevelParse;
 import com.hc.logic.xmlParser.SceneParse;
@@ -23,7 +30,8 @@ import io.netty.channel.Channel;
  * @author hc
  *
  */
-public class Context {
+@Component
+public class Context implements ApplicationContextAware{
 
 
 
@@ -34,6 +42,7 @@ public class Context {
 	//private static BornPlace bornPlace; 
 	//新手村
 	//private static VillageOfFreshman villageOfFreshman;
+	private ApplicationContext context;
 	
 	//*************配置文件****************
     private static SceneParse sceneParse;   //场景
@@ -45,120 +54,184 @@ public class Context {
 
 	//世界
 	private static World world;
-	//在线玩家
+	
+    //在线玩家
 	private static OnlinePlayer onlinPlayer;
+    
 	//所有客户端的channel和session的对应,
 	private static ConcurrentHashMap<Channel, Session> channel2Session = new ConcurrentHashMap<>();
-	//private static ConcurrentHashMap<Session, Channel> session2Channel = new ConcurrentHashMap<>();
+	
 	//一个周期性调用的线程池
 	private static TaskProducer taskProducer;
+	
+	//传送服务
+	private static TransferService transferService;
+	//npc服务
+	private static NpcService npcService;
+	//怪物服务
+	private static MonsterService monsterService;
+	//技能服务
+	private static SkillService skillService;
+	//物品服务
+	private static GoodsService goodsService;
+	
+	
 	//玩家id
 	private static AtomicInteger pID = new AtomicInteger(1008);
 
     
 	
-	
-	
-	
-	
-	
 	/**
-	 * 只有一个Context实例
-	 */
-	private static Context instance = new  Context();
-	
 	private Context() {
-		
+		System.out.println("这里是context的构造方法");
 	}
+	public static Context instance = new Context();
 	public static Context getInstance() {
 		return instance;
 	}
+	*/
 	
-
-	/**
-	 * 初始化方法
-	 * 有了spring之后，就不需要了
-	 * @return
-	 */
-	public static void initialize() {
-		
-		instance.setSceneParse(new SceneParse());
-		instance.setSkillParse(new SkillParse());
-		instance.setWorld(World.getInstance());
-	    //instance.setVillageOfFreshman(new VillageOfFreshman());
-	    //instance.setBornPlace(new BornPlace());
-	    instance.setOnlinPlayer(new OnlinePlayer());
-	    instance.setTaskProducer(new TaskProducer());
-	    instance.setLevelParse(new LevelParse());
-	    instance.setGoodsParse(new GoodsParse());
-	    
+	@Override
+	public void setApplicationContext(ApplicationContext applicationContext) {
+		this.context = applicationContext;
 	}
-	
-	
-	
-	
+
+
 	
 	
 
-/**
-	public static BornPlace getBornPlace() {
-		return bornPlace;
+
+
+	public static SkillParse getSkillParse() {
+		return skillParse;
 	}
-	public void setBornPlace(BornPlace bornPlace) {
-		this.bornPlace = bornPlace;
+	@Autowired
+	@Qualifier("skillParse")
+	public void setSkillParse(SkillParse skillParse) {
+		Context.skillParse = skillParse;
 	}
-	public static VillageOfFreshman getVillageOfFreshman() {
-		return villageOfFreshman;
+
+	public static LevelParse getLevelParse() {
+		return levelParse;
 	}
-	public void setVillageOfFreshman(VillageOfFreshman villageOfFreshman) {
-		this.villageOfFreshman = villageOfFreshman;
+	@Autowired
+	@Qualifier("levelParse")
+	public void setLevelParse(LevelParse levelParse) {
+		Context.levelParse = levelParse;
 	}
-*/
+
+	public static GoodsParse getGoodsParse() {
+		return goodsParse;
+	}
+	@Autowired
+	@Qualifier("goodsParse")
+	public void setGoodsParse(GoodsParse goodsParse) {
+		Context.goodsParse = goodsParse;
+	}
+
 	public static World getWorld() {
 		return world;
 	}
+	@Autowired
 	public void setWorld(World world) {
-		this.world = world;
+		Context.world = world;
 	}
+
 	public static OnlinePlayer getOnlinPlayer() {
 		return onlinPlayer;
 	}
+	@Autowired
 	public void setOnlinPlayer(OnlinePlayer onlinPlayer) {
-	   this.onlinPlayer = onlinPlayer;
+		Context.onlinPlayer = onlinPlayer;
 	}
-	
-	public static ConcurrentHashMap<Channel, Session> getSession2Channel() {
-		return channel2Session;
-	}
-	public static Session getSessionByChannel(Channel channel) {
-		/**
-		if(channel2Session.size() > 1) {
-			System.out.println("c2s  " + channel2Session.toString());
-			System.out.println("s2c  " + session2Channel.toString());
-		}
-		*/
-		return channel2Session.get(channel);
-	}
-	public static void addChannel2Session(Channel channel, Session session) {
-		channel2Session.put(channel, session);
-		//session2Channel.put(session, channel);
-		//System.out.println("channel2Session的大小：" + channel2Session.size()+ "  相反 " + session2Channel.size());
-	}
-	public static void deleteChannel2Session(Channel channel) {
-		channel2Session.remove(channel);
-	}
+
 	public static TaskProducer getTaskProducer() {
 		return taskProducer;
 	}
+	@Autowired
 	public void setTaskProducer(TaskProducer taskProducer) {
 		Context.taskProducer = taskProducer;
 	}
 	
+	public static SceneParse getSceneParse() {
+		return sceneParse;
+	}
+	@Autowired
+	@Qualifier("sceneParse")
+	public void setSceneParse(SceneParse sceneParse) {
+		Context.sceneParse = sceneParse;
+	}
+
+	public static TransferService getTransferService() {
+		return transferService;
+	}
+	@Autowired
+	public void setTransferService(TransferService transferService) {
+		Context.transferService = transferService;
+	}
+
+	public static NpcService getNpcService() {
+		return npcService;
+	}
+	@Autowired
+	public void setNpcService(NpcService npcService) {
+		Context.npcService = npcService;
+	}
+
+	public static MonsterService getMonsterService() {
+		return monsterService;
+	}
+	@Autowired
+	public void setMonsterService(MonsterService monsterService) {
+		Context.monsterService = monsterService;
+	}
+	
+	public static SkillService getSkillService() {
+		return skillService;
+	}
+	@Autowired
+	public void setSkillService(SkillService skillService) {
+		Context.skillService = skillService;
+	}
+
+	public static GoodsService getGoodsService() {
+		return goodsService;
+	}
+	@Autowired
+	public void setGoodsService(GoodsService goodsService) {
+		Context.goodsService = goodsService;
+	}
+
+	
+	
+	
+	
+	
+	
+	
+	
+
+
+
+
+
+
+	public static ConcurrentHashMap<Channel, Session> getSession2Channel() {
+		return channel2Session;
+	}
+	public static Session getSessionByChannel(Channel channel) {
+		return channel2Session.get(channel);
+	}
+	public static void addChannel2Session(Channel channel, Session session) {
+		channel2Session.put(channel, session);
+	}
+	public static void deleteChannel2Session(Channel channel) {
+		channel2Session.remove(channel);
+	}
 	
 	public static void channelToString() {
 		if(channel2Session.size() > 1) {
 			System.out.println("c2s  " + channel2Session.toString());
-			//System.out.println("s2c  " + session2Channel.toString());
 		}
 
 	}
@@ -168,30 +241,7 @@ public class Context {
 	public static void setpID(int pID) {
 		Context.pID = new AtomicInteger(pID);
 	}
-	public static SceneParse getSceneParse() {
-		return sceneParse;
-	}
-	public void setSceneParse(SceneParse sceneParse) {
-		Context.sceneParse = sceneParse;
-	}
-	public static SkillParse getSkillParse() {
-		return skillParse;
-	}
-	public void setSkillParse(SkillParse skillParse) {
-		Context.skillParse = skillParse;
-	}
-	public static LevelParse getLevelParse() {
-		return levelParse;
-	}
-	public void setLevelParse(LevelParse levelParse) {
-		Context.levelParse = levelParse;
-	}
-	public static GoodsParse getGoodsParse() {
-		return goodsParse;
-	}
-	public void setGoodsParse(GoodsParse goodsParse) {
-		Context.goodsParse = goodsParse;
-	}
+	
 
 	
 	

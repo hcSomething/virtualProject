@@ -10,6 +10,8 @@ import org.dom4j.Document;
 import org.dom4j.DocumentException;
 import org.dom4j.Element;
 import org.dom4j.io.SAXReader;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import com.hc.frame.Scene;
 import com.hc.logic.config.SceneConfig;
@@ -22,6 +24,7 @@ import com.hc.logic.config.SceneConfig;
  * @author hc
  *
  */
+@Component
 public class SceneParse implements ParseXml{
 	//所有配置文件中的场景配置
 	private List<SceneConfig> sceneList = null;
@@ -29,15 +32,19 @@ public class SceneParse implements ParseXml{
 	//所有场景，并且已经初始化
 	//private List<Scene> allScene = new ArrayList<>();
 	
+	@Autowired
 	MonstParse monsters;
+	@Autowired
 	NpcParse npcs;
+	@Autowired
 	TelepParse teleps;
 
 
 	public SceneParse() {
+		
 		File file = new File("config/scenes.xml");
 		parse(file);
-		init();
+		//init();
 	}
 	
 	@Override
@@ -89,24 +96,6 @@ public class SceneParse implements ParseXml{
 		}
 
 	}
-	
-	/**
-	 * 加载怪物，npc，传送阵等配置文件
-	 */
-	public void init() {
-		monsters = new MonstParse();
-		npcs = new NpcParse();
-		teleps = new TelepParse();
-		
-		monsters.parse(new File("config/monst.xml"));
-		npcs.parse(new File("config/npc.xml"));
-		teleps.parse(new File("config/teleports.xml"));
-		
-		
-	}
-	
-	
-	
 	
 	
 	/**

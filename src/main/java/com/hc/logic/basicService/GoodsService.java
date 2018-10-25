@@ -1,10 +1,13 @@
 package com.hc.logic.basicService;
 
+import org.springframework.stereotype.Component;
+
 import com.hc.frame.Context;
 import com.hc.logic.domain.Equip;
 import com.hc.logic.domain.GoodsEntity;
 import com.hc.logic.domain.PlayerEntity;
 
+@Component
 public class GoodsService {
 
 	/**
@@ -99,5 +102,27 @@ public class GoodsService {
 			}
 		}
 		return false;
+	}
+	
+	/**
+	 * 返回所有已穿着的装备
+	 * @param pe
+	 * @return
+	 */
+	public String allEquips(PlayerEntity pe) {
+		StringBuilder sb = new StringBuilder();
+		sb.append("身上的装备：- - - - - - - - - -  - - - - - - - - - - - - - - - - - - - - - - - - - - - - -\n");
+		for(GoodsEntity ge : pe.getGoods()) {
+			if(ge instanceof Equip) {
+				Equip equip = (Equip)ge;
+				if(equip.getState() != 1) continue;
+				int gid = equip.geteId();
+				String name = Context.getGoodsParse().getGoodsConfigById(gid).getName();
+				int dua = equip.getDuraion();
+				sb.append(name + " 剩余耐久度：" + dua + "\n");
+			}
+		}
+		sb.append("- - - - - - - - - - - - -  - - - - - - - - - - - - - - - - - - - - - - - - - - - - -\n");
+		return sb.toString();
 	}
 }

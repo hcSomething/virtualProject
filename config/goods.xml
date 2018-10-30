@@ -44,11 +44,11 @@
 		<type>3</type>
 		<name>诛仙剑【4】</name>
 		<description>神器，极大的增加杀伤力</description>
-		<continue>5</continue>
+		<continue>50</continue>
 		<mp>0</mp>
 		<hp>0</hp>
-		<protect>15</protect>
-		<attack>10</attack>
+		<protect>0</protect>
+		<attack>25</attack>
 		<superposition>1</superposition>
 		<price>0</price>
 	</good>

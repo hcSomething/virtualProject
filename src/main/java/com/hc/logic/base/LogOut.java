@@ -1,10 +1,12 @@
 package com.hc.logic.base;
 
 import java.util.List;
+import java.util.concurrent.Future;
 
 import com.hc.frame.Context;
 import com.hc.logic.creature.Player;
 import com.hc.logic.dao.impl.PlayerDaoImpl;
+import com.hc.logic.domain.CopyEntity;
 import com.hc.logic.domain.Equip;
 import com.hc.logic.domain.GoodsEntity;
 import com.hc.logic.domain.PlayerEntity;
@@ -39,36 +41,25 @@ public class LogOut implements Runnable{
 		if(name.equals(null)) 
 			return;
 		
+		//玩家断开连接时，需要清除副本任务调度线程
+		Context.getWorld().delCopyThread(p);
+		
 		//由玩家创建一个玩家实体,用来更新数据库
 		PlayerEntity cPE = player.getPlayerEntity();  
 		PlayerEntity pe = Context.getWorld().getPlayerEntityByName(name);
 		
-		//玩家物品实体
-		//GoodsEntity cGE = player.getGoodsEntity();
-		
 		//若在缓存中没有，也就是数据库中没有，则插入一条数据到数据库，同时也在缓存中缓存一条数据
 		if(pe == null) {
 			System.out.println("logout，进行数据库插入");			
-			//playerEntSave(cPE);
 			new PlayerDaoImpl().insert(cPE);
-			//new PlayerDaoImpl().insert(cGE);
 			Context.getWorld().addPlayerEntity(cPE);  //加入缓存
-			//Context.getWorld().addGoodsEntity(cGE);
 		}else {
 			//若存在于缓存中，则只要更新数据库就行
 			System.out.println("logout，进行数据库更新");
-			//System.out.println(cPE.toString());
-			//updatePE(cPE);
-			new PlayerDaoImpl().update(cPE);  //用pe反倒不会更新
-			//new PlayerDaoImpl().update(cGE);
-			//Context.getWorld().updCache(cPE);  //不用更新缓存，因为传到player类的playerEntity是引用
+			new PlayerDaoImpl().update(cPE);  
+			//delCopys(cPE);
 		}
 		
-	}
-
-	public void updatePE(PlayerEntity pp) {
-		//Context.getWorld().updatePE(pp);
-		new PlayerDaoImpl().update(pp);
 	}
 	
 	

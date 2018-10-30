@@ -64,10 +64,8 @@ public class ServerHandler extends ChannelInboundHandlerAdapter{
 			name = pl.getName();
 			//处理某一个客户端断开后，清理场景中的信息
 			pl.getScene().deletePlayer(pl);
-			
 			//处理某一个客户端断开后，从在线列表中的删除
 			Context.getOnlinPlayer().deletePlayer(pl);
-			
 			//执行登出操作, 在线程池中做
 			//new LogOut(pl).updateDB(pl);;
 			System.out.println( "------------task前");

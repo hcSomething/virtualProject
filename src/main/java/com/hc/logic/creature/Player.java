@@ -15,7 +15,9 @@ import com.hc.logic.base.Session;
 import com.hc.logic.basicService.BagService;
 import com.hc.logic.basicService.GoodsService;
 import com.hc.logic.config.LevelConfig;
+import com.hc.logic.copys.Copys;
 import com.hc.logic.dao.impl.UpdateTask;
+import com.hc.logic.domain.CopyEntity;
 import com.hc.logic.domain.Equip;
 import com.hc.logic.domain.GoodsEntity;
 import com.hc.logic.domain.PlayerEntity;
@@ -133,10 +135,22 @@ public class Player extends LiveCreature{
 	
 	/**
 	 * 通过sceneID的获得scene
+	 * 如果在副本中，则返回副本Copys
 	 * @return
 	 */
 	public Scene getScene() {
-		return Context.getWorld().getSceneById(playerEntity.getSceneId());
+		int sceId = playerEntity.getSceneId();
+		System.out.println("sceId=0" + (sceId==0));
+		if(sceId == 0) {
+			return getCopys();
+		}
+		return Context.getWorld().getSceneById(sceId);
+	}
+	
+	public Copys getCopys() {
+		int copeId = playerEntity.getCopEntity().getCopyId();
+		System.out.println("copeId" + copeId);
+		return Context.getWorld().getCopysByAPlayer(copeId, playerEntity.getId());
 	}
 	
 	public String getName() {
@@ -677,6 +691,14 @@ public class Player extends LiveCreature{
 			map.put(ge.geteId(), map.getOrDefault(ge.geteId(), 0) + 1);
 		}
 		return map;
+	}
+	
+	public void setCopEntity(CopyEntity copy) {
+		//playerEntity.setCopEntity(copy);
+		playerEntity.addCopyEntity(copy);
+	}
+	public CopyEntity getCopEntity() {
+		return playerEntity.getCopEntity();
 	}
 
 

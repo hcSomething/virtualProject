@@ -39,11 +39,19 @@ public class PlayerDaoImpl{
 	
 	
 	public void delete(Object o) {
-		System.out.println("É¾³ý***");
+		System.out.println("É¾³ý***");	
 		Session session = SessionUtil.getSession();
-		Transaction ts = session.beginTransaction();
-		session.delete(o);
-		ts.commit();
+		Transaction ts;
+		try {
+			ts = session.beginTransaction();
+			session.delete(o);
+			ts.commit();
+		}catch(Exception e) {
+			e.printStackTrace();
+		}finally {
+			session.close();
+		}
+
 	}
 	
 	

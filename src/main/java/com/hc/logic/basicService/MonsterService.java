@@ -22,6 +22,12 @@ public class MonsterService {
 		sb.append(mc.getAttack() + "\n");
 		sb.append("是否活着：");
 		sb.append(mc.isAlive());
+		if(mc.getGold() != 0) {
+			//表明是boss
+			sb.append("\n" + "击杀获得金币：" + mc.getGold());
+			sb.append("\n" + "所有技能" + mc.bossSkillList());
+		}
+		
 		session.sendMessage(sb.toString());
 	}
 

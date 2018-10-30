@@ -71,11 +71,8 @@ public enum Order {
 				session.sendMessage("命令参数不正确");
 				return;
 			}
-			Scene scene = session.getPlayer().getScene();
-			session.sendMessage("所有生物" + scene.getCreatures());
-			session.sendMessage("所有玩家" + scene.getPlayers() + "\n");
-			//更改了传送的方式
-			session.sendMessage("所有可传送目标：" + scene.allTransportableScene());
+			Scene scene = session.getPlayer().getScene(); 
+			scene.allThing(session);
 		} 
 	},
 	TRANSFER("transfer", "进行传送"){
@@ -85,15 +82,9 @@ public enum Order {
 				session.sendMessage("命令参数不正确");
 				return;
 			}
+			int targetId = Integer.parseInt(args[1]);
 			int sceneId = session.getPlayer().getSceneId();
-			Teleport t = Context.getTransferService();
-			int tSceneId = Integer.parseInt(args[1]);
-			if(!Context.getWorld().getSceneById(sceneId).hasTelepId(tSceneId)) {
-				session.sendMessage("没有这个传送阵，不能传送");
-				return;
-			}
-			t.transfer(session.getPlayer(), sceneId, tSceneId);
-			session.sendMessage("欢迎来到" + Context.getWorld().getSceneById(tSceneId).getName());
+			Context.getTransferService().allTransfer(targetId, sceneId, session);	
 		} 
 	},
 	NPCTALK("npcTalk", "和npc对话"){
@@ -105,8 +96,8 @@ public enum Order {
 			}
 			NpcService npcS = Context.getNpcService();
 			int nId = Integer.parseInt(args[1]);
-			//验证npc是否在同一场景
-			if(!npcS.isOnScene(session, nId)) {
+			//验证npc是否在同一场景，当在副本中时也没有这个npc
+			if((session.getPlayer().getSceneId() == 0) || !npcS.isOnScene(session, nId)) {
 				session.sendMessage("没有这个npc");
 				return;
 			}
@@ -250,6 +241,20 @@ public enum Order {
 			boolean used = session.getPlayer().addRecoverHpMp(gId);
 			if(used) session.sendMessage("使用成功");
 			else session.sendMessage("使用失败！可能不属于药品，或者此药品已用完");
+		}
+	},
+	ECOPY("eCopy", "请求进入副本"){
+		@Override 
+		public void doService(String[] args, Session session) {
+			//现在默认是只有一个玩家进入副本
+			if(!OrderVerifyService.ontInt(args)) {
+				session.sendMessage("命令参数不正确");
+				return;
+			}
+			int copyId = Integer.parseInt(args[1]);
+			//判断是否已经在副本中
+			if(!Context.getCopyService().canEnterCopy(session.getPlayer())) return;
+			boolean entered = Context.getCopyService().enterCopy(copyId, session.getPlayer(), session, 0);		
 		}
 	};
 	

@@ -1,5 +1,7 @@
 package com.hc.logic.basicService;
 
+import java.util.List;
+
 import com.hc.frame.Context;
 import com.hc.frame.OnlinePlayer;
 import com.hc.frame.Scene;
@@ -27,4 +29,17 @@ public class BroadcastService {
 			}
 		}
 	}
+	
+	/**
+	 * 给玩家发送信息
+	 * @param player
+	 * @param mesg
+	 */
+	public static void broadToPlayer(List<Player> players, String mesg) {
+		for(Player p : players) {
+			p.getSession().sendMessage(mesg);
+		}
+	}
+	
+	
 }

@@ -73,6 +73,9 @@ public class SkillParse implements ParseXml{
 					}else if(nodeName.equals("weapon")) {
 						String swe = child.getStringValue();
 						skill.setWeapon(Integer.parseInt(swe));;
+					}else if(nodeName.equals("scope")) {
+						String sScop = child.getStringValue();
+						skill.setScope(Integer.parseInt(sScop));
 					}
 				}
 				

@@ -16,6 +16,32 @@
 		<attack>5</attack>
 		<exp>15</exp>
 	</monster>
+	
+	
+	
+	
+	<!-- ****************************100之后是boss -->
+	<monster id="100">
+	    <name>都天大魔王【100】</name>
+	    <description>战力强大的魔族领袖</description>
+	    <hp>100</hp>
+	    <exp>70</exp>
+	    <attackP>1</attackP>                         <!-- 是否会主动攻击玩家。0：不会，1：会 -->      
+	    <skills>100,101,102</skills>                 <!-- boss所拥有的技能 -->
+	    <gold>100</gold>                             <!-- 击杀boss的金币奖励 -->
+	</monster>
+	
+	<monster id="101">
+	    <name>都天大魔王2号【101】</name>
+	    <description>战力强大的魔族领袖</description>
+	    <hp>100</hp>
+	    <exp>70</exp>
+	    <attackP>1</attackP>                         <!-- 是否会主动攻击玩家。0：不会，1：会 -->      
+	    <skills>100,101,102</skills>                 <!-- boss所拥有的技能 -->
+	    <gold>100</gold>                             <!-- 击杀boss的金币奖励 -->
+	</monster>
+	
+	
 
 
 

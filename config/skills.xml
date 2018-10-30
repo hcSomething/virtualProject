@@ -33,5 +33,42 @@
 		<continue>10</continue>
 		<weapon>0</weapon>
 	</skill>
+	
+	
+	
+	
+	
+	<!-- *******************100以后是boss的技能 -->
+	<skill id="100">
+	   <name>野蛮冲撞【100】</name>
+	   <description>朝着某个方向疯狂冲撞，对路径上的敌人造成巨大伤害</description>
+	   <cd>10</cd>
+	   <attack>5</attack>
+	   <protect>0</protect>
+	   <continue>0</continue>
+	   <scope>1</scope>             <!-- 能同时攻击多少个玩家；0：所有，.. -->	   
+	</skill>
+	
+	<skill id="101">
+	   <name>音波吼【101】</name>
+	   <description>仰天长啸，形成无法躲避的音波攻击。在受到伤害的同时，玩家眩晕3秒</description>
+	   <cd>20</cd>
+	   <attack>6</attack>
+	   <protect>0</protect>
+	   <continue>0</continue>
+	   <scope>0</scope>             	   
+	</skill>
+	
+	<skill id="102">
+	   <name>地狱业火【102】</name>
+	   <description>召唤来自地狱深处的业火，在一段时间内，持续造成伤害</description>
+	   <cd>30</cd>
+	   <attack>3</attack>
+	   <protect>0</protect>
+       <continue>8</continue>
+	   <scope>0</scope>             	   
+	</skill>
+	
+	
 
 </skills>

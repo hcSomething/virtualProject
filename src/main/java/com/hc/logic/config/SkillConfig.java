@@ -10,10 +10,11 @@ public class SkillConfig {
 	private int protect;  //对自身的保护，比如能加防御，
 	private int mp;      //消耗的法力
 	private int weapon;   //需要的武器(物品id)
-	private int continueT;   //技能持续时间
+	private int continueT;   //(秒)技能持续时间
 	
 	
-	
+	//boss专用
+	private int scope;  //能同时攻击多少玩家;0：无限；1：一个,。 。 。
 	
 	
 	
@@ -71,6 +72,12 @@ public class SkillConfig {
 	
 	
 	
+	public int getScope() {
+		return scope;
+	}
+	public void setScope(int scope) {
+		this.scope = scope;
+	}
 	public int getWeapon() {
 		return weapon;
 	}

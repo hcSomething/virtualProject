@@ -25,5 +25,6 @@
 		<mapping class="com.hc.logic.domain.PlayerEntity" />
 		<mapping class="com.hc.logic.domain.GoodsEntity" />
 		<mapping class="com.hc.logic.domain.Equip" />
+		<mapping class="com.hc.logic.domain.CopyEntity" />
 	</session-factory>
 </hibernate-configuration>

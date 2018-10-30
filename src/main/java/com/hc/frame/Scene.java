@@ -3,7 +3,7 @@ import java.util.*;
 import java.util.Map.Entry;
 
 import com.hc.frame.taskSchedule.TaskConsume;
-
+import com.hc.logic.base.Session;
 import com.hc.logic.config.LevelConfig;
 import com.hc.logic.creature.*;
 
@@ -15,7 +15,7 @@ public class Scene extends TaskConsume{
 	protected int id;
 	//
 	protected String name;
-	//当前场景内的所有生物, 包括玩家
+	//当前场景内的所有生物, 不包括玩家
 	protected List<LiveCreature> creatures = new ArrayList<>();
 	//当前场景内的所有玩家
 	protected List<Player> players = new ArrayList<>();
@@ -25,11 +25,15 @@ public class Scene extends TaskConsume{
 	protected List<Integer> telepIds = new ArrayList<>();
 	
 	//当前场景，被攻击玩家列表: key:怪物id, value:每个怪物可以攻击的玩家
-	private Map<Integer, List<Player>> attackPlayers = new HashMap<>();
+	protected Map<Integer, List<Player>> attackPlayers = new HashMap<>();
 	
 
 	public Scene() {
-		exe(5); //启动一个周期性调度器，周期20秒
+		exe(5, "scene"+id); //启动一个周期性调度器，周期20秒
+	}
+	
+	public Scene(int interval) {
+		System.out.println("scene的构造方法" + interval);
 	}
 	
 	
@@ -42,15 +46,7 @@ public class Scene extends TaskConsume{
     	attackPlayer();
     	
     }
-	
-
-/**	
-	public static void main(String[] args) {
-		Scene scene = new Scene();
-		scene.prepareExecute();
 		
-	}
-*/	
 	/**
 	 * 每秒恢复血量、法力
 	 */
@@ -70,8 +66,6 @@ public class Scene extends TaskConsume{
 			
 			p.addHpMp(mhp, mmp);
 		}
-		
-		
 	}
 
 	/**
@@ -94,7 +88,7 @@ public class Scene extends TaskConsume{
 			
 			pp.addHpMp(-dHp, 0); //加个负号，就变成减了
 			String name = Context.getSceneParse().getMonsters().getMonstConfgById(mId).getName();
-			pp.getSession().sendMessage("正在被：" + name + " 攻击，减少血量：" + dHp);
+			pp.getSession().sendMessage("正在被 " + name + " 攻击，减少血量：" + dHp);
 
 		}
 
@@ -117,6 +111,109 @@ public class Scene extends TaskConsume{
 		}
 		return null;
 	}
+
+	
+	/**
+	 * 增加可以被某个怪物攻击的玩家
+	 * 加入之后，就一只会遭受攻击，只有在怪物死亡、玩家离开当前场景，才不会被攻击
+	 * @param mId : 怪物id 
+	 * @param p ： 怪物可以攻击的玩家
+	 */
+	public void addAttackPlayer(int mId, Player p) {
+		if(!attackPlayers.containsKey(mId)) {
+			attackPlayers.put(mId, new ArrayList<Player>());
+		}
+		//不重复添加。一个怪物列表中，不能有重复的玩家
+		if(attackPlayers.get(mId).contains(p)) return;
+		attackPlayers.get(mId).add(p);
+	}
+	/**
+	 * 当一个玩家去到别的场景时，怪物就攻击不到，从怪物的攻击列表中删除
+	 * @param p
+	 */
+	public void deleteAttackPlayer(Player p) {
+		System.out.println(" 当一个玩家去到别的场景时，怪物就攻击不到，从怪物的攻击列表中删除");
+		//boolean find = false;
+		for(Entry<Integer, List<Player>> enti : attackPlayers.entrySet()) {
+			int mId = enti.getKey();
+			List<Player> attackP = enti.getValue();
+			for(int j = 0; j < attackP.size(); j++) {
+				if(attackP.get(j).getName().equals(p.getName())) {
+					attackP.remove(p);
+				}
+				if(attackP.isEmpty()) {
+					attackPlayers.remove(mId);
+				}
+				break;
+			}
+		}
+		
+	}
+	/**
+	 * 当怪物被击杀，就不能攻击玩家了，需要删除
+	 * @param mId
+	 */
+	public void deleteAttackMonst(int mId) {
+		attackPlayers.remove(mId);
+	}
+
+
+	/**
+	 * 判断当前场景是否有这个传送阵id
+	 * @param id
+	 * @return
+	 */
+	public boolean hasTelepId(int id) {
+		for(int ii : telepIds) {
+			if(ii == id) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+
+	/**
+	 * 所有当前场景可以传送到的场景
+	 * @return
+	 */
+	public String allTransportableScene() {
+		return teleports.toString();
+	}
+	
+	/**
+	 * 当前场景是否存在这个怪物
+	 * @param mid 怪物id
+	 */
+	public boolean hasMonst(int mId) {
+		for(LiveCreature ii : creatures) {
+			if(ii.getcId() == mId) {
+				return true;
+			}
+		}
+		return false;
+	}
+	
+	/**
+	 * 返回客户端当前场景的所有信息
+	 * @param session
+	 */
+	public void allThing(Session session) {
+		session.sendMessage("所有生物" + getCreatures());
+		session.sendMessage("所有玩家" + getPlayers() + "\n");
+		//更改了传送的方式
+		session.sendMessage("所有可传送目标：" + allTransportableScene());
+	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 	
 	
 	
@@ -178,109 +275,4 @@ public class Scene extends TaskConsume{
 	}
 	
 
-	public Map<Integer, List<Player>> getAttackPlayers() {
-		return attackPlayers;
-	}
-
-
-	public void setAttackPlayers(Map<Integer, List<Player>> attackPlayers) {
-		this.attackPlayers = attackPlayers;
-	}
-	/**
-	 * 增加可以被某个怪物攻击的玩家
-	 * 加入之后，就一只会遭受攻击，只有在怪物死亡、玩家离开当前场景，才不会被攻击
-	 * @param mId : 怪物id 
-	 * @param p ： 怪物可以攻击的玩家
-	 */
-	public void addAttackPlayer(int mId, Player p) {
-		if(!attackPlayers.containsKey(mId)) {
-			attackPlayers.put(mId, new ArrayList<Player>());
-		}
-		//不重复添加。一个怪物列表中，不能有重复的玩家
-		if(attackPlayers.get(mId).contains(p)) return;
-		attackPlayers.get(mId).add(p);
-		System.out.println("addAttackPlayer " + attackPlayers.toString());
-	}
-	/**
-	 * 当一个玩家去到别的场景时，怪物就攻击不到，从怪物的攻击列表中删除
-	 * @param p
-	 */
-	public void deleteAttackPlayer(Player p) {
-		System.out.println(" 当一个玩家去到别的场景时，怪物就攻击不到，从怪物的攻击列表中删除");
-		//boolean find = false;
-		for(Entry<Integer, List<Player>> enti : attackPlayers.entrySet()) {
-			int mId = enti.getKey();
-			List<Player> attackP = enti.getValue();
-			for(int j = 0; j < attackP.size(); j++) {
-				if(attackP.get(j).getName().equals(p.getName())) {
-					attackP.remove(p);
-				}
-				if(attackP.isEmpty()) {
-					attackPlayers.remove(mId);
-				}
-				break;
-			}
-		}
-		/**
-		for(int i = 1; i <= attackPlayers.size(); i++) {
-			for(int j = 0; j < attackPlayers.get(i).size(); j++) {
-				if(attackPlayers.get(i).get(j).getName().equals(p.getName())) {
-					attackPlayers.get(i).remove(p);
-					//find = true;
-					//当玩家列表为空，就删掉
-					if(attackPlayers.get(i).isEmpty()) {
-						attackPlayers.remove(i);
-					}
-					break;
-				}
-			}
-			//if(find == true) break;
-		}
-		*/
-		
-	}
-	/**
-	 * 当怪物被击杀，就不能攻击玩家了，需要删除
-	 * @param mId
-	 */
-	public void deleteAttackMonst(int mId) {
-		System.out.println("当怪物被击杀，就不能攻击玩家了，需要删除");
-		attackPlayers.remove(mId);
-	}
-
-
-	/**
-	 * 判断当前场景是否有这个传送阵id
-	 * @param id
-	 * @return
-	 */
-	public boolean hasTelepId(int id) {
-		for(int ii : telepIds) {
-			if(ii == id) {
-				return true;
-			}
-		}
-		return false;
-	}
-
-
-	/**
-	 * 所有当前场景可以传送到的场景
-	 * @return
-	 */
-	public String allTransportableScene() {
-		return teleports.toString();
-	}
-	
-	/**
-	 * 当前场景是否存在这个怪物
-	 */
-	public boolean hasMonst(int mId) {
-		for(LiveCreature ii : creatures) {
-			if(ii.getcId() == mId) {
-				return true;
-			}
-		}
-		return false;
-	}
 }

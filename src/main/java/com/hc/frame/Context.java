@@ -11,11 +11,14 @@ import org.springframework.stereotype.Component;
 import com.hc.frame.taskSchedule.TaskProducer;
 import com.hc.logic.base.Session;
 import com.hc.logic.base.World;
+import com.hc.logic.basicService.AwardService;
 import com.hc.logic.basicService.GoodsService;
 import com.hc.logic.basicService.MonsterService;
 import com.hc.logic.basicService.NpcService;
 import com.hc.logic.basicService.SkillService;
 import com.hc.logic.basicService.TransferService;
+import com.hc.logic.copys.CopyService;
+import com.hc.logic.xmlParser.CopysParse;
 import com.hc.logic.xmlParser.GoodsParse;
 import com.hc.logic.xmlParser.LevelParse;
 import com.hc.logic.xmlParser.SceneParse;
@@ -49,6 +52,7 @@ public class Context implements ApplicationContextAware{
     private static SkillParse skillParse;   //技能
     private static LevelParse levelParse;   //等级
     private static GoodsParse goodsParse;   //物品，包括丹药和装备
+    private static CopysParse copysParse;   //副本
 	
 	//*************************************************
 
@@ -74,7 +78,10 @@ public class Context implements ApplicationContextAware{
 	private static SkillService skillService;
 	//物品服务
 	private static GoodsService goodsService;
-	
+	//副本服务
+	private static CopyService copyService;
+	//奖励服务
+	private static AwardService awardService;
 	
 	//玩家id
 	private static AtomicInteger pID = new AtomicInteger(1008);
@@ -202,18 +209,38 @@ public class Context implements ApplicationContextAware{
 		Context.goodsService = goodsService;
 	}
 
+	public static CopysParse getCopysParse() {
+		return copysParse;
+	}
+	@Autowired
+	public void setCopysParse(CopysParse copysParse) {
+		Context.copysParse = copysParse;
+	}
 	
+	public static CopyService getCopyService() {
+		return copyService;
+	}
+	@Autowired
+	public void setCopyService(CopyService copyService) {
+		Context.copyService = copyService;
+	}
 	
-	
-	
-	
-	
-	
-	
+	public static AwardService getAwardService() {
+		return awardService;
+	}
+	@Autowired
+	public void setAwardService(AwardService awardService) {
+		Context.awardService = awardService;
+	}
 
 
 
 
+
+	
+	
+	
+	
 
 
 	public static ConcurrentHashMap<Channel, Session> getSession2Channel() {
@@ -241,6 +268,7 @@ public class Context implements ApplicationContextAware{
 	public static void setpID(int pID) {
 		Context.pID = new AtomicInteger(pID);
 	}
+
 	
 
 	

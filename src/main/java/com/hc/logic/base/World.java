@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.Future;
 
 import javax.annotation.PostConstruct;
 
@@ -16,12 +18,15 @@ import org.springframework.stereotype.Component;
 import com.hc.frame.Context;
 import com.hc.frame.OnlinePlayer;
 import com.hc.frame.Scene;
+import com.hc.logic.config.CopysConfig;
 import com.hc.logic.config.MonstConfig;
 import com.hc.logic.config.NpcConfig;
 import com.hc.logic.config.SceneConfig;
 import com.hc.logic.config.TelepConfig;
+import com.hc.logic.copys.Copys;
 import com.hc.logic.creature.Player;
 import com.hc.logic.dao.impl.PlayerDaoImpl;
+import com.hc.logic.domain.CopyEntity;
 import com.hc.logic.domain.Equip;
 import com.hc.logic.domain.GoodsEntity;
 import com.hc.logic.domain.PlayerEntity;
@@ -41,31 +46,19 @@ public class World implements ApplicationContextAware{
   //
 	//所有场景：（sceneId, scene），现在都是从配置文件中加载
 	private  Map<Integer, Scene> sceneResource = new HashMap<>();
+	//所有副本：(sceneId, (playerid, copys))。通过某个副本中的player的id可以唯一确定一个副本。
+	private Map<Integer, Map<Integer, Copys>> allCopys = new HashMap<>();
 	//所有注册的玩家，
 	private List<Player> allRegisteredPlayer = new ArrayList<>();
 	//所有玩家实体，在启动时，从数据库加载
 	private List<PlayerEntity> allPlayerEntity = new ArrayList<>();
-	//所有的物品，包括装备
-	//private List<GoodsEntity> allGoodsEntity = new ArrayList<>();
-	//所有的玩家的所有装备，无论是在背包中，还是穿上了
-	//private List<Equip> allEquip = new ArrayList<>();
-	ApplicationContext context;
-
+	//任务调度线程的标识。格式：key：copys+副本id+玩家id, value: 对应的future
+	ConcurrentHashMap<String, Future> futureMap = new ConcurrentHashMap<>();
 	
-	/**
-	 * 只能有一个World实例
-	 */
-	/**
-	private static World instance = new World();
-	private World() {
-		init();
-	}
-	public static World getInstance() {
-		return instance;
-	}
-	*/
+	ApplicationContext context;
+	
 	public World() {
-		//init();
+		
 	}
 	
 	@Override
@@ -81,9 +74,6 @@ public class World implements ApplicationContextAware{
 		//System.out.println("这里是world的init方法");
 		String hql = "from PlayerEntity";
 		allPlayerEntity = new PlayerDaoImpl().find(hql);
-		
-		//allGoodsEntity = new PlayerDaoImpl().find("from GoodsEntity");
-		
 		
 		//从数据库中加载玩家数据后，设置最大id
 		int maxId = getMaxId();
@@ -131,21 +121,129 @@ public class World implements ApplicationContextAware{
 		}
 	}
 	
+	/**
+	 *  创建一个新副本, 多人
+	 * @param copyId  副本id
+	 * @param players 需要进入此副本的所有玩家
+	 */
+	public void createCopy(int copyId, List<Player> players, int bossIndex) {
+		CopysConfig copysConfig = Context.getCopysParse().getCopysConfById(copyId);
+		Copys nCopys = new Copys(copyId, copysConfig.getName(), copysConfig.getDescription(), players, bossIndex);
+	    addCopys(copyId, players.get(0).getId(), nCopys);  //默认是players的第一个的id作为标识
+	}
+	
+	/**
+	 * 创建一个副本，单人
+	 * @param copyId
+	 * @param player
+	 */
+	public void createCopy(int copyId, Player player, int bossIndex) {
+		List<Player> players = new ArrayList<>();
+		players.add(player);
+		createCopy(copyId, players, bossIndex);
+	}
 
 	
 	
-	
+	/**
+	 * v当玩家请求进入副本时，创建一个副本
+	 * @param copyId    副本id，也就是sceneid
+	 * @param playerId  需要进入副本的某个玩家的中playerId
+	 * @param copys
+	 */
+	private void addCopys(int copyId, int playerId, Copys copys) {
+		if(allCopys.containsKey(new Integer(copyId))) {
+			allCopys.get(new Integer(copyId)).put(playerId, copys); 
+			return;
+		}		
+		Map<Integer, Copys> cop = new HashMap<>();
+		cop.put(playerId, copys);
+		allCopys.put(copyId, cop);	
+	}
+	/**
+	 * 通过副本id和玩家列表，删除对应的副本, 多人
+	 * @param copyId
+	 * @param players 要删除的副本中的所有玩家
+	 */
+	public void delCopys(int copyId, List<Player> players) {
+		for(Player p : players) {
+			boolean hasdel = delCopys(copyId, p);
+			if(!hasdel) continue;
+			return;
+		}
+	}
+	/**
+	 * 通过副本id和玩家，删除对应的副本, 单人
+	 * @param copyId
+	 * @param player
+	 * @return
+	 */
+	public boolean delCopys(int copyId, Player player) {
+		Map<Integer, Copys> pCopy = allCopys.get(new Integer(copyId));
+		if(pCopy == null) return false;
+		Copys copy = pCopy.remove(new Integer(player.getId()));
+		copy = null;
+		return true;
+	}
+	/**
+	 * 通过副本id，玩家列表，获得相应的副本
+	 * @param copyId  副本id
+	 * @param players 玩家列表
+	 * @return
+	 */
+	public Copys getCopysBy(int copyId, List<Player> players) {
+		for(Player p : players) {
+			Map<Integer, Copys> pCopy = allCopys.get(new Integer(copyId));
+			if(pCopy == null) continue;
+			return pCopy.get(new Integer(p.getId()));
+		}
+		return null;
+	}
+	/**
+	 * 根据副本id和玩家id，获得相应的Copys
+	 * @param copyId 副本id
+	 * @param playerId 玩家id
+	 * @return
+	 */
+	public Copys getCopysByAPlayer(int copyId, int playerId) {
+		Map<Integer, Copys> pCopy = allCopys.get(new Integer(copyId));
+		if(pCopy == null) return null;
+		return pCopy.get(new Integer(playerId));
+	}
+	/**
+	 * 停止副本线程
+	 * @param player
+	 * @return
+	 */
+	public void delCopyThread(Player player) {
+		CopyEntity copyEntity = player.getCopEntity(); 
+		if(copyEntity == null) return;
+		int copyId = copyEntity.getCopyId();
+		Future future = futureMap.remove("copys"+copyId+player.getId());
+		if(future == null) return;	
+		for(int bossId : Context.getCopysParse().getCopysConfById(copyEntity.getCopyId()).getBosses()) {
+			delBossThread(player.getId(), bossId);
+		}	
+		future.cancel(true);
+	}
+	/**
+	 * 停止boss线程
+	 * @param playerId
+	 * @param bossId
+	 */
+	public void delBossThread(int playerId, int bossId) {
+		Future future = futureMap.remove("boss"+bossId+playerId);
+		if(future == null) return;
+		future.cancel(true);
+		System.out.println("boss线程 pid=" + playerId + ", bossId=" + bossId + " 已停止");
+	}
+
 	public Scene getSceneById(int sceneId) {
 		return sceneResource.get(sceneId);
 	}
-
-	public Map<Integer, Scene> getSceneResource() {
-		return sceneResource;
-	}
-
+	
 	public void addSceneResource(int sceneId, Scene scene) {
 		sceneResource.put(sceneId, scene);
-		//System.out.println("******" + scene.getName() + " && " + scene.getId() + " ** " + scene.getDescribe());
 	}
 	public Player getPlayerByName(String name) {
 		for(Player player : allRegisteredPlayer) {
@@ -201,5 +299,12 @@ public class World implements ApplicationContextAware{
 		}
 		return result + 1;
 	}
+
+	public ConcurrentHashMap<String, Future> getFutureMap() {
+		return futureMap;
+	}
+
+	
+	
 	
 }

@@ -17,6 +17,7 @@ import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.PrimaryKeyJoinColumn;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 
 /**
  * 玩家实体
@@ -51,6 +52,13 @@ public class PlayerEntity{
 	//法力
 	@Column
 	private int mp;
+	
+	@OneToOne(mappedBy="playerEntity", orphanRemoval = true, cascade = CascadeType.ALL, fetch=FetchType.EAGER)
+	private CopyEntity copyEntity;
+	
+	@Transient
+	private boolean needDel=false;   //是否需要从数据库中删除对应的CopyEntity
+	
 
 	//技能id
 	@Column
@@ -209,6 +217,29 @@ public class PlayerEntity{
 	
 	
 
+
+	public boolean isNeedDel() {
+		return needDel;
+	}
+	public void setNeedDel(boolean needDel) {
+		this.needDel = needDel;
+	}
+	public CopyEntity getCopEntity() {
+		return copyEntity;
+	}
+	public void setCopEntity(CopyEntity copys) {
+		this.copyEntity = copys;
+	}
+	public void addCopyEntity(CopyEntity copyEntity) {
+		copyEntity.setPlayerEntity(this);
+		this.copyEntity = copyEntity;
+	}
+	public void removeCopyEntity() {
+		if(copyEntity != null) {
+			copyEntity.setPlayerEntity(null);
+			this.copyEntity = null;
+		}
+	}
 	
 	@Override
 	public String toString() {

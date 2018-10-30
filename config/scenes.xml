@@ -25,12 +25,12 @@
 	</scene>
 
 	<scene id="3">
-		<name>青山镇</name>
-		<description>欢迎来到青山镇</description>
+		<name>青云镇</name>
+		<description>欢迎来到青云镇</description>
 		<monst>2</monst>
 		<npc>2</npc>
 		<teleport>1</teleport>
 	</scene>
-
+	
 
 </scenes>

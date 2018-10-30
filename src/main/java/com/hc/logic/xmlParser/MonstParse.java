@@ -19,7 +19,7 @@ import com.hc.logic.config.SceneConfig;
 @Component
 public class MonstParse implements ParseXml{
 	
-	private List<MonstConfig> monstList = null;
+	private List<MonstConfig> monstList = null;   //普通怪物, 包括副本中和场景中的boss
 	private MonstConfig monst = null;
 
 	public MonstParse() {
@@ -67,10 +67,21 @@ public class MonstParse implements ParseXml{
 					}else if(nodeName.equals("exp")) {
 						String sE = child.getStringValue();
 						monst.setExp(Integer.parseInt(sE));
+					}else if(nodeName.equals("skills")) {
+						monst.setSkiStr(child.getStringValue());
+					}else if(nodeName.equals("gold")){
+						String sGol = child.getStringValue();
+						monst.setGold(Integer.parseInt(sGol));
+					}else if(nodeName.equals("attackP")) {
+						String sAtt = child.getStringValue();
+						monst.setAttackP(Integer.parseInt(sAtt));
 					}
 				}
 				
+				
 				monstList.add(monst);
+				monst.convert();
+				
 				monst = null;
 				
 			}
@@ -80,7 +91,11 @@ public class MonstParse implements ParseXml{
 
 	}
 	
-	
+	/**
+	 * 根据怪物id获得怪物/boss配置
+	 * @param id
+	 * @return
+	 */
 	public MonstConfig getMonstConfgById(int id) {
 		for(MonstConfig mc : monstList) {
 			if(mc.getMonstId() == id) {
@@ -89,6 +104,7 @@ public class MonstParse implements ParseXml{
 		}
 		return null;
 	}
+	
 	
 	
 }

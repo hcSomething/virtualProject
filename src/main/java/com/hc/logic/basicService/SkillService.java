@@ -106,7 +106,6 @@ public class SkillService {
 		player.updateCdById(skillId);
 		//攻击怪物，就要被怪物攻击。
 		player.getScene().addAttackPlayer(mId, player);
-		System.out.println("添加被怪物攻击");
 		
 		//更新武器耐久度
 		player.minusContT(wId);
@@ -119,8 +118,8 @@ public class SkillService {
 			monstConf.setHp(0);
 			monstConf.setAlive(false);
 			player.getScene().deleteAttackMonst(mId); //怪物死亡后，就不能攻击玩家
-			//增加玩家经验
-			player.addExp(monstConf.getExp());
+			//击杀怪物/boss获得相应奖励
+			Context.getAwardService().obtainAward(player, monstConf);
 			//需要广播给当前场景的所有玩家
 			String mesg = monstConf.getName() + "死亡";
 			BroadcastService.broadInScene(session, mesg);

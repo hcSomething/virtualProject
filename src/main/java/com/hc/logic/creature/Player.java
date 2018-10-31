@@ -51,6 +51,9 @@ public class Player extends LiveCreature{
 	//背包
 	private BagService bagService;
 	
+	//商店页面
+	private int pageNumber;
+	
 	
 	
 	@Override
@@ -108,30 +111,11 @@ public class Player extends LiveCreature{
 		sb.append("等级：" + playerEntity.getLevel()+ "\n");
 		sb.append("经验：" + playerEntity.getExp() + "/" + lc.getExp() + "\n");
 		sb.append("血量: " + playerEntity.getHp() + "/" + lc.getHp() + "\n");
-		sb.append("剩余法力: " + playerEntity.getMp() + "/" + lc.getMp());
+		sb.append("剩余法力: " + playerEntity.getMp() + "/" + lc.getMp() + "\n");
+		sb.append("金币：" + playerEntity.getGold());
 		session.sendMessage(sb.toString());
 	}
 	
-	/**
-	 * 从数据库中获得玩家的已穿戴装备
-	 */
-	/**
-	public void initEquips() {
-		//playerEntity.get
-		
-		String eq1 = goodsEntity.getEquiped();
-		List<Integer> li = new ArrayList<>();
-		if(eq1 == null || eq1.equals("")) {
-			this.equips = li;
-			return;
-		}
-		String[] eq = eq1.split(",");
-		for(int i = 0; i < eq.length; i++) {
-			li.add(Integer.parseInt(eq[i]));
-		}
-		this.equips = new ArrayList<>(li);
-	}
-	*/
 	
 	/**
 	 * 通过sceneID的获得scene
@@ -241,6 +225,28 @@ public class Player extends LiveCreature{
 	public void setMp(int mp) {
 		//this.mp = mp;
 		playerEntity.setMp(mp);
+	}
+	
+	public int getGold() {
+		return playerEntity.getGold();
+	}
+	/**
+	 * 增加金币
+	 * @param amount 数量
+	 */
+	public void addGold(int amount) {
+		playerEntity.setGold(playerEntity.getGold() + amount);
+	}
+	/**
+	 * 减少金币。如果玩家拥有的金币不够，则返回false
+	 * @param amount
+	 * @return
+	 */
+	public boolean minusGold(int amount) {
+		int diff = playerEntity.getGold() - amount;
+		if(diff < 0) return false;
+		playerEntity.setGold(diff);
+		return true;
 	}
 	
 	/**
@@ -699,6 +705,13 @@ public class Player extends LiveCreature{
 	}
 	public CopyEntity getCopEntity() {
 		return playerEntity.getCopEntity();
+	}
+
+	public int getPageNumber() {
+		return pageNumber;
+	}
+	public void setPageNumber(int pageNumber) {
+		this.pageNumber = pageNumber;
 	}
 
 

@@ -52,6 +52,9 @@ public class PlayerEntity{
 	//·¨Á¦
 	@Column
 	private int mp;
+	//½ð±Ò
+	@Column
+	private int gold = 100;
 	
 	@OneToOne(mappedBy="playerEntity", orphanRemoval = true, cascade = CascadeType.ALL, fetch=FetchType.EAGER)
 	private CopyEntity copyEntity;
@@ -241,6 +244,13 @@ public class PlayerEntity{
 		}
 	}
 	
+	
+	public int getGold() {
+		return gold;
+	}
+	public void setGold(int gold) {
+		this.gold = gold;
+	}
 	@Override
 	public String toString() {
 		StringBuilder sb = new StringBuilder();

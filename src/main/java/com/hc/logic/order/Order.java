@@ -256,6 +256,29 @@ public enum Order {
 			if(!Context.getCopyService().canEnterCopy(session.getPlayer())) return;
 			boolean entered = Context.getCopyService().enterCopy(copyId, session.getPlayer(), session, 0);		
 		}
+	},
+	STORE("store", "查询商店商品"){
+		@Override 
+		public void doService(String[] args, Session session) {
+			if(!OrderVerifyService.ontInt(args)) {
+				session.sendMessage("命令参数不正确");
+				return;
+			}
+			int page = Integer.parseInt(args[1]);
+			Context.getStoreService().lookStore(session, page);
+		}
+	},
+	BUY("buy", "购买商品"){
+		@Override 
+		public void doService(String[] args, Session session) {
+			if(!OrderVerifyService.twoInt(args)) {
+				session.sendMessage("命令参数不正确");
+				return;
+			}
+			int gid = Integer.parseInt(args[1]);
+			int amount = Integer.parseInt(args[2]);
+			Context.getStoreService().validBuyGood(session, gid, amount);
+		}
 	};
 	
 	

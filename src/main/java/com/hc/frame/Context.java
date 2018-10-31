@@ -23,6 +23,8 @@ import com.hc.logic.xmlParser.GoodsParse;
 import com.hc.logic.xmlParser.LevelParse;
 import com.hc.logic.xmlParser.SceneParse;
 import com.hc.logic.xmlParser.SkillParse;
+import com.hc.login.store.Store;
+import com.hc.login.store.StoreService;
 
 import io.netty.channel.Channel;
 /**
@@ -82,6 +84,11 @@ public class Context implements ApplicationContextAware{
 	private static CopyService copyService;
 	//奖励服务
 	private static AwardService awardService;
+	//商店服务
+	private static StoreService storeService;
+	//商店
+	private static Store store;
+	
 	
 	//玩家id
 	private static AtomicInteger pID = new AtomicInteger(1008);
@@ -233,14 +240,26 @@ public class Context implements ApplicationContextAware{
 		Context.awardService = awardService;
 	}
 
+	public static StoreService getStoreService() {
+		return storeService;
+	}
+	@Autowired
+	public void setStoreService(StoreService storeService) {
+		Context.storeService = storeService;
+	}
+
+	public static Store getStore() {
+		return store;
+	}
+	@Autowired
+	public void setStore(Store store) {
+		Context.store = store;
+	}
 
 
 
 
-	
-	
-	
-	
+
 
 
 	public static ConcurrentHashMap<Channel, Session> getSession2Channel() {

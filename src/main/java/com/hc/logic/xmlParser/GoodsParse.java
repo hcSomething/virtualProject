@@ -106,6 +106,14 @@ public class GoodsParse implements ParseXml{
 		}
 		return null;
 	}
+	
+	/**
+	 * 返回所有物品配置列表
+	 * @return
+	 */
+	public List<GoodsConfig> getGoodsList(){
+		return goodslList;
+	}
 
 	
 }

@@ -1,8 +1,13 @@
 package com.hc.logic.config;
 
-public class GoodsConfig {
+/**
+ * 物品
+ * @author hc
+ *
+ */
+public class GoodsConfig{
 
-	private int id;              
+	private int id;                //物品id
 	private int typeId;            //类型id
 	private String name;           //物品名 
 	private String description;    //物品描述
@@ -90,5 +95,10 @@ public class GoodsConfig {
 		this.superposi = superposi;
 	}
 	
-	
+	@Override
+	public String toString() {
+		return "good {id=" + id
+				+ ", typeId=" + typeId
+				+", name" + name +"}";
+	}
 }

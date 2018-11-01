@@ -17,6 +17,10 @@ import com.hc.logic.basicService.MonsterService;
 import com.hc.logic.basicService.NpcService;
 import com.hc.logic.basicService.SkillService;
 import com.hc.logic.basicService.TransferService;
+import com.hc.logic.chat.ChatService;
+import com.hc.logic.chat.EmailService;
+import com.hc.logic.chat.WorldChat;
+import com.hc.logic.chat.WorldChatObservable;
 import com.hc.logic.copys.CopyService;
 import com.hc.logic.xmlParser.CopysParse;
 import com.hc.logic.xmlParser.GoodsParse;
@@ -88,6 +92,14 @@ public class Context implements ApplicationContextAware{
 	private static StoreService storeService;
 	//商店
 	private static Store store;
+	//世界聊天频道通知器
+	private static WorldChatObservable worldChatObservable;
+	//世界聊天
+	private static WorldChat worldChat;
+	//聊天服务
+	private static ChatService chatService;
+	//邮件服务
+	private static EmailService emailService;
 	
 	
 	//玩家id
@@ -256,8 +268,42 @@ public class Context implements ApplicationContextAware{
 		Context.store = store;
 	}
 
+	public static WorldChatObservable getWorldChatObservable() {
+		return worldChatObservable;
+	}
+	@Autowired
+	public void setWorldChatObservable(WorldChatObservable worldChatObservable) {
+		Context.worldChatObservable = worldChatObservable;
+	}
+
+	public static WorldChat getWorldChat() {
+		return worldChat;
+	}
+	@Autowired
+	public void setWorldChat(WorldChat worldChat) {
+		Context.worldChat = worldChat;
+	}
+	public static ChatService getChatService() {
+		return chatService;
+	}
+	@Autowired
+	public void setChatService(ChatService chatService) {
+		Context.chatService = chatService;
+	}
+
+	public static EmailService getEmailService() {
+		return emailService;
+	}
+	@Autowired
+	public void setEmailService(EmailService emailService) {
+		Context.emailService = emailService;
+	}
 
 
+
+	
+	
+	
 
 
 

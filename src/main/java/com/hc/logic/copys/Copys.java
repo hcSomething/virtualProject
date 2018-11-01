@@ -185,8 +185,11 @@ public class Copys extends Scene{
      *  若是超时离开副本，则没有奖励
      */
     public void obtainAward() {
-    	//待续
-    	
+    	String award = Context.getCopysParse().getCopysConfById(id).getsRewords();
+    	//发送奖励邮件
+    	for(Player p : players) {
+    		Context.getEmailService().sendGoodsEmail(p.getName(), award);
+    	}
     }
     
     /**

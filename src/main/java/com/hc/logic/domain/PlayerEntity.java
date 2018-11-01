@@ -71,6 +71,9 @@ public class PlayerEntity{
 	@OneToMany(orphanRemoval = true, cascade = CascadeType.ALL,fetch=FetchType.EAGER)
 	private Set<GoodsEntity> goods = new HashSet();  //都用list会出现错误
 	
+	//邮件
+	@OneToMany(orphanRemoval = true, cascade = CascadeType.ALL,fetch=FetchType.EAGER)
+	private List<EmailEntity> emails = new ArrayList<>();
 	//所有装备/武器，不包括已经穿戴的//orphanRemoval：在这个自段中删除Equip时，会在Equip表中删除相应的Equip
 
 	
@@ -218,9 +221,18 @@ public class PlayerEntity{
 		this.goods.remove(ge);
 	}
 	
-	
-
-
+	/**
+	 * 删除邮件
+	 */
+	public void delEmail(EmailEntity emailEnt) {
+		this.emails.remove(emailEnt);
+	}
+	public List<EmailEntity> getEmails() {
+		return emails;
+	}
+	public void setEmails(List<EmailEntity> emails) {
+		this.emails = emails;
+	}
 	public boolean isNeedDel() {
 		return needDel;
 	}

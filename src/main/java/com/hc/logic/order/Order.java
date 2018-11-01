@@ -279,6 +279,30 @@ public enum Order {
 			int amount = Integer.parseInt(args[2]);
 			Context.getStoreService().validBuyGood(session, gid, amount);
 		}
+	},
+	ALLCHAT("allchat", "全服聊天"){
+		@Override 
+		public void doService(String[] args, Session session) {
+			Context.getChatService().decOrder(session, args);
+		}
+	},
+	CHAT("chat", "私聊"){
+		@Override 
+		public void doService(String[] args, Session session) {
+			if(!OrderVerifyService.threePara(args)) {
+				session.sendMessage("参数格式不正确，请重新输入");
+				return;
+			}
+			//目标玩家的id
+			int tPlaId = Context.getWorld().getPlayerEntityByName(args[1]).getId();
+			Context.getChatService().privateChat(session, tPlaId, args);
+		}
+	},
+	EMAIL("email", "邮箱系统"){
+		@Override 
+		public void doService(String[] args, Session session) {
+			Context.getEmailService().descOrder(session, args);
+		}
 	};
 	
 	

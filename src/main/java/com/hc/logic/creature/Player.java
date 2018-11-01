@@ -14,6 +14,7 @@ import com.hc.frame.Scene;
 import com.hc.logic.base.Session;
 import com.hc.logic.basicService.BagService;
 import com.hc.logic.basicService.GoodsService;
+import com.hc.logic.chat.Email;
 import com.hc.logic.config.LevelConfig;
 import com.hc.logic.copys.Copys;
 import com.hc.logic.dao.impl.UpdateTask;
@@ -53,6 +54,8 @@ public class Player extends LiveCreature{
 	
 	//商店页面
 	private int pageNumber;
+	//邮箱
+	private Email email;
 	
 	
 	
@@ -74,6 +77,7 @@ public class Player extends LiveCreature{
 			addSkill(skill[i]);
 		}
 		bagService = new BagService(this);
+		email = new Email(pe.getEmails());
 	}
 	//注册专用	
 	public Player(int id, int level, String name, String pass, int sceneId, int hp, int mp,
@@ -85,16 +89,12 @@ public class Player extends LiveCreature{
 		}
 		if(sb.length() > 0) sb.deleteCharAt(sb.length()-1);
 		playerEntity = new PlayerEntity(id, level, name, pass, sceneId, hp, mp, exp, sb.toString(), new ArrayList<>(), null);
-
-		//Map<Integer, Integer> map = new HashMap<>();
-		//this.goodsEntity = new GoodsEntity(map, playerEntity);
-		//playerEntity.setGoods(goodsEntity);
 		
 		
 		this.session = session;
 		this.bagService = new BagService(this);
 		this.isAlive = true;
-
+		this.email = new Email(playerEntity.getEmails());
 	}
 	
 
@@ -112,7 +112,8 @@ public class Player extends LiveCreature{
 		sb.append("经验：" + playerEntity.getExp() + "/" + lc.getExp() + "\n");
 		sb.append("血量: " + playerEntity.getHp() + "/" + lc.getHp() + "\n");
 		sb.append("剩余法力: " + playerEntity.getMp() + "/" + lc.getMp() + "\n");
-		sb.append("金币：" + playerEntity.getGold());
+		sb.append("金币：" + playerEntity.getGold() + "\n");
+		sb.append("所在商店页面：" + getPageNumber());
 		session.sendMessage(sb.toString());
 	}
 	
@@ -353,6 +354,15 @@ public class Player extends LiveCreature{
 	
 
 	
+	
+	public Email getEmail() {
+		return email;
+	}
+	public void setEmail(Email email) {
+		this.email = email;
+	}
+
+
 	@Override
 	public void setcId() {
 		this.cId = playerEntity.getId();

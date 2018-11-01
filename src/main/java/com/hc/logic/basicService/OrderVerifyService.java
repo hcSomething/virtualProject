@@ -4,6 +4,16 @@ package com.hc.logic.basicService;
 public class OrderVerifyService {
 
 	/**
+	 * 用于有一个参数的命令。无论这个参数是什么
+	 * @param args
+	 * @return
+	 */
+	public static boolean onePara(String[] args) {
+		if(args.length !=2 ) return false;
+		return true;
+	}
+	
+	/**
 	 * 用于有两个字符串参数的命令，如注册、登陆
 	 * @param args
 	 * @return
@@ -57,6 +67,16 @@ public class OrderVerifyService {
 				return false;
 			}
 		}
+		return true;
+	}
+	
+	/**
+	 * 用于三个参数的命令， 无论参数是什么
+	 * @param args
+	 * @return
+	 */
+	public static boolean threePara(String[] args) {
+		if(args.length < 3) return false;
 		return true;
 	}
 }

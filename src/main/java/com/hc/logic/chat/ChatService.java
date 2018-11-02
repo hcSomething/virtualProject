@@ -26,6 +26,7 @@ public class ChatService {
 		}
 		String content = chatFormat(session.getPlayer(), bindMessage(delPart(args)));
 		Player tagPla = Context.getOnlinPlayer().getPlayerById(tagPlaId);
+		System.out.println("--------privateChat----" + content + ", args= " + args.toString());
 		tagPla.getSession().sendMessage(content);
 		session.sendMessage("·¢ËÍ³É¹¦£¡");
 	}
@@ -105,8 +106,10 @@ public class ChatService {
 	 * @return
 	 */
 	private String bindMessage(String[] args) {
+		System.out.println("-----------bindMessage----" +  args.length);
 		StringBuilder sb = new StringBuilder();
 		for(int i = 1; i < args.length; i++) {
+			System.out.println("-----------bindMessage----" +  args[i]);
 			sb.append(args[i] + " ");
 		}
 		return sb.toString();

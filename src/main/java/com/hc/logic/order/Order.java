@@ -303,6 +303,23 @@ public enum Order {
 		public void doService(String[] args, Session session) {
 			Context.getEmailService().descOrder(session, args);
 		}
+	},
+	PK("pk", "进行pk"){
+		@Override 
+		public void doService(String[] args, Session session) {
+			Context.getPkService().desOrder(session, args);
+		}
+	},
+	ATTACKP("attackP", "攻击玩家"){
+		@Override 
+		public void doService(String[] args, Session session) {
+			if(!OrderVerifyService.twoString(args) || !OrderVerifyService.isDigit(args[1])){
+				session.sendMessage("命令参数不正确");
+				return;
+			}
+			int skillId = Integer.parseInt(args[1]);
+			Context.getSkillService().attackPlayer(session, skillId, args[2]);
+		}
 	};
 	
 	

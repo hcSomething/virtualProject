@@ -56,6 +56,10 @@ public class Player extends LiveCreature{
 	private int pageNumber;
 	//邮箱
 	private Email email;
+	//是否正在pk
+	private boolean inPK = false;
+	//发起pk时，对方玩家的名字
+	private String pkTarget;
 	
 	
 	
@@ -161,7 +165,15 @@ public class Player extends LiveCreature{
 	public void setAlive(boolean isAlive) {
 		this.isAlive = isAlive;
 		if(isAlive == false) {
-			session.sendMessage("您已经死亡");
+			palyerDead();
+		}
+	}
+	
+	public void palyerDead() {
+		session.sendMessage("您已经死亡");
+		if(isInPK() == true) {
+			//死亡之后自动认输
+			Context.getPkService().deadFailed(this);
 		}
 	}
 
@@ -397,6 +409,22 @@ public class Player extends LiveCreature{
 	public Map<Integer, Date> getReduceAtt() {
 		return reduceAtt;
 	}
+	
+	/**
+	 * 根据攻击，减少玩家血量
+	 * @param player  受到伤害的玩家
+	 * @param hurt  受到的伤害
+	 * @return 玩家实际减少的血量
+	 */
+	public int attackPlayerReduce(int hurt) {
+		int redu = allReduce();
+		hurt -= redu;
+		if(hurt < 0) hurt = 0;   //防止护盾的保护大于受到的伤害
+		addHpMp(-hurt, 0); //加个负号，就变成减了
+		return hurt;
+	}
+
+	
 	/**
 	 * 添加减免伤害的技能
 	 * @param skiId
@@ -722,6 +750,21 @@ public class Player extends LiveCreature{
 	}
 	public void setPageNumber(int pageNumber) {
 		this.pageNumber = pageNumber;
+	}
+
+
+	public boolean isInPK() {
+		return inPK;
+	}
+	public void setInPK(boolean inPK) {
+		this.inPK = inPK;
+	}
+
+	public String getPkTarget() {
+		return pkTarget;
+	}
+	public void setPkTarget(String pkTarget) {
+		this.pkTarget = pkTarget;
 	}
 
 

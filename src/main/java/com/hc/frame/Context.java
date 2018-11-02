@@ -22,6 +22,8 @@ import com.hc.logic.chat.EmailService;
 import com.hc.logic.chat.WorldChat;
 import com.hc.logic.chat.WorldChatObservable;
 import com.hc.logic.copys.CopyService;
+import com.hc.logic.pk.PkService;
+import com.hc.logic.pk.TwoPlayerPk;
 import com.hc.logic.xmlParser.CopysParse;
 import com.hc.logic.xmlParser.GoodsParse;
 import com.hc.logic.xmlParser.LevelParse;
@@ -100,6 +102,10 @@ public class Context implements ApplicationContextAware{
 	private static ChatService chatService;
 	//邮件服务
 	private static EmailService emailService;
+	//pk服务
+	private static PkService pkService;
+	//两个玩家pk
+	private static TwoPlayerPk twoPlayerPK;
 	
 	
 	//玩家id
@@ -299,13 +305,29 @@ public class Context implements ApplicationContextAware{
 		Context.emailService = emailService;
 	}
 
+	public static PkService getPkService() {
+		return pkService;
+	}
+	@Autowired
+	public void setPkService(PkService pkService) {
+		Context.pkService = pkService;
+	}
+
+	public static TwoPlayerPk getTwoPlayerPK() {
+		return twoPlayerPK;
+	}
+	@Autowired
+	public void setTwoPlayerPK(TwoPlayerPk twoPlayerPK) {
+		Context.twoPlayerPK = twoPlayerPK;
+	}
+
+
+
 
 
 	
 	
 	
-
-
 
 
 	public static ConcurrentHashMap<Channel, Session> getSession2Channel() {

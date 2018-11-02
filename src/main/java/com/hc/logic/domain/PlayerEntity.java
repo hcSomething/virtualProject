@@ -69,7 +69,7 @@ public class PlayerEntity{
 	
 	//物品
 	@OneToMany(orphanRemoval = true, cascade = CascadeType.ALL,fetch=FetchType.EAGER)
-	private Set<GoodsEntity> goods = new HashSet();  //都用list会出现错误
+	private Set<GoodsEntity> goods = new HashSet<>();  //都用list会出现错误
 	
 	//邮件
 	@OneToMany(orphanRemoval = true, cascade = CascadeType.ALL,fetch=FetchType.EAGER)

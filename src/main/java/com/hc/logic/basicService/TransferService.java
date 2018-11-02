@@ -21,6 +21,7 @@ public class TransferService implements Teleport{
 	 */
 	public void allTransfer(int targetId, int sourceId, Session session){
 		if(sourceId !=0) {
+			if(session.getPlayer().isInPK()) Context.getPkService().giveUp(session);
 			//对于在普通场景中传送
 			if(!Context.getWorld().getSceneById(targetId).hasTelepId(sourceId)) {
 				session.sendMessage("没有这个传送阵，不能传送");

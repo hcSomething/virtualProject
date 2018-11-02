@@ -3,6 +3,9 @@ package com.hc.logic.basicService;
 
 public class OrderVerifyService {
 
+	
+	
+	
 	/**
 	 * 用于有一个参数的命令。无论这个参数是什么
 	 * @param args

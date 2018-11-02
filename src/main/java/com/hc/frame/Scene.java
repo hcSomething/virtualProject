@@ -82,17 +82,15 @@ public class Scene extends TaskConsume{
 			int dHp = Context.getSceneParse().getMonsters().getMonstConfgById(mId).getAttack();
 			
 			//玩家可以减少伤害的buff，比如护盾
-			int redu = pp.allReduce();
-			dHp -= redu;
-			if(dHp < 0) dHp = 0;   //防止护盾的保护大于受到的伤害
+			pp.attackPlayerReduce(dHp);
 			
-			pp.addHpMp(-dHp, 0); //加个负号，就变成减了
 			String name = Context.getSceneParse().getMonsters().getMonstConfgById(mId).getName();
 			pp.getSession().sendMessage("正在被 " + name + " 攻击，减少血量：" + dHp);
 
 		}
 
 	}
+	
 	
 	//场景中能加入玩家，就要删除玩家。
 	public void deletePlayer(Player player) {

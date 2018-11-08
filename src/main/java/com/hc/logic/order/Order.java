@@ -252,7 +252,7 @@ public enum Order {
 				return;
 			}
 			int copyId = Integer.parseInt(args[1]);
-			//判断是否已经在副本中
+			//判断是否可以进入副本中
 			if(!Context.getCopyService().canEnterCopy(session.getPlayer())) return;
 			boolean entered = Context.getCopyService().enterCopy(copyId, session.getPlayer(), session, 0);		
 		}
@@ -319,6 +319,16 @@ public enum Order {
 			}
 			int skillId = Integer.parseInt(args[1]);
 			Context.getSkillService().attackPlayer(session, skillId, args[2]);
+		}
+	},
+	PARTY("group", "进行组队"){
+		@Override 
+		public void doService(String[] args, Session session) {
+			if(!OrderVerifyService.threePara(args)) {
+				session.sendMessage("命令参数不正确");
+				return;
+			}
+			Context.getParty().desOrder(session, args);
 		}
 	};
 	

@@ -19,7 +19,7 @@ public class TaskProducer extends TaskConsume{
 	BlockingQueue<Runnable> task = new LinkedBlockingQueue<>();
 	
 	public TaskProducer() {
-		exe(5, "task");//启动周期性调度器。5秒周期
+		exe(2, "task");//启动周期性调度器。5秒周期
 	}
 	
 

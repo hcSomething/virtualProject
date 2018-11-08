@@ -47,6 +47,7 @@
 	   <protect>0</protect>
 	   <continue>0</continue>
 	   <scope>1</scope>             <!-- 能同时攻击多少个玩家；0：所有，.. -->	   
+	   <dizziness>0</dizziness>     <!-- 眩晕时间(秒)，击中玩家后，在一定时间不能使用技能 -->
 	</skill>
 	
 	<skill id="101">
@@ -56,7 +57,8 @@
 	   <attack>6</attack>
 	   <protect>0</protect>
 	   <continue>0</continue>
-	   <scope>0</scope>             	   
+	   <scope>0</scope> 
+	   <dizziness>0</dizziness>              	   
 	</skill>
 	
 	<skill id="102">
@@ -66,7 +68,19 @@
 	   <attack>3</attack>
 	   <protect>0</protect>
        <continue>8</continue>
-	   <scope>0</scope>             	   
+	   <scope>0</scope>
+	   <dizziness>0</dizziness>               	   
+	</skill>
+	
+	<skill id="103">
+	   <name>眩晕【103】</name>
+	   <description>召唤来自地狱深处的业火，在一段时间内，持续造成伤害</description>
+	   <cd>30</cd>
+	   <attack>3</attack>
+	   <protect>0</protect>
+       <continue>0</continue>
+	   <scope>1</scope>  
+	   <dizziness>6</dizziness>           	   
 	</skill>
 	
 	

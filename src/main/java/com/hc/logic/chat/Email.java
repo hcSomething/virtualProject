@@ -12,6 +12,7 @@ import com.hc.frame.Context;
 import com.hc.logic.base.Constants;
 import com.hc.logic.creature.Player;
 import com.hc.logic.domain.EmailEntity;
+import com.hc.logic.domain.PlayerEntity;
 
 
 public class Email {
@@ -25,7 +26,6 @@ public class Email {
 	//在player中调用
 	public Email(List<EmailEntity> lists) {
 		for(EmailEntity ee : lists) {
-			System.out.println("---------Email构造方法----------" + ee.toString());
 			addEmail(ee.getContent());
 		}
 	}
@@ -34,18 +34,15 @@ public class Email {
 	 * 分页显示邮箱内容
 	 */
 	public String displayEmail(int page) {
-		System.out.println("----------displayEmail-----------"+ emails.toString());
 		Map<Integer, String> emailPage = aPage(page);
 		List<Integer> keys = sortedKeys(emailPage.keySet());
 		StringBuilder sb = new StringBuilder();
 		sb.append("【邮箱】- - - - - - - - - - - - - - - - - - - - - - - -- - - - - - - -\n");
 		sb.append("- - - - - - - - - -第【" + page + "】页- - - - - - - - - - - -- -  -- - - - -\n");
 		for(int i : keys) {
-			System.out.println("----------displayEmail中-----------"+ emailPage.get(i));
 			sb.append("【"+ i + "】" + emailPage.get(i) + "\n"); //需要减1
 		}
 		sb.append("- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -- - - - -");
-		System.out.println("----------displayEmail-----------"+ sb.toString());
 		return sb.toString();
 	}
 	
@@ -54,7 +51,6 @@ public class Email {
 		for(int i : keys)
 			resu.add(i);
 		Collections.sort(resu);
-		System.out.println("------------sortedKeys---- " + resu);
 		return resu;
 	}
 	
@@ -70,10 +66,8 @@ public class Email {
 		int stop = PAGENUM + start;System.out.println("------------ 内容---- " + start +" " + stop);
 		for(int i = start; i < stop; i++) {
 			if(i >= emails.size()) break; //不足一页
-			System.out.println("-------" + i + "---" +  emails.get(i).get(0));
 			result.put(i+1, emails.get(i).get(0)); //只显示邮件主题
 		}
-		System.out.println("---------------第" + page + " 内容 " + result.toString());
 		return result;
 	}
 	
@@ -105,12 +99,18 @@ public class Email {
 			sb.append(nameAmount[0] + " " + nameAmount[1] + "个");
 		}
 		//删除道具邮件
-		delEmail(index);
+		delEmail(player, index);
 		return sb.toString();
 	}
 	//读取普通邮件，content格式：email 玩家名 目标玩家名 主题  内容
 	private String readNormalEmail(String[] content, int index) {
-		int pId = Context.getWorld().getPlayerEntityByName(content[2]).getId();
+		PlayerEntity tpe = Context.getWorld().getPlayerEntityByName(content[2]);
+		if(tpe == null) {
+			Player player = Context.getWorld().getPlayerByName(content[2]);
+			tpe = player.getPlayerEntity();
+		}
+		int pId = tpe.getId(); 
+		//int pId = Context.getWorld().getPlayerEntityByName(content[2]).getId();
 		Player player = Context.getOnlinPlayer().getPlayerById(pId); //读取邮件的玩家肯定在线
 		StringBuilder sb = new StringBuilder();
 		sb.append("玩家【" + content[1] + "】发送的信息如下: \n");
@@ -121,16 +121,27 @@ public class Email {
 	}
 	
 	/**
-	 * 删除邮件
+	 * 删除邮件, 并且删除数据库中的邮件
 	 * @param index 邮件编号
 	 */
-	public String delEmail(int index) {
+	public String delEmail(Player player, int index) {
 		String content = emails.get(index-1).get(1);
-		System.out.println("----------------delEmail前--" + emails.toString());
 		emails.remove(index-1);
-		System.out.println("----------------delEmail--" + emails.toString());
+		removeEmail(player, content);
 		return content;
 	}
+	
+	//删除邮件
+	private void removeEmail(Player player, String content) {
+		PlayerEntity tpe = player.getPlayerEntity();
+		for(EmailEntity ee : tpe.getEmails()) {
+			if(ee.getContent().equals(content)) {
+				tpe.delEmail(ee);
+				return;
+			}
+		}
+	}
+
 	
 	
 	/**
@@ -179,7 +190,6 @@ public class Email {
 		list.add(subj);
 		list.add(msg);
 		emails.push(list);
-		System.out.println("--------------addEmail--" + emails.toString());
 	}
 	
 	public Stack<List<String>> getEmail(){
@@ -191,13 +201,11 @@ public class Email {
 	 * @param content
 	 */
 	public void addEmail(String content) {
-		System.out.println("-------------addEmail()添加缓存邮件" );
 		String[] con = content.split(" ");
 		if(Character.isDigit(con[0].charAt(0))) {
 			addEmail(con[2], content);
 		}else {
 			addEmail(con[3], content);
 		}
-		System.out.println("-------------addEmail()添加缓存邮件" );
 	}
 }

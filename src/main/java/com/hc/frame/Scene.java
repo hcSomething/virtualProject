@@ -5,6 +5,7 @@ import java.util.Map.Entry;
 import com.hc.frame.taskSchedule.TaskConsume;
 import com.hc.logic.base.Session;
 import com.hc.logic.config.LevelConfig;
+import com.hc.logic.config.SceneConfig;
 import com.hc.logic.creature.*;
 
 public class Scene extends TaskConsume{
@@ -15,8 +16,10 @@ public class Scene extends TaskConsume{
 	protected int id;
 	//
 	protected String name;
-	//当前场景内的所有生物, 不包括玩家
+	//当前场景内的所有npc, 不包括玩家
 	protected List<LiveCreature> creatures = new ArrayList<>();
+	//所有怪物
+	protected List<Monster> monsters = new ArrayList<>();
 	//当前场景内的所有玩家
 	protected List<Player> players = new ArrayList<>();
 	//当前场景的所有传送阵,列表中存放的是目标场景id的集合
@@ -95,7 +98,6 @@ public class Scene extends TaskConsume{
 	//场景中能加入玩家，就要删除玩家。
 	public void deletePlayer(Player player) {
 		this.players.remove(player);
-		//this.creatures.remove(player);
 	}
 	
 	/**
@@ -151,8 +153,9 @@ public class Scene extends TaskConsume{
 	 * 当怪物被击杀，就不能攻击玩家了，需要删除
 	 * @param mId
 	 */
-	public void deleteAttackMonst(int mId) {
-		attackPlayers.remove(mId);
+	public void deleteAttackMonst() {
+		System.out.println("================这里被击杀了");
+		attackPlayers.clear();
 	}
 
 
@@ -197,7 +200,8 @@ public class Scene extends TaskConsume{
 	 * @param session
 	 */
 	public void allThing(Session session) {
-		session.sendMessage("所有生物" + getCreatures());
+		session.sendMessage("所有npc" + getCreatures() + "");
+		session.sendMessage("所有怪物" + getMonsters() + "\n");
 		session.sendMessage("所有玩家" + getPlayers() + "\n");
 		//更改了传送的方式
 		session.sendMessage("所有可传送目标：" + allTransportableScene());
@@ -241,15 +245,37 @@ public class Scene extends TaskConsume{
 		this.creatures.add(creature);
 	}
 
+	public void addMonste(Monster monst) {
+		this.monsters.add(monst);
+	}
+	public Monster getMonsteById(int id) {
+		for(Monster mon : monsters) {
+			if(mon.getMonstId() == id) {
+				return mon;
+			}
+		}
+		return null;
+	}
+	public void initMonster() {
+		SceneConfig sConfig = Context.getSceneParse().getSceneById(id);
+		for(int i : sConfig.getMonsts()) {
+			Monster monst = new Monster(i);
+			addMonste(monst);
+		}
+	}
+	public List<Monster> getMonsters() {
+		if(monsters.size() == 0) initMonster();
+		return monsters;
+	}
+
 	public List<Player> getPlayers() {
 		return players;
 	}
 
 	public void addPlayer(Player player) {
 		this.players.add(player);
-		//this.creatures.add(player);
 	}
-
+	
 	public List<String> getTeleport() {
 		return teleports;
 	}

@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.concurrent.Future;
 
 import com.hc.frame.Context;
+import com.hc.logic.copys.Copys;
 import com.hc.logic.creature.Player;
 import com.hc.logic.dao.impl.PlayerDaoImpl;
 import com.hc.logic.domain.CopyEntity;
@@ -31,7 +32,7 @@ public class LogOut implements Runnable{
 	 * 刷新数据库，
 	 */
 	public void updateDB(Player player) {
-		System.out.println("logout --------------------");
+		System.out.println("logout --------------------" + player==null);
 		if(player == null)
 			return;
 		//缓存中是否有这个玩家（因为在服务器启动时，就会将数据库中的信息导出来）
@@ -40,13 +41,11 @@ public class LogOut implements Runnable{
 		
 		if(name.equals(null)) 
 			return;
-		
-		//玩家断开连接时，需要清除副本任务调度线程
-		Context.getWorld().delCopyThread(p);
-		
 		//由玩家创建一个玩家实体,用来更新数据库
 		PlayerEntity cPE = player.getPlayerEntity();  
 		PlayerEntity pe = Context.getWorld().getPlayerEntityByName(name);
+		//从副本中删除玩家
+		manageCopy(player);
 		
 		//若在缓存中没有，也就是数据库中没有，则插入一条数据到数据库，同时也在缓存中缓存一条数据
 		if(pe == null) {
@@ -62,6 +61,28 @@ public class LogOut implements Runnable{
 		
 	}
 	
+	/**
+	 *断线时，需要从副本中删除玩家。
+	 *最后一个玩家断线，则清除副本
+	 * @param player
+	 */
+	private void manageCopy(Player player) {
+		System.out.println("------------manageCopy " + player.getCopys());
+		//玩家断开连接时，需要清除副本任务调度线程
+		Copys copy = player.getCopys();
+		if(copy == null) return;
+		copy.delPlayer(player.getId());
+		//每次有玩家断线都要更新副本实体
+		CopyEntity cpe = Context.getWorld().getCopyEntityById(copy.getId());
+		cpe.setBossindex(copy.getBossIndex());
+		new PlayerDaoImpl().update(cpe);
+		if(!copy.haveAvailablePlayer()) {
+			System.out.println("------------manageCopy ");
+			//玩家断开连接,并且是最后一个离开副本的，需要清除副本任务调度线程
+			Context.getWorld().delCopys(copy.getId(), player.getSponserNmae());
+			Context.getWorld().delCopyThread(player);
+		}
+	}
 	
 	/**
 	 * 这个方法会在TaskProducer中执行.

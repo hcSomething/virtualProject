@@ -76,6 +76,9 @@ public class SkillParse implements ParseXml{
 					}else if(nodeName.equals("scope")) {
 						String sScop = child.getStringValue();
 						skill.setScope(Integer.parseInt(sScop));
+					}else if(nodeName.equals("dizziness")) {
+						String sdi = child.getStringValue();
+						skill.setDizziness(Integer.parseInt(sdi));
 					}
 				}
 				

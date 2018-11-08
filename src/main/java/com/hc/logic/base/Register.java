@@ -58,7 +58,7 @@ public class Register {
 		Context.getWorld().getSceneById(1).addPlayer(player); //在场景1中注册了玩家，
 		
 		Context.getWorld().addAllRegisteredPlayer(player);  //充当数据库，解决客户端重连问题
-		Context.getWorld().addPlayerEntity(player.getPlayerEntity());
+		//Context.getWorld().addPlayerEntity(player.getPlayerEntity());
 		//player.setSession(session);  //只有在注册阶段，玩家才会设置session
 		//player.setAttack(1);
 		//player.setId(Context.getpID());   

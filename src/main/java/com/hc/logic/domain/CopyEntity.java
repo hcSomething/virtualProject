@@ -1,12 +1,17 @@
 package com.hc.logic.domain;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.PrimaryKeyJoinColumn;
 
@@ -27,8 +32,11 @@ public class CopyEntity {
 	@Column
 	private int bossindex;   //进行到了第几个boss，index
 	
-	@OneToOne
-	private PlayerEntity playerEntity;
+	@Column
+	private String sponsor;   //组队的发起者名字
+	
+	@OneToMany
+	private List<PlayerEntity> players = new ArrayList<>();
 	
 	public CopyEntity() {
 		
@@ -38,13 +46,16 @@ public class CopyEntity {
 	 * @param copyId       副本id
 	 * @param firstEn      首次进入此副本的时间(毫秒)
 	 * @param playerEntity 对应的玩家
-	 * @param index        在副本中已经打到第几个boss了
+	 * @param bindex        在副本中已经打到第几个boss了
+	 * @param sponsorId   发起者id
 	 */
-	public CopyEntity(int copyId, long firstEn, PlayerEntity playerEntity, int index) {
+	public CopyEntity(int copyId, long firstEn, List<PlayerEntity> player, int bindex, String sponsorId) {
 		this.copyId = copyId;
 		this.firstEnterTime = firstEn;
-		this.playerEntity = playerEntity;
-		this.bossindex = index;
+		//this.playerEntity = playerEntity;
+		this.players = new ArrayList<>(player);
+		this.bossindex = bindex;
+		this.sponsor = sponsorId;
 	}
 	
 	
@@ -73,12 +84,19 @@ public class CopyEntity {
 		this.firstEnterTime = firstEnterTime;
 	}
 
-	public PlayerEntity getPlayerEntity() {
-		return playerEntity;
+	public List<PlayerEntity> getPlayers() {
+		return players;
 	}
-
-	public void setPlayerEntity(PlayerEntity playerEntity) {
-		this.playerEntity = playerEntity;
+	public void setPlayers(List<PlayerEntity> players) {
+		this.players = players;
+	}
+	public PlayerEntity getPlayerEntityById(int pid) {
+		for(PlayerEntity pe : players) {
+			if(pe.getId() == pid) {
+				return pe;
+			}
+		}
+		return null;
 	}
 	public int getBossindex() {
 		return bossindex;
@@ -86,8 +104,20 @@ public class CopyEntity {
 	public void setBossindex(int bossindex) {
 		this.bossindex = bossindex;
 	}
+	public String getSponsor() {
+		return sponsor;
+	}
+	public void setSponsor(String sponsor) {
+		this.sponsor = sponsor;
+	}
+
 	
 	
+	@Override
+	public String toString() {
+		return "copyEntity cID=" + copyId
+				+ ", sponsor=" + sponsor + ". ";
+	}
 	
 	
 }

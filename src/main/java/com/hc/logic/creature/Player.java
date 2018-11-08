@@ -60,8 +60,13 @@ public class Player extends LiveCreature{
 	private boolean inPK = false;
 	//发起pk时，对方玩家的名字
 	private String pkTarget;
+	//可以使用技能的时间（终时）毫秒
+	private long canUSkill = 0;
 	
-	
+	//副本组队的队友, 不包括自己。格式，key：玩家名；value：是否同意
+	private Map<String, Boolean> teammate = new HashMap<>();
+	//组队的发起者名，只要在组队中，就不是null
+	private String sponserNmae;
 	
 	@Override
 	public void setDescribe() {
@@ -82,6 +87,8 @@ public class Player extends LiveCreature{
 		}
 		bagService = new BagService(this);
 		email = new Email(pe.getEmails());
+		if(playerEntity.getCopyEntity() != null)
+			this.sponserNmae = playerEntity.getCopyEntity().getSponsor();
 	}
 	//注册专用	
 	public Player(int id, int level, String name, String pass, int sceneId, int hp, int mp,
@@ -101,8 +108,14 @@ public class Player extends LiveCreature{
 		this.email = new Email(playerEntity.getEmails());
 	}
 	
-
-
+	/**
+	 * 玩家断线时，需要做的一些工作
+	 */
+	public void brakLine() {
+		//断线时，自动认输
+		if(inPK) pkFail();
+		
+	}
 	
 	/**
 	 * 返回客户端玩家当前状态
@@ -136,10 +149,21 @@ public class Player extends LiveCreature{
 		return Context.getWorld().getSceneById(sceId);
 	}
 	
+	/**
+	 * 获得玩家对应的副本
+	 * @return
+	 */
 	public Copys getCopys() {
-		int copeId = playerEntity.getCopEntity().getCopyId();
+		if(playerEntity.getCopyEntity() == null) return null;
+		int copeId = playerEntity.getCopyEntity().getCopyId();
+		//发起者的id
+		String pn = sponserNmae;
+		if(sponserNmae == null && teammate.size() == 0) {
+			pn = playerEntity.getName();
+		}
+		int sponsId = Context.getWorld().getPlayerEntityByName(pn).getId();
 		System.out.println("copeId" + copeId);
-		return Context.getWorld().getCopysByAPlayer(copeId, playerEntity.getId());
+		return Context.getWorld().getCopysByAPlayer(copeId, sponsId);
 	}
 	
 	public String getName() {
@@ -175,6 +199,29 @@ public class Player extends LiveCreature{
 			//死亡之后自动认输
 			Context.getPkService().deadFailed(this);
 		}
+	}
+
+	/**
+	 * 现在能否使用技能进行攻击
+	 * @return
+	 */
+	public boolean canUseSkill() {
+		long cur = System.currentTimeMillis();
+		System.out.println("-----palyer.canuseSkiill-----" + cur + ", " + canUSkill);
+		if(cur > canUSkill) return true;
+		return false;
+	}	
+	public long getCanUSkill() {
+		return canUSkill;
+	}
+	/**
+	 * 需要停止使用技能多长时间
+	 * @param canUSkill （秒）
+	 */
+	public void setCanUSkill(int dizz) {
+		long cur = System.currentTimeMillis();
+		this.canUSkill = cur + dizz * 1000;
+		System.out.println("----------------setCanUSkill---------" + canUSkill);
 	}
 
 
@@ -737,12 +784,9 @@ public class Player extends LiveCreature{
 		return map;
 	}
 	
-	public void setCopEntity(CopyEntity copy) {
-		//playerEntity.setCopEntity(copy);
-		playerEntity.addCopyEntity(copy);
-	}
+
 	public CopyEntity getCopEntity() {
-		return playerEntity.getCopEntity();
+		return playerEntity.getCopyEntity();
 	}
 
 	public int getPageNumber() {
@@ -752,7 +796,12 @@ public class Player extends LiveCreature{
 		this.pageNumber = pageNumber;
 	}
 
-
+	/**
+	 * 当断线时，自动认输
+	 */
+	public void pkFail() {
+		Context.getPkService().giveUp(session);
+	}
 	public boolean isInPK() {
 		return inPK;
 	}
@@ -765,6 +814,70 @@ public class Player extends LiveCreature{
 	}
 	public void setPkTarget(String pkTarget) {
 		this.pkTarget = pkTarget;
+	}
+
+
+	public List<String> getTeammate() {
+		Set<String> ts = teammate.keySet();
+		System.out.println("----------teammate.size " + ts.size());
+		return new ArrayList<>(ts);
+	}
+	/**
+	 * 取消组队
+	 */
+	public void clearTeammate() {
+		this.teammate.clear();
+	}
+
+	/**
+	 * 通过玩家名来确定是否是要邀请的玩家
+	 * @param pname
+	 * @return
+	 */
+	public boolean contPlaName(String pname) {
+		System.out.println("--------------player的team是---" + teammate + ", pname=" + pname);
+		for(String n : teammate.keySet()) {
+			if(n.equals(pname))
+				return true;
+		}
+		return false;
+	}
+	/**
+	 * 玩家同意组队
+	 * @param pname 同意组队的玩家的名字
+	 */
+	public void acTeam(String pname) {
+		teammate.put(pname, true);
+	}
+	/**
+	 * 是否完成组队。发起者只有在所有玩家都同意之后才能进入副本。
+	 * @return
+	 */
+	public boolean goupComplete() {
+		if(teammate.size() < 1) return false;
+		for(boolean bb : teammate.values()) {
+			if(!bb)
+				return false;
+		}
+		return true;
+	}
+	public void addTeammate(List<Player> ps) {
+		for(Player p : ps) {
+			teammate.put(p.getName(), false);
+		}
+	}
+	//public boolean isInParty() {
+	//	System.out.println("isInParty------------" + inParty);
+	//	return inParty;
+	//}
+	//public void setInParty(boolean inParty) {
+	//	this.inParty = inParty;
+	//}
+	public String getSponserNmae() {
+		return sponserNmae;
+	}
+	public void setSponserNmae(String sponserNmae) {
+		this.sponserNmae = sponserNmae;
 	}
 
 

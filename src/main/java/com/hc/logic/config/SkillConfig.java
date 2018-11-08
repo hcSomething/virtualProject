@@ -11,6 +11,7 @@ public class SkillConfig {
 	private int mp;      //消耗的法力
 	private int weapon;   //需要的武器(物品id)
 	private int continueT;   //(秒)技能持续时间
+	private int dizziness;  //眩晕（秒），期间不能使用技能
 	
 	
 	//boss专用
@@ -68,10 +69,13 @@ public class SkillConfig {
 	}
 	public void setContinueT(int continueT) {
 		this.continueT = continueT;
+	}	
+	public int getDizziness() {
+		return dizziness;
 	}
-	
-	
-	
+	public void setDizziness(int dizziness) {
+		this.dizziness = dizziness;
+	}
 	public int getScope() {
 		return scope;
 	}

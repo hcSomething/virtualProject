@@ -5,6 +5,7 @@ import org.springframework.stereotype.Component;
 import com.hc.frame.Context;
 import com.hc.logic.base.Session;
 import com.hc.logic.creature.Player;
+import com.hc.logic.dao.impl.PlayerDaoImpl;
 import com.hc.logic.dao.impl.UpdateTask;
 import com.hc.logic.domain.EmailEntity;
 import com.hc.logic.domain.PlayerEntity;
@@ -153,17 +154,10 @@ public class EmailService {
 		System.out.println("-------------createEmail()---------" + tpe.getEmails().toString());
 		//更新数据库，只有不在线的目标玩家才需要立即更新
 		if(tPlayer == null) {
-			new UpdateTask(tpe);
-		}
-	}
-	//删除邮件
-	private void removeEmail(Player player, String content) {
-		PlayerEntity tpe = player.getPlayerEntity();
-		for(EmailEntity ee : tpe.getEmails()) {
-			if(ee.getContent().equals(content)) {
-				tpe.delEmail(ee);
-				return;
-			}
+			//new UpdateTask(tpe);
+			System.out.println("**********************************进行更新了吗--前");
+			new PlayerDaoImpl().update(tpe);
+			System.out.println("**********************************进行更新了吗--后");
 		}
 	}
 	
@@ -182,8 +176,7 @@ public class EmailService {
 			session.sendMessage("您要查看的邮件不在当前列表中，请检查参数！");
 			return;
 		}
-		String content = emails.delEmail(index);
-		removeEmail(session.getPlayer(), content);
+		String content = emails.delEmail(session.getPlayer(), index);
 		//session.getPlayer().getEmail().delEmail(index);  //删除缓存中的
 		session.sendMessage("删除成功");
 	}

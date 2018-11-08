@@ -22,6 +22,7 @@ import com.hc.logic.chat.EmailService;
 import com.hc.logic.chat.WorldChat;
 import com.hc.logic.chat.WorldChatObservable;
 import com.hc.logic.copys.CopyService;
+import com.hc.logic.copys.Party;
 import com.hc.logic.pk.PkService;
 import com.hc.logic.pk.TwoPlayerPk;
 import com.hc.logic.xmlParser.CopysParse;
@@ -106,6 +107,8 @@ public class Context implements ApplicationContextAware{
 	private static PkService pkService;
 	//两个玩家pk
 	private static TwoPlayerPk twoPlayerPK;
+	//组队服务
+	private static Party party;
 	
 	
 	//玩家id
@@ -321,6 +324,13 @@ public class Context implements ApplicationContextAware{
 		Context.twoPlayerPK = twoPlayerPK;
 	}
 
+	public static Party getParty() {
+		return party;
+	}
+	@Autowired
+	public void setParty(Party party) {
+		Context.party = party;
+	}
 
 
 
@@ -328,6 +338,8 @@ public class Context implements ApplicationContextAware{
 	
 	
 	
+	
+
 
 
 	public static ConcurrentHashMap<Channel, Session> getSession2Channel() {

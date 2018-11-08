@@ -9,7 +9,9 @@ import java.util.concurrent.Future;
 
 import javax.annotation.PostConstruct;
 
+import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.InitializingBean;
+import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.annotation.DependsOn;
@@ -24,6 +26,7 @@ import com.hc.logic.config.NpcConfig;
 import com.hc.logic.config.SceneConfig;
 import com.hc.logic.config.TelepConfig;
 import com.hc.logic.copys.Copys;
+import com.hc.logic.creature.Monster;
 import com.hc.logic.creature.Player;
 import com.hc.logic.dao.impl.PlayerDaoImpl;
 import com.hc.logic.domain.CopyEntity;
@@ -53,7 +56,9 @@ public class World implements ApplicationContextAware{
 	//所有玩家实体，在启动时，从数据库加载
 	private List<PlayerEntity> allPlayerEntity = new ArrayList<>();
 	//任务调度线程的标识。格式：key：copys+副本id+玩家id, value: 对应的future
-	ConcurrentHashMap<String, Future> futureMap = new ConcurrentHashMap<>();
+	private ConcurrentHashMap<String, Future> futureMap = new ConcurrentHashMap<>();
+	//所有副本实体
+	private List<CopyEntity> copyEntitys = new ArrayList<>();
 	
 	ApplicationContext context;
 	
@@ -81,6 +86,7 @@ public class World implements ApplicationContextAware{
 		configAllScene();
 	}
 	
+	
 	/**
 	 * 初始化所有场景,即从配置文件中加载场景配置
 	 * 加载的场景都缓存在Wolrd类的sceneResource字段中
@@ -98,11 +104,6 @@ public class World implements ApplicationContextAware{
 			scene.setName(sConfig.getName());
 			scene.setDescribe(sConfig.getDescription());
 			//设置creature
-			for(int i : sConfig.getMonsts()) { //怪物
-				MonstParse mp = sceneP.getMonsters();
-				MonstConfig mc = mp.getMonstConfgById(i);
-				scene.addCreatures(mc);
-			}
 			
 			for(int i: sConfig.getNpcs()) {  //npc
 				NpcParse mp = sceneP.getNpcs();
@@ -131,15 +132,35 @@ public class World implements ApplicationContextAware{
 		Copys nCopys = new Copys(copyId, copysConfig.getName(), copysConfig.getDescription(), players, bossIndex);
 	    addCopys(copyId, players.get(0).getId(), nCopys);  //默认是players的第一个的id作为标识
 	}
-	
 	/**
-	 * 创建一个副本，单人
+	 * 所有玩家都断线后，第一个重连的玩家，创建副本
 	 * @param copyId
 	 * @param player
+	 * @param bossIndex  
+	 * @param sponsId   发起者的id
+	 */
+	public void creatCopy(int copyId, List<Player> players, int bossIndex, int sponsId) {
+		CopysConfig copysConfig = Context.getCopysParse().getCopysConfById(copyId);
+		Copys nCopys = new Copys(copyId, copysConfig.getName(), copysConfig.getDescription(), players, bossIndex);
+		addCopys(copyId, sponsId, nCopys);
+	}
+		
+	/**
+	 * 创建副本
+	 * @param copyId
+	 * @param player
+	 * @param bossIndex
+	 * @param a
 	 */
 	public void createCopy(int copyId, Player player, int bossIndex) {
 		List<Player> players = new ArrayList<>();
-		players.add(player);
+		players.add(player);  //添加发起者 
+		System.out.println("--------------------createCopy--team=" + player.getTeammate());
+		if(player.getTeammate().size() > 0) {
+			for(String pn : player.getTeammate()) {
+				players.add(Context.getOnlinPlayer().getPlayerByName(pn));
+			}
+		}
 		createCopy(copyId, players, bossIndex);
 	}
 
@@ -167,21 +188,24 @@ public class World implements ApplicationContextAware{
 	 */
 	public void delCopys(int copyId, List<Player> players) {
 		for(Player p : players) {
-			boolean hasdel = delCopys(copyId, p);
-			if(!hasdel) continue;
+			if(!delCopys(copyId, p.getName())) continue;
 			return;
 		}
 	}
 	/**
-	 * 通过副本id和玩家，删除对应的副本, 单人
+	 * 通过副本id和玩家，删除对应的副本,
+	 * 还有删除玩家实体
 	 * @param copyId
 	 * @param player
 	 * @return
 	 */
-	public boolean delCopys(int copyId, Player player) {
+	public boolean delCopys(int copyId, String pname) {
+		//System.out.println("------------world.delCopys正在删除副本缓存和实体");
+		int pid = getPlayerEntityByName(pname).getId();
 		Map<Integer, Copys> pCopy = allCopys.get(new Integer(copyId));
 		if(pCopy == null) return false;
-		Copys copy = pCopy.remove(new Integer(player.getId()));
+		Copys copy = pCopy.remove(new Integer(pid));
+		CopyEntity cpe = delCopyEntity(copy.getId());
 		copy = null;
 		return true;
 	}
@@ -200,7 +224,7 @@ public class World implements ApplicationContextAware{
 		return null;
 	}
 	/**
-	 * 根据副本id和玩家id，获得相应的Copys
+	 * 根据副本id和玩家id，获得相应的Copys。只有发起者的id才能得到队友的副本
 	 * @param copyId 副本id
 	 * @param playerId 玩家id
 	 * @return
@@ -219,10 +243,35 @@ public class World implements ApplicationContextAware{
 		CopyEntity copyEntity = player.getCopEntity(); 
 		if(copyEntity == null) return;
 		int copyId = copyEntity.getCopyId();
+		int pid = player.getId();
+		delCopyThread(pid, copyId);
+		/**
+		System.out.println("---------删除副本线程------");
+		CopyEntity copyEntity = player.getCopEntity(); 
+		if(copyEntity == null) return;
+		int copyId = copyEntity.getCopyId();
+		System.out.println("---------future----" + futureMap.size() + ", " + player.getId());
 		Future future = futureMap.remove("copys"+copyId+player.getId());
+		System.out.println("---------future-后---" + futureMap.size());
 		if(future == null) return;	
 		for(int bossId : Context.getCopysParse().getCopysConfById(copyEntity.getCopyId()).getBosses()) {
 			delBossThread(player.getId(), bossId);
+		}	
+		future.cancel(true);
+		*/
+	}
+	
+	public void delCopyThread(int pid, int copyId) {
+		System.out.println("---------删除副本线程------");
+		System.out.println("---------future----" + futureMap.size() + ", " + pid);
+		String iden = "copys"+copyId + pid;
+		Future future = futureMap.remove(iden);
+		System.out.println("------futuremap=" + futureMap.toString());
+		System.out.println("=------iden = " + iden);
+		System.out.println("---------future-后---" + futureMap.size() + ", " + (future==null));
+		if(future == null) return;	
+		for(int bossId : Context.getCopysParse().getCopysConfById(copyId).getBosses()) {
+			delBossThread(pid, bossId);
 		}	
 		future.cancel(true);
 	}
@@ -237,6 +286,7 @@ public class World implements ApplicationContextAware{
 		future.cancel(true);
 		System.out.println("boss线程 pid=" + playerId + ", bossId=" + bossId + " 已停止");
 	}
+	
 
 	public Scene getSceneById(int sceneId) {
 		return sceneResource.get(sceneId);
@@ -286,7 +336,19 @@ public class World implements ApplicationContextAware{
 		return null;
 	}
 
-	
+	/**
+	 * 更新缓存
+	 * @param pe
+	 */
+	public void updatePlayerEntity(PlayerEntity pe) {
+		for(PlayerEntity p: allPlayerEntity) {
+			if(p.getId() == pe.getId() ) {
+				allPlayerEntity.remove(p);
+				break;
+			}
+		}
+		allPlayerEntity.add(pe);
+	}
 	/**
 	 * 获得数据库中，最大的id
 	 * 从而在服务器，关闭，开启的时候，获得一个目前最大的id，来给新注册的玩家用
@@ -304,7 +366,33 @@ public class World implements ApplicationContextAware{
 		return futureMap;
 	}
 
-	
+	public List<CopyEntity> getCopyEntitys() {
+		return copyEntitys;
+	}
+	public void addCopyEntity(CopyEntity ce) {
+		this.copyEntitys.add(ce);
+	}
+	/**
+	 * 删除copeEntity缓存
+	 * @param cid
+	 */
+	public CopyEntity delCopyEntity(int cid) {
+		for(CopyEntity cpe : copyEntitys) {
+			if(cpe.getCopyId() == cid) {
+				copyEntitys.remove(cpe);
+				return cpe;
+			}
+		}
+		return null;
+	}
+	public CopyEntity getCopyEntityById(int copyId) {
+		for(CopyEntity cpe : copyEntitys) {
+			if(cpe.getCopyId() == copyId) {
+				return cpe;
+			}
+		}
+		return null;
+	}
 	
 	
 }

@@ -7,7 +7,7 @@ import com.hc.frame.Context;
 import com.hc.logic.creature.LiveCreature;
 
 
-public class MonstConfig extends LiveCreature{
+public class MonstConfig{
 
 	private int monstId;
 	private String name;
@@ -41,7 +41,6 @@ public class MonstConfig extends LiveCreature{
 	}
 	public void setMonstId(int monstId) {
 		this.monstId = monstId;
-		setcId();
 	}
 	public String getName() {
 		return name;
@@ -107,22 +106,12 @@ public class MonstConfig extends LiveCreature{
 	}
 	public void setAlive(boolean isAlive) {
 		this.isAlive = isAlive;
-	}
-	@Override
-	public void setDescribe() {
-		this.describe = description;
-	}
-	
+	}	
 	@Override
 	public String toString() {
 		return name;
 	}
-	
-	@Override
-	public void setcId() {
-		this.cId = monstId;
-	}
-	
+		
 	/**
 	 * ·µ»Øboss¼¼ÄÜ
 	 * @return

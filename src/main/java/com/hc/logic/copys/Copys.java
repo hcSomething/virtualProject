@@ -7,7 +7,11 @@ import com.hc.frame.Context;
 import com.hc.frame.Scene;
 import com.hc.logic.base.Session;
 import com.hc.logic.basicService.TransferService;
+import com.hc.logic.creature.Monster;
 import com.hc.logic.creature.Player;
+import com.hc.logic.dao.impl.PlayerDaoImpl;
+import com.hc.logic.domain.CopyEntity;
+import com.hc.logic.domain.PlayerEntity;
 
 /**
  * 副本场景
@@ -23,6 +27,9 @@ public class Copys extends Scene{
 	private long openTime;
 	//从哪个boss开始。初始进入时0。
 	private int bossIndex = 0;
+	private CopyEntity copyEntity;
+	//多人副本中，剩余的玩家
+	private List<Player> availablePlayer;
     
     public Copys(int id, String name, String desc, List<Player> players, int bossInd) {
     	super(2);
@@ -30,6 +37,8 @@ public class Copys extends Scene{
     	this.name = name;
     	this.describe = desc;
     	this.players = new ArrayList<>(players);   //进入当前副本的玩家列表
+    	this.availablePlayer = new ArrayList<>(players); //进入的玩家都是可攻击对象
+    	System.out.println("------------copys中的所有玩家---" + players.toString());
     	this.allBoss = Context.getCopysParse().getCopysConfById(id).getBosses();
     	this.bossIndex = bossInd;
     	//默认生成一只boss
@@ -43,6 +52,7 @@ public class Copys extends Scene{
 	//这个方法会被自动周期性调用
     @Override
     public void execute() {
+    	//System.out.println("-------------------aaaaaaaaa");
     	//玩家每秒恢复的血量和法力
     	recoverHpMp();
     	//刷新boss
@@ -96,7 +106,7 @@ public class Copys extends Scene{
     public String bossNameList() {
     	StringBuilder sb = new StringBuilder();
     	sb.append("【");
-    	System.out.println("bossNameLis---------------- " + bosses.size());
+    	//System.out.println("bossNameLis---------------- " + bosses.size());
     	for(Boss boss : bosses) {
     		String name = Context.getSceneParse().getMonsters().getMonstConfgById(boss.getId()).getName();
     		sb.append(name);
@@ -159,14 +169,16 @@ public class Copys extends Scene{
     public void haveAvailableBoss() {
     	int boId = 1000;
     	int bossId = allBoss.get(bossIndex);
-    	if(!Context.getSceneParse().getMonsters().getMonstConfgById(bossId).isAlive()) {
+    	//System.out.println("-------haveavailableBosos------" + bossId + ", " + bossIndex);
+    	//System.out.println("------getMonstById=null " + getMonsteById(bossId));
+    	if(!getMonsteById(bossId).isAlive()) {
 			//若boss已死亡， 从列表中删除
 			delBoss(bossId);
 			//是否还有怪物可以生成
 			boId = Context.getCopysParse().getCopysConfById(id).moreBoss(bossId);
 			bossIndex++;  
 			players.get(0).getCopEntity().setBossindex(bossIndex);  //更新实体类
-			System.out.println("-----------------haveAvailableBoss--boId=" + boId);
+			//System.out.println("-----------------haveAvailableBoss--boId=" + boId);
 			if(boId != -1) {
 				createBoss(boId);
 				return;
@@ -174,7 +186,7 @@ public class Copys extends Scene{
 		}
     	//已经没有怪物了，副本完成退出
     	if(boId == -1) {
-    		System.out.println("-----------------haveAvailableBoss--没有boss了");
+    		//System.out.println("-----------------haveAvailableBoss--没有boss了");
     		obtainAward();
         	complete();
     	}
@@ -200,10 +212,45 @@ public class Copys extends Scene{
     	//自动进行传送
     	int targetId = Context.getCopysParse().getCopysConfById(id).getPlace();
     	TransferService transferService = Context.getTransferService();
-    	for(Player player : players) {
+    	//清除所有在副本完成后还没有重连的玩家
+    	offLinePla(players.get(0));
+    	for(int i = (players.size()-1); i >=0 ; i--) {
+    		Player player = players.get(i);
     		System.out.println("-----------------complete--进行传送" + players.toString());
-    		transferService.transferCopy(player, id); //从副本中传送出来
+    		transferService.transferCopy(player, id); //从副本中传送出来   		
     	}
+    }
+    
+    /**
+     * 副本完成时，更新断线未重连玩家的数据库
+     * 所有不是主动离开副本的玩家都会得到奖励
+     * @param player 任意一个还在副本中的玩家
+     */
+    public void offLinePla(Player player) {
+    	System.out.println("--------断线未重连---名字--前 " + player.getName());
+    	String award = Context.getCopysParse().getCopysConfById(id).getsRewords();
+    	//List<PlayerEntity> pes = player.getCopEntity().getPlayers();
+		String hql = "select ce.players from CopyEntity ce where sponsor "
+				+ "like : name";
+		List<PlayerEntity> pes = new PlayerDaoImpl().find(hql, player.getSponserNmae());
+		
+    	System.out.println("--------断线未重连---名字--中 " + pes.toString());
+    	int place = Context.getCopysParse().getCopysConfById(id).getPlace();
+    	for(PlayerEntity pe : pes) {
+    		if(getPlayerByName(pe.getName()) == null) {
+    			if(pe.getCopyEntity() != null) {
+    				System.out.println("--------断线未重连---名字 " + pe.getName());
+    				//表示是断线未重连
+    				pe.setSceneId(place);
+    				pe.setCopyEntity(null);
+    				new PlayerDaoImpl().update(pe);
+    				Context.getWorld().updatePlayerEntity(pe); //更新缓存
+    				//Context.getEmailService().sendGoodsEmail(pe.getName(), award);
+    				System.out.println("-----------断线未重连的玩家pe=" + pe.toString());
+    			}
+    		}
+    	}
+    	
     }
 
 	public int getBossIndex() {
@@ -213,6 +260,25 @@ public class Copys extends Scene{
 	public void setBossIndex(int bossIndex) {
 		this.bossIndex = bossIndex;
 	}
+	
+	@Override
+	public Monster getMonsteById(int bid) {
+		if(monsters.size() == 0) initMonst();
+		for(Monster mon : monsters) {
+			if(mon.getMonstId() == bid) {
+				return mon;
+			}
+		}
+		return null;
+	}
+	
+	public void initMonst() {
+		for(int bid : allBoss) {
+			Monster boss = new Monster(bid);
+			monsters.add(boss);
+		}
+		//System.out.println("---copys中的intitMonst--------------------------" + monsters.toString());
+	}
     
 	@Override
 	public String toString() {
@@ -220,6 +286,55 @@ public class Copys extends Scene{
 		      + ", name=" + name
 		      +"}";
 	}
+
+
+	public CopyEntity getCopyEntity() {
+		return copyEntity;
+	}
+
+
+	public void setCopyEntity(CopyEntity copyEntity) {
+		this.copyEntity = copyEntity;
+	}
+
+
+	/**
+	 * 副本中是否还要玩家
+	 * @return
+	 */
+	public boolean haveAvailablePlayer() {
+		return availablePlayer.size() > 0;
+	}
+	/**
+	 * 玩家离开副本时，从剩余玩家中删除
+	 * @param id
+	 */
+	public void delPlayer(int id) {
+		for(Player p : availablePlayer) {
+			if(p.getId() == id) {
+				availablePlayer.remove(p);
+				players.remove(p);  //主动传送出去的要减少场景中玩家数量
+				break;
+			}
+		}
+		for(Boss bs : bosses) {
+			bs.delPlayers(id);
+		}
+	}
+	public void playerComeback(Player player) {
+		System.out.println("-----players--" + players.toString());
+		System.out.println("-----availablePlayer--" + availablePlayer.toString());
+
+		this.availablePlayer.add(player);
+		this.players.add(player);
+		for(Boss bs : bosses) {
+			bs.addPlayer(player);
+		}
+		System.out.println("-----players-后-" + players.toString());
+		System.out.println("-----availablePlayer-后-" + availablePlayer.toString());
+		
+	}
+
     
 	
 }

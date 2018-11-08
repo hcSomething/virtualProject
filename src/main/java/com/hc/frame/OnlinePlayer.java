@@ -40,4 +40,13 @@ public class OnlinePlayer {
 		return null;
 	}
 	
+	public Player getPlayerByName(String name) {
+		for(Player p : onlinePlayers) {
+			if(p.getName().equals(name)) {
+				return p;
+			}
+		}
+		return null;
+	}
+	
 }

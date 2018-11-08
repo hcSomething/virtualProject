@@ -60,7 +60,7 @@ public class Boss extends TaskConsume{
 	
 	@Override
 	public void execute() {
-		System.out.println("boss线程, bid=" + bid + ", 时间 " + System.currentTimeMillis() + " attPlayer " + attPlayer.toString());
+		//System.out.println("boss线程, bid=" + bid + ", 时间 " + System.currentTimeMillis());
 		//攻击玩家
 		bossAttackPlayer();
 		//具有持续性效果的技能，减少相应玩家血量
@@ -76,13 +76,13 @@ public class Boss extends TaskConsume{
 		if(!isCdOut(skillId)) return;
 		SkillConfig skillConfig = Context.getSkillParse().getSkillConfigById(skillId);
 		int conti = skillConfig.getContinueT()*1000;
-		System.out.println("------------bossAttackPlayer---------continue=" + conti + " 技能 " + skillConfig.getName());
-		//播放被boss攻击的技能，以及伤害
-		
+		//System.out.println("------------bossAttackPlayer---------continue=" + conti + " 技能 " + skillConfig.getName());
 		if(skillConfig.getScope() != 0) {
 			//此技能只针对一个玩家
 			if(nextAttackPlayer() < 0) return;
 			Player player = players.get(nextAttackPlayer());
+			//眩晕
+			dizzi(player, skillId);
 			if(conti < 1) instantAttack(player, skillId);
 			else  continueAttack(player, skillId);	
 			broadcastAttack(player, skillId);  //播放技能造成的伤害
@@ -113,7 +113,7 @@ public class Boss extends TaskConsume{
 		sb.append(" 使用技能  " + skillConfig.getName());
 		sb.append(" 对 " + allPlayer + " 造成 ");
 		sb.append( hert + " 的伤害！");
-		System.out.println("-----------------------broadcast " + sb.toString());
+		//System.out.println("-----------------------broadcast " + sb.toString());
 		BroadcastService.broadToPlayer(players, sb.toString());
 	}
 	
@@ -161,7 +161,7 @@ public class Boss extends TaskConsume{
 				attack -= redu;
 				if(attack < 0) attack = 0;   //防止护盾的保护大于受到的伤害				
 				p.addHpMp(-attack, 0); //加个负号，就变成减了
-				System.out.println("boss的持续技能对你造成伤害， 减少血量" + attack);
+				//System.out.println("boss的持续技能对你造成伤害， 减少血量" + attack);
 				p.getSession().sendMessage("boss的持续技能对你造成伤害， 减少血量" + attack);
 			}	
 		}
@@ -193,7 +193,7 @@ public class Boss extends TaskConsume{
 			long term = attPlayer.get(player).get(new Integer(skillId)) + terminate;
 			attPlayer.get(player).put(skillId, term);
 		}
-		System.out.println("---------------continueAttack----------- " + attPlayer.toString());
+		//System.out.println("---------------continueAttack----------- " + attPlayer.toString());
 	}
 	/**
 	 * 有持续效果的群攻技能
@@ -215,6 +215,12 @@ public class Boss extends TaskConsume{
 	private void instantAttack(Player player, int skillId) {
 		int attack = Context.getSkillParse().getSkillConfigById(skillId).getAttack();
 		player.addHpMp(-attack, 0);
+	}
+	
+	private void dizzi(Player player, int skillId) {
+		int dizziness = Context.getSkillParse().getSkillConfigById(skillId).getDizziness();
+		System.out.println("----------------------更新眩晕时间----------------------" + skillId + ", " + dizziness);
+		if(dizziness != 0) player.setCanUSkill(dizziness);
 	}
 	/**
 	 * 瞬时群攻技能
@@ -278,10 +284,33 @@ public class Boss extends TaskConsume{
 		this.attackNow = attackNow;
 	}
 
+	/**
+	 * 增加玩家攻击列表
+	 * @param p
+	 */
+	public void addPlayer(Player p) {
+		 players.add(p);
+	}
+
+	/**
+	 * 删除boss攻击列表
+	 * @param pid
+	 */
+	public void delPlayers(int pid) {
+		//System.out.println("----------boss.delplayers, 前" + players.toString());
+		for(Player pp : players) {
+			if(pp.getId() == pid) {
+				players.remove(pp);
+				return;
+			}
+		}
+	}
+
 	@Override
 	public String toString() {
 		return "boss{id=" + bid
 	          + ", name="+ Context.getCopysParse().getCopysConfById(bid).getName()
+	          + ", players.size()=" + players.size()
 	          + " }";
 	}
 	

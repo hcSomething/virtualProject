@@ -9,6 +9,7 @@ import com.hc.frame.Context;
 import com.hc.logic.base.Session;
 import com.hc.logic.config.MonstConfig;
 import com.hc.logic.config.SkillConfig;
+import com.hc.logic.creature.Monster;
 import com.hc.logic.creature.Player;
 
 @Component
@@ -59,9 +60,12 @@ public class SkillService {
 		
 		SkillConfig skillConf = Context.getSkillParse().getSkillConfigById(skillId);
 		MonstConfig monstConf = Context.getSceneParse().getMonsters().getMonstConfgById(mId);
+		Monster monst = player.getScene().getMonsteById(mId);
 		
+		boolean isalive = monst.canAttack( skillId, player);
 		//怪物已经死亡时，不能攻击
-		if(!monstConf.isAlive()) {
+		//if(!monst.isAlive()) {
+		if(!isalive) {
 			session.sendMessage("怪物已经死亡，不能攻击");
 			return;
 		}
@@ -75,23 +79,24 @@ public class SkillService {
 		player.getScene().addAttackPlayer(mId, player);
 		
 		//计算玩家攻击后，怪物剩余血量，玩家的攻击力需要叠加：buff，技能等等
-		int restHp = monstConf.getHp() - player.AllAttack(skillId);
-		session.sendMessage("击中" + monstConf.getName());
-		if(restHp < 0) {
+		//int restHp = monst.getHp() - player.AllAttack(skillId);
+		session.sendMessage("击中" + monst.getName());
+		if(monst.getHp() <= 0) {
 			//怪物死亡
-			monstConf.setHp(0);
-			monstConf.setAlive(false);
-			player.getScene().deleteAttackMonst(mId); //怪物死亡后，就不能攻击玩家
+			//monst.setHp(0);
+			//monst.setAlive(false);
+			player.getScene().deleteAttackMonst(); //怪物死亡后，就不能攻击玩家
 			//击杀怪物/boss获得相应奖励
 			Context.getAwardService().obtainAward(player, monstConf);
 			//需要广播给当前场景的所有玩家
-			String mesg = monstConf.getName() + "死亡";
+			String mesg = monst.getName() + "被玩家[" + player.getName() + "]击杀";
 			BroadcastService.broadInScene(session, mesg);
 			return;
 		}
-		monstConf.setHp(restHp);
+		//monst.setHp(restHp);
 		//播放怪物血量
-		session.sendMessage(monstConf.getName() + "的血量为：" + monstConf.getHp());
+		String msg = monst.getName() + "被玩家[" + player.getName() +"]攻击，剩余血量为：" + monst.getHp();
+		BroadcastService.broadInScene(session, msg);
 	}
 	
 	/**
@@ -129,7 +134,7 @@ public class SkillService {
 		if(restHp <= 0) {
 			//玩家死亡
 			tPlayer.setHp(0);
-			session.sendMessage("玩家【" + tpName + "】已被死亡！");
+			session.sendMessage("玩家【" + tpName + "】已死亡！");
 			//tPlayer.getSession().sendMessage("您已被玩家【" + player.getName() + "】杀死！");
 			tPlayer.setAlive(false);
 			return;
@@ -172,6 +177,11 @@ public class SkillService {
 	public boolean skillValid(Session session, int skillId) {
 		SkillConfig skillConf = Context.getSkillParse().getSkillConfigById(skillId);
 		Player player = session.getPlayer();
+        //判断玩家是否能使用技能
+		if(!player.canUseSkill()) {
+			session.sendMessage("受到敌人的技能影响，现在还不能使用技能");
+			return false;
+		}
 		//判断玩家是否拥有这个技能,且有相应的武器
 		if(!player.hasSkill(skillId)) {
 			session.sendMessage("没有这个技能");

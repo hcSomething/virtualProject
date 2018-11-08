@@ -44,6 +44,10 @@ public class StoreService {
 			session.sendMessage("您要购买的商品不在当前列表中，请检查参数是否正确！");
 			return;
 		}
+		if(amount > 100) {
+			session.sendMessage("购买失败，一次只能购买100件相应物品");
+			return;
+		}
 		boolean hasbuy = store.buyGood(session.getPlayer(), gid, amount);
 		if(!hasbuy) session.sendMessage("购买失败，请检查是否有足够的金币");
 		else session.sendMessage("购买成功");

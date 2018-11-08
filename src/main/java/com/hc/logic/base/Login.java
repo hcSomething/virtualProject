@@ -8,6 +8,8 @@ import com.hc.frame.Scene;
 import com.hc.logic.copys.Copys;
 import com.hc.logic.creature.Player;
 import com.hc.logic.dao.impl.CopyPersist;
+import com.hc.logic.dao.impl.PlayerDaoImpl;
+import com.hc.logic.domain.CopyEntity;
 import com.hc.logic.domain.PlayerEntity;
 
 
@@ -83,11 +85,14 @@ public class Login {
 		if(sceneId != 0) {
 			//进入普通场景
 			System.out.println("进入普通场景");
-			enterNormalScene(player);
+			enterNormalScene(player, sceneId);
 			return;
 		}
 		System.out.println("进入副本");
-		int copyId = player.getCopEntity().getCopyId();
+		CopyEntity copyEntity = player.getCopEntity();		
+		int copyId = copyEntity.getCopyId();
+		sceneId = Context.getCopysParse().getCopysConfById(copyId).getPlace();
+		
 		long etC = player.getCopEntity().getFirstEnterTime();
 		long cur = System.currentTimeMillis();
 		long dual = Context.getCopysParse().getCopysConfById(copyId).getContinueT();
@@ -95,22 +100,64 @@ public class Login {
 		System.out.println("!!!!!!!!进入时间"+etC + " 现在时间 " + cur + " 差 " + (cur-etC) + " 开启时间 " + dual );
 		if(dual > (cur - etC)) {
 			//创建并进入副本, 设定boss的 index
+			if(Context.getWorld().getCopyEntityById(copyId) != null) {
+				//副本中还有队友，直接进入副本
+				System.out.println("副本中还有队友，直接进入副本" + (player.getCopEntity()==null));
+				int spsId = Context.getWorld().getPlayerEntityByName(player.getCopEntity().getSponsor()).getId();				
+				Context.getWorld().getCopysByAPlayer(copyId, spsId).playerComeback(player);				
+				return;
+			}
+			//副本已被清除，需要再次创建
 			int bossIndex = player.getCopEntity().getBossindex();
-			Context.getCopyService().enterCopy(copyId, player, player.getSession(), bossIndex);
+			//创建副本时，要注意副本的发起者
+			List<Player> players = new ArrayList<>();
+			players.add(player);
+			int sponsId = Context.getWorld().getPlayerEntityByName(player.getCopEntity().getSponsor()).getId();
+			Context.getWorld().creatCopy(copyId, players, bossIndex, sponsId);	
+			Context.getWorld().addCopyEntity(player.getCopEntity());  //第一个重连的玩家需要缓存copyenityt
+			//Context.getCopyService().enterCopy(copyId, player, player.getSession(), bossIndex);
 		}else {
 			//超时，进入普通场景
 			System.out.println("超时");
-			player.setSceneId(Context.getCopysParse().getCopysConfById(copyId).getPlace());
 			//删除副本数据库信息
 			player.getPlayerEntity().setNeedDel(true);
-			Context.getTaskProducer().addTask(new CopyPersist(player.getPlayerEntity()));
+
+			enterNormalScene(player, sceneId);
+			
+			timeout(player);
+			
 			System.out.println("超时副本删除成功");
-			enterNormalScene(player);
 		}
 	}
 	
-	private void enterNormalScene(Player player) {
+	
+	/**
+	 * 当重连时，副本已超时，需要清除副本数据库
+	 * @param player
+	 */
+	public void timeout(Player player) {
+		CopyEntity ce = player.getPlayerEntity().getCopyEntity();
+		System.out.println("----------timeout-------------" + ce.toString());
+		String hql = "select ce.players from CopyEntity ce where sponsor "
+				+ "like : name";
+		List<PlayerEntity> list = new PlayerDaoImpl().find(hql, player.getSponserNmae());
+		System.out.println("------------" + (list==null) + ", " + list.toString());
+		for(PlayerEntity pe : list) {
+			pe.setCopyEntity(null);
+			pe.setSceneId(player.getSceneId());
+			new PlayerDaoImpl().update(pe);	
+			Context.getWorld().updatePlayerEntity(pe);
+		}
+		player.setSponserNmae(null);
+		player.clearTeammate();
+		new PlayerDaoImpl().delete(ce);
+	}
+	
+	private void enterNormalScene(Player player, int sceneId) {
+		System.out.println("---------------今入normalscene" + player  + ", sceneId="+sceneId);
+		player.setSceneId(sceneId);
 		Scene sc = Context.getWorld().getSceneById(player.getSceneId());
+		System.out.println("---------------今入normalscene后-" + player.getSceneId());
 		if(sc.getPlayerByName(player.getName()) == null) {
 			sc.addPlayer(player);
 		}

@@ -13,6 +13,7 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.Id;
+import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.PrimaryKeyJoinColumn;
@@ -56,7 +57,7 @@ public class PlayerEntity{
 	@Column
 	private int gold = 100;
 	
-	@OneToOne(mappedBy="playerEntity", orphanRemoval = true, cascade = CascadeType.ALL, fetch=FetchType.EAGER)
+	@ManyToOne
 	private CopyEntity copyEntity;
 	
 	@Transient
@@ -239,24 +240,24 @@ public class PlayerEntity{
 	public void setNeedDel(boolean needDel) {
 		this.needDel = needDel;
 	}
-	public CopyEntity getCopEntity() {
+	
+	//public void addCopyEntity(CopyEntity copyEntity) {
+	//	copyEntity.setPlayerEntity(this);
+	//	this.copyEntity = copyEntity;
+	//}
+	//public void removeCopyEntity() {
+	//	if(copyEntity != null) {
+	//		copyEntity.setPlayerEntity(null);
+	//		this.copyEntity = null;
+	//	}
+	//}
+	public CopyEntity getCopyEntity() {
 		return copyEntity;
 	}
-	public void setCopEntity(CopyEntity copys) {
-		this.copyEntity = copys;
-	}
-	public void addCopyEntity(CopyEntity copyEntity) {
-		copyEntity.setPlayerEntity(this);
+	public void setCopyEntity(CopyEntity copyEntity) {
 		this.copyEntity = copyEntity;
 	}
-	public void removeCopyEntity() {
-		if(copyEntity != null) {
-			copyEntity.setPlayerEntity(null);
-			this.copyEntity = null;
-		}
-	}
-	
-	
+
 	public int getGold() {
 		return gold;
 	}
@@ -267,11 +268,8 @@ public class PlayerEntity{
 	public String toString() {
 		StringBuilder sb = new StringBuilder();
 		sb.append("名字：" + name + "\n");
-		sb.append("等级: " + level+ "\n");
-		sb.append("经验：" + exp+ "\n");
-		sb.append("血量hp: " + hp+ "\n");
-		sb.append("法力mp: " + mp);
-		sb.append("物品：" + goods.toString());
+		sb.append("场景: " + sceneId + "\n");
+		sb.append("copyentity: " + copyEntity);
 		return sb.toString();
 	}
 	

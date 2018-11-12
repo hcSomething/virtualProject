@@ -107,8 +107,7 @@ public class DealService {
 			return;
 		}
 		if(!isSponsor(session, sponsor)) return;
-		player.accDeal(ddel);
-		player.getDeal().setSpName(spName);
+		ddel.acceptDeal(player, spName);
 		session.sendMessage("交易配对成功，你们可以开始交易了！现在就可以展示物品了");
 		sponsor.getSession().sendMessage("对方同意和你进行交易，交易开始，可以开始展示物品了！");
 	}

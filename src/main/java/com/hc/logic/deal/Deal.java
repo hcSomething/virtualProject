@@ -22,12 +22,26 @@ public class Deal {
 	private Map<String, Integer> spDeal = new HashMap<>();  //发起者希望交易的物品和数量
 	private boolean tpAccep;   //是否同意进行交换
 	private boolean spAccep;
-	
+	private Lock lock = new ReentrantLock();
 	//需要交换的物品
 	private List<GoodsEntity> exchange;
 
 	public Deal(String p) {
 		this.tpName = p;
+	}
+	
+	public void acceptDeal(Player tPlayer, String sName) {
+		lock.lock();
+		try {
+			if(spName != null || !tPlayer.getName().equals(tpName)) {
+				tPlayer.getSession().sendMessage("对方已经在交易中，组队失败");
+				return;
+			}
+			this.spName = sName;
+			tPlayer.accDeal(this);
+		}finally {
+			lock.unlock();
+		}
 	}
 	
 	/**
@@ -36,7 +50,6 @@ public class Deal {
 	public void exchangeGoods() {
 		System.out.println("-----开始交换-----" + tpDeal.toString() +", " + spDeal.toString());
 		System.out.println("---交易双方-----" + tpName + ", " + spName);
-		Lock lock = new ReentrantLock();
 		lock.lock();
 		try {
 			Player tPlayer = Context.getOnlinPlayer().getPlayerByName(tpName);
@@ -99,7 +112,6 @@ public class Deal {
 	 * @param args: deal 物品名 数量
 	 */
 	public void showGoods(String pName, String[] args) {
-		Lock lock = new ReentrantLock();
 		lock.lock();
 		try {
 			if(pName.equals(tpName)) {
@@ -138,7 +150,6 @@ public class Deal {
 	 * @param pName 同意交换的玩家名
 	 */
 	public void hopeDeal(String pName) {
-		Lock lock = new ReentrantLock();
 		lock.lock();
 		try {
 			if(pName.equals(spName)) {
@@ -156,7 +167,6 @@ public class Deal {
 	 * @param pName
 	 */
 	public void notHopeDeal(String pName) {
-		Lock lock = new ReentrantLock();
 		lock.lock();
 		try {
 			tpAccep = false;
@@ -173,7 +183,6 @@ public class Deal {
 	 * @return
 	 */
 	public boolean isReadyVerify() {
-		Lock lock = new ReentrantLock();
 		lock.lock();
 		try {
 			if(tpDeal.size() == 0 || spDeal.size() == 0) {
@@ -189,7 +198,6 @@ public class Deal {
 	 * @return
 	 */
 	public boolean isReadyChange() {
-		Lock lock = new ReentrantLock();
 		lock.lock();
 		try {
 			if(!tpAccep || !spAccep) {

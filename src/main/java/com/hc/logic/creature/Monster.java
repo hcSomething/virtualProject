@@ -23,27 +23,43 @@ public class Monster extends LiveCreature{
 	}
 	
 	/**
-	 * 判断能不能打
+	 * 判断能不能打.
+	 * 攻击失败，怪物被别的玩家击杀：-1
+	 * 攻击成功，怪物没被自己击杀：0
+	 * 攻击成功，怪物被自己击杀：1
 	 * @param skillid
 	 * @param player
 	 * @return  是否攻击成功
 	 */
-	public boolean canAttack(int skillid, Player player) {
+	public int canAttack(int skillid, Player player) {
+		int reduce = player.AllAttack(skillid);
+		System.out.println("------------Monster.canAttack-------");
+	    return attack(reduce);
+	}
+	/**
+	 * 进行攻击
+	 * 攻击失败，怪物被别的玩家击杀：-1
+	 * 攻击成功，怪物没被自己击杀：0
+	 * 攻击成功，怪物被自己击杀：1
+	 * @param attack
+	 * @return
+	 */
+	public int attack(int attack) {
 		Lock lock = new ReentrantLock();
 		lock.lock();
 		try {
-			int reduce = player.AllAttack(skillid);
-		    int diff = Hp - reduce;
+			int diff = Hp - attack;
 		    if(Hp > 0) {  //未死，可以攻击
 		    	if(diff > 0) {
 		    		Hp = diff;
 		    	}else {
 		    		Hp = 0;
 		    		isAlive = false;
+		    		return 1;
 		    	}
-		    	return true;
+		    	return 0;
 		    }else {
-		    	return false;
+		    	return -1;
 		    }
 		}finally {
 			lock.unlock();
@@ -79,7 +95,9 @@ public class Monster extends LiveCreature{
 	public void setMonstConfig(MonstConfig monstConfig) {
 		this.monstConfig = monstConfig;
 	}
-
+	public int getGold() {
+		return this.monstConfig.getGold();
+	}
 
 
 
@@ -101,7 +119,9 @@ public class Monster extends LiveCreature{
 	public void setAlive(boolean isAlive) {
 		this.isAlive = isAlive;
 	}
-
+	public String bossSkillList() {
+		return this.monstConfig.bossSkillList();
+	}
 
 
 	@Override

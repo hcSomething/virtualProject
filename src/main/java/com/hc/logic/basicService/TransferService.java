@@ -25,7 +25,7 @@ public class TransferService implements Teleport{
 		if(sourceId !=0) {
 			if(session.getPlayer().isInPK()) Context.getPkService().giveUp(session);
 			//对于在普通场景中传送
-			if(!Context.getWorld().getSceneById(targetId).hasTelepId(sourceId)) {
+			if(!Context.getWorld().getSceneById(sourceId).hasTelepId(targetId)) {
 				session.sendMessage("没有这个传送阵，不能传送");
 				return;
 			}
@@ -56,7 +56,12 @@ public class TransferService implements Teleport{
 		source.deletePlayer(player);
 		
 		//不再受原场景中的怪物攻击, 要在改变sceneId前
-		player.getScene().deleteAttackPlayer(player);
+		//player.getScene().deleteAttackPlayer(player);
+		player.getScene().addTask(new Runnable() {
+			public void run() {
+				source.deleteAttackPlayer(player);
+			}
+		});
 
 		
 		//重设玩家的sceneid字段。
@@ -80,7 +85,12 @@ public class TransferService implements Teleport{
 		//普通场景
 		Scene source =  Context.getWorld().getSceneById(sId);
 		
-		source.deleteAttackPlayer(player);
+		//source.deleteAttackPlayer(player);
+		source.addTask(new Runnable() {
+			public void run() {
+				source.deleteAttackPlayer(player);
+			}
+		});
 		source.deletePlayer(player);
 		
 		player.setSceneId(0);   //改变玩家sceneid

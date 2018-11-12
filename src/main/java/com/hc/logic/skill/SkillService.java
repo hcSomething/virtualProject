@@ -1,4 +1,4 @@
-package com.hc.logic.basicService;
+package com.hc.logic.skill;
 
 import java.util.Date;
 import java.util.List;
@@ -7,6 +7,8 @@ import org.springframework.stereotype.Component;
 
 import com.hc.frame.Context;
 import com.hc.logic.base.Session;
+import com.hc.logic.basicService.BroadcastService;
+import com.hc.logic.basicService.OrderVerifyService;
 import com.hc.logic.config.MonstConfig;
 import com.hc.logic.config.SkillConfig;
 import com.hc.logic.creature.Monster;
@@ -15,6 +17,35 @@ import com.hc.logic.creature.Player;
 @Component
 public class SkillService {
 	
+	/**
+	 * 解析命令
+	 * @param session
+	 * @param args
+	 */
+	public void desOrder(Session session, String[] args) {
+		if(args.length > 3 || args.length < 2) {
+			session.sendMessage("命令参数不正确");
+			return;
+		}
+		if(args.length == 3) {
+			if(!OrderVerifyService.twoInt(args)) {
+				session.sendMessage("命令参数不正确");
+				return;
+			}
+			//单个攻击: attackM 技能id 怪物id
+			int skillId = Integer.parseInt(args[1]);
+			int mid = Integer.parseInt(args[2]);
+			attackAMonster( session, skillId, mid);
+		}else {
+			if(!OrderVerifyService.ontInt(args)) {
+				session.sendMessage("命令参数不正确");
+				return;
+			}
+			//群体攻击: attackM 技能
+			int skillId = Integer.parseInt(args[1]);
+			attackAllMonster( session,  skillId);
+		}
+	}
 	
 	/**
 	 * 发送给客户端，当前玩家所有技能信息
@@ -31,6 +62,8 @@ public class SkillService {
 			sb.append(sConfig.getName() + ": ");
 			sb.append(sConfig.getDescription());
 			sb.append("; 攻击力：" + sConfig.getAttack() );
+			sb.append("; 防御力：" + sConfig.getProtect());
+			sb.append("; 治疗：" + sConfig.getCure());
 			sb.append("; 冷却时间: " + sConfig.getCd());
 			sb.append("; 消耗法力：" + sConfig.getMp());
 			sb.append("; 持续时间：" + sConfig.getContinueT() + "秒");
@@ -41,63 +74,140 @@ public class SkillService {
 	}
 	
 	/**
+	 * 单个攻击
+	 * @param session
+	 * @param skillId
+	 * @param mid
+	 */
+	public void attackAMonster(Session session, int skillId, int mid) {
+		System.out.println("------------进行单个攻击---------");
+		Player player = session.getPlayer();		
+		//玩家技能验证
+		if(!skillValid(session, skillId)) return;
+		if(Context.getSkillParse().getSkillConfigById(skillId).getScope() == 0) {
+			session.sendMessage("此技能是全范围攻击！将攻击所有敌人");
+			attackAllMonster( session, skillId);
+			return;
+		}
+		//判断是否和怪物在同一场景
+		if(!player.getScene().hasMonst(mid)) {
+			session.sendMessage("没有这个怪物");
+			return;
+		}
+		Monster monst = player.getScene().getMonsteById(mid);
+		int isalive = monst.canAttack(skillId, player);
+		//怪物已经死亡时，不能攻击
+		if(isalive == -1) {
+			session.sendMessage("怪物已经死亡，不能攻击");
+			return;
+		}
+		//记录具有持续效果的技能的使用时间
+		player.addContinueAtttib(skillId, monst);			
+		//攻击怪物，就要被怪物攻击。
+		player.getScene().addAttackPlayer(mid, player);			
+		doAttack(session, monst, isalive);
+		//更新技能和武器
+		updateWeapon(player, skillId);
+
+	}
+	/**
+	 * 群体攻击
+	 * @param session
+	 * @param skillId
+	 */
+	public void attackAllMonster(Session session, int skillId) {
+		System.out.println("------------进行群体攻击---------");
+		Player player = session.getPlayer();		
+		//玩家技能验证
+		if(!skillValid(session, skillId)) return;
+		SkillConfig skillConfig = Context.getSkillParse().getSkillConfigById(skillId);
+		if(skillConfig.getSummonBoss() != 0) {
+			summonBoss(session, skillId);
+			return;
+		}
+		if(skillConfig.getScope() != 0) {
+			session.sendMessage("此技能为单个攻击，请指定要攻击的敌人");
+			return;
+		}
+		boolean attacked = false;
+		List<Monster> monsters = player.getScene().getMonsters();
+		for(Monster monster : monsters) {
+			int isalive = monster.canAttack( skillId, player);
+			//怪物已经死亡时，不能攻击
+			//if(!monst.isAlive()) {
+			if(isalive == -1) {
+				continue;
+			}
+			if(skillConfig.getAttack() < 1 && skillConfig.getAttack()>0) continue;  //释放技能时，只有攻击大于0才可以
+			//记录具有持续效果的攻击技能的使用时间
+			player.addContinueAtttib(skillId, monster);		
+			doAttack(session, monster, isalive);
+			//攻击怪物，就要被怪物攻击。只有攻击大于0才会收到怪物攻击
+			if(monster.getHp() > 0) {
+				player.getScene().addAttackPlayer(monster.getMonstId(), player);			
+			}
+			attacked = true;
+		}
+		//记录具有持续恢复血量和防御的技能使用时间
+		player.addContinueRecov(skillId);
+		if(!attacked) {
+			session.sendMessage("所有怪物都死亡，不能攻击");
+			return;
+		}
+		//更新技能和武器
+		updateWeapon(player, skillId);
+
+	}
+	
+	/**
+	 * 召唤师召唤boss
+	 * 打怪物
+	 * @param session
+	 * @param skillId
+	 */
+	public void summonBoss(Session session, int skillId) {
+		//召唤师也要被怪物攻击
+	    Player player = session.getPlayer();
+	    for(Monster m : player.getScene().getMonsters()) {
+			player.getScene().addAttackPlayer(m.getMonstId(), player);	
+		}		
+		System.out.println("进行召唤");
+		SkillConfig skConfig = Context.getSkillParse().getSkillConfigById(skillId);
+		Monster m = new Monster(skConfig.getSummonBoss());
+		SummonBoss summonBoss = new SummonBoss(m, player.getScene().getMonsters(), player);
+		summonBoss.exe(1, "summon" + m.getMonstId() + player.getId());
+		session.sendMessage("召唤成功");
+		//更新技能和武器
+		updateWeapon(player, skillId);
+	}
+	
+	/**
 	 * 攻击怪物，
 	 * @param session
 	 * @param skillId：技能id，mId：怪物id
 	 */
-	public void doAttack(Session session, int skillId, int mId) {
+	public void doAttack(Session session, Monster monst, int isalive) {
 		Player player = session.getPlayer();
 		
-		//玩家技能验证
-		if(!skillValid(session, skillId)) return;
-		
-		//判断是否和怪物在同一场景
-		if(!player.getScene().hasMonst(mId)) {
-			session.sendMessage("没有这个怪物");
-			return;
-		}
-		
-		
-		SkillConfig skillConf = Context.getSkillParse().getSkillConfigById(skillId);
-		MonstConfig monstConf = Context.getSceneParse().getMonsters().getMonstConfgById(mId);
-		Monster monst = player.getScene().getMonsteById(mId);
-		
-		boolean isalive = monst.canAttack( skillId, player);
-		//怪物已经死亡时，不能攻击
-		//if(!monst.isAlive()) {
-		if(!isalive) {
-			session.sendMessage("怪物已经死亡，不能攻击");
-			return;
-		}
-				
-		//使用技能后------
-		
-		//更新技能和武器
-		updateWeapon(player, skillId);
-		
-		//攻击怪物，就要被怪物攻击。
-		player.getScene().addAttackPlayer(mId, player);
-		
-		//计算玩家攻击后，怪物剩余血量，玩家的攻击力需要叠加：buff，技能等等
-		//int restHp = monst.getHp() - player.AllAttack(skillId);
-		session.sendMessage("击中" + monst.getName());
-		if(monst.getHp() <= 0) {
-			//怪物死亡
-			//monst.setHp(0);
-			//monst.setAlive(false);
-			player.getScene().deleteAttackMonst(); //怪物死亡后，就不能攻击玩家
+		if(isalive == 1) {
+			player.getScene().addTask(new Runnable() {
+				public void run() {
+					player.getScene().deleteAttackMonst(monst);
+				}
+			});
 			//击杀怪物/boss获得相应奖励
-			Context.getAwardService().obtainAward(player, monstConf);
+			Context.getAwardService().obtainAward(player, monst);
 			//需要广播给当前场景的所有玩家
 			String mesg = monst.getName() + "被玩家[" + player.getName() + "]击杀";
 			BroadcastService.broadInScene(session, mesg);
 			return;
 		}
-		//monst.setHp(restHp);
 		//播放怪物血量
 		String msg = monst.getName() + "被玩家[" + player.getName() +"]攻击，剩余血量为：" + monst.getHp();
 		BroadcastService.broadInScene(session, msg);
 	}
+	
+	
 	
 	/**
 	 * 攻击玩家
@@ -121,7 +231,13 @@ public class SkillService {
 			session.sendMessage("玩家已死亡，不能攻击");
 		}
 		
+		//使用技能后
+		
 		updateWeapon(player, skillId);
+		
+		//记录具有持续效果的技能的使用时间
+		player.addContinueAttib(skillId, tPlayer);
+
 		
 		//对目标的伤害
 		int hurt = player.AllAttack(skillId);
@@ -150,21 +266,20 @@ public class SkillService {
 	 * @param skillId 技能id
 	 */
 	public void updateWeapon(Player player, int skillId) {
+		System.out.println("---------updatewapon更新技能和武器");
 		SkillConfig skillConf = Context.getSkillParse().getSkillConfigById(skillId);
 		//该技能对应的武器的物品id
 		int wId = Context.getSkillParse().getSkillConfigById(skillId).getWeapon();
 		//减少法力
 		int restMp = player.getMp() - skillConf.getMp();
 		player.setMp(restMp);
-		//记录具有持续效果的技能的使用时间
-		player.addReduceAtt(skillId);
 		
 		//更新技能cd
 		player.updateCdById(skillId);
 		System.out.println("-----=----更新cd时间---" + player.getCdTimeByid(skillId));
 		
-		//更新武器耐久度
-		player.minusContT(wId);
+		//更新武器耐久度. wid==0表示此技能不需要武器
+		if(wId != 0) player.minusContT(wId);
 
 	}
 	
@@ -191,12 +306,12 @@ public class SkillService {
 		//该技能对应的武器的物品id
 		int wId = Context.getSkillParse().getSkillConfigById(skillId).getWeapon();
 		//判断该技能需要的武器是否存在
-		if(!player.contEquip(wId)) {
+		if(wId!=0 &&!player.contEquip(wId)) {
 			session.sendMessage("没有装备对应的武器，不能使用");
 			return false;
 		}
 		//判断该技能所对应的武器的耐久度
-		if(player.restContiT(wId) < 1) {
+		if(wId!=0 && player.restContiT(wId) < 1) {
 			session.sendMessage("武器的耐久度过低，请修理后再使用");
 			return false;
 		}
@@ -223,10 +338,10 @@ public class SkillService {
 	 */
 	public boolean cdOut(Player player, int sId) {
 	    long pTime = player.getCdTimeByid(sId).getTime();
-	    long nTime = new Date().getTime();
+	    long nTime = System.currentTimeMillis();
 	    long diff = nTime - pTime;
 	    long di = Context.getSkillParse().getSkillConfigById(sId).getCd() * 1000; //需要扩大1000倍，化为毫秒
-	    //System.out.println(pTime + "=--" + nTime);
+	    System.out.println(pTime + "=--" + nTime +", "+ diff+ ", cd=" + di);
 	    if(di > diff)
 	    	return false;
 	    return true;

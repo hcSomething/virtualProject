@@ -13,7 +13,15 @@
 		<name>树妖【2】</name>
 		<description>俺是一只树妖，从不害人，你信吗</description>
 		<hp>40</hp>
-		<attack>5</attack>
+		<attack>3</attack>
+		<exp>15</exp>
+	</monster>
+	
+	<monster id="3">
+		<name>微冥【3】</name>
+		<description>及其微小的生物，以鲜血为食</description>
+		<hp>40</hp>
+		<attack>3</attack>
 		<exp>15</exp>
 	</monster>
 	

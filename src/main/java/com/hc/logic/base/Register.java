@@ -2,6 +2,7 @@ package com.hc.logic.base;
 
 import java.util.ArrayList;
 
+import org.springframework.stereotype.Component;
 
 import com.hc.frame.Context;
 import com.hc.logic.creature.Player;
@@ -12,69 +13,77 @@ import com.hc.logic.creature.Player;
  * @author hc
  *
  */
+@Component
 public class Register {
 
-	private Player player;
+	//private Player player;
 	
-	private String name;
-	private String password;
+	//private String name;
+	//private String password;
 	
-	public Register(String name, String password) {
-		this.name = name;
-		this.password = password;
-	}
+	//public Register(String name, String password) {
+	//	this.name = name;
+	//	this.password = password;
+	//}
 	
-	public void register(Session session) {
+	public void register(Session session, String name, String password) {
 		//防止重复注册
 		if((Context.getWorld().getPlayerByName(name) != null)  || (Context.getWorld().getPlayerEntityByName(name) != null)) {
 			session.sendMessage("当前用户已存在，请重新输入");
 			return;
 		}
 		int id = Context.getpID();
-		int hp = Context.getLevelParse().getLevelConfigById(1).getHp();
-		int mp = Context.getLevelParse().getLevelConfigById(1).getMp();
+		//int hp = Context.getLevelParse().getLevelConfigById(1).getHp();
+		int hp = 0;
+		int mp = 0;
+		//int mp = Context.getLevelParse().getLevelConfigById(1).getMp();
+		//血量和法力在选择职业后设置
 		int[] skills = {}; //默认没有技能
-		player = new Player(id, 1, name, password, 1, hp, mp, 0, skills, session, true, new ArrayList<>());
-
-		//这里先直接增加2技能，以后再添加相应的指令
-		//player.addSkill(2);
-		//System.out.println("register: " + player.getSkills().toString() + " *** " + player.getPlayerEntity().getSkills());
+		Player player = new Player(id, 1, name, password, 1, hp, mp, 0, skills, session, true, new ArrayList<>());
 		
-
-		
-		
-		//player.setName(name);
-		//player.setPassword(password);
-		//player.setAlive(true);
-		//player.setLevel(1);  //初始等级
-		//player.setHp(100);   //初始血量
-		//player.setMp(20);    //初始法力
-		//player.addSkill(1);  //初始技能
-		//player.setExp(0);   //初始经验
-	    
-		//player.setSceneId(Context.getBornPlace().getId());   //玩家注册场景id
-		//Context.getBornPlace().addPlayer(player);            //在场景中注册了玩家，
-		//player.setSceneId(1);  //玩家注册，默认进入场景1，即出生地
 		Context.getWorld().getSceneById(1).addPlayer(player); //在场景1中注册了玩家，
 		
 		Context.getWorld().addAllRegisteredPlayer(player);  //充当数据库，解决客户端重连问题
-		//Context.getWorld().addPlayerEntity(player.getPlayerEntity());
-		//player.setSession(session);  //只有在注册阶段，玩家才会设置session
-		//player.setAttack(1);
-		//player.setId(Context.getpID());   
-		
-		
-		
-		//在session中注册player
 		session.setPlayer(player);  
 		
 		//System.out.println("--register--: " + session + " channel: " + session.getChannel());
 		session.sendMessage("注册成功");
+		choiceProf(session);
+	}
+	
+	/**
+	 * 注册后，提示选择职业
+	 * @param session
+	 */
+	private void choiceProf(Session session) {
+		StringBuilder sb = new StringBuilder();
+		int i = 1;
+		for(Profession pf : Profession.values()) {
+			sb.append( i + ", "+ pf.getTitle() + ": ");
+			sb.append(pf.getDescription() + "\n");
+			i++;
+		}
+		if(sb.length() > 1) sb.deleteCharAt(sb.length()-1);
+		session.sendMessage("请选择一种职业(设置后不能修改)： \n" + sb.toString());
+	}
+	
+	/**
+	 * 正在选择职业
+	 * @param session
+	 * @param index
+	 */
+	public void inChoiceProf(Session session, int index) {
+		if(session.getPlayer().haveProf()) {
+			session.sendMessage("不能重复设置");
+			return;
+		}
+		session.getPlayer().setProf(index);
+		session.sendMessage("职业设置成功，您的职业是：" + Profession.getProfByIndex(index-1).getTitle());
+		session.getPlayer().setHp(Context.getLevelParse().getLevelConfigById(1).getHpByProf(index-1));
+		session.getPlayer().setMp(Context.getLevelParse().getLevelConfigById(1).getMpByProf(index-1));
 	}
 
-	public Player getPlayer() {
-		return player;
-	}
+
 
 	
 }

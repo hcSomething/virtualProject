@@ -56,6 +56,9 @@ public class PlayerEntity{
 	//金币
 	@Column
 	private int gold = 100;
+	//职业
+	@Column
+	private int profession = -1;  //表示没有职业
 	
 	@ManyToOne
 	private CopyEntity copyEntity;
@@ -264,6 +267,13 @@ public class PlayerEntity{
 	public void setGold(int gold) {
 		this.gold = gold;
 	}
+	
+	public int getProfession() {
+		return profession;
+	}
+	public void setProfession(int profession) {
+		this.profession = profession;
+	}
 	@Override
 	public String toString() {
 		StringBuilder sb = new StringBuilder();
@@ -280,4 +290,6 @@ public class PlayerEntity{
 		if(p.getName().equals(name)) return true;
 		return false;
 	}
+	
+	
 }

@@ -68,11 +68,9 @@ public class GoodsParse implements ParseXml{
 						String sMp = child.getStringValue(); 
 						goods.setMp(Integer.parseInt(sMp));
 					}else if(nodeName.equals("protect")) {
-						String sPro = child.getStringValue(); 
-						goods.setProtect(Integer.parseInt(sPro));;
+						goods.setSprotect(child.getStringValue());;;
 					}else if(nodeName.equals("attack")) {
-						String sAtt = child.getStringValue();
-						goods.setAttack(Integer.parseInt(sAtt));
+						goods.setSattack(child.getStringValue());;
 					}else if(nodeName.equals("superposition")) {
 						String sSupo = child.getStringValue();
 						goods.setSuperposi(Integer.parseInt(sSupo));
@@ -83,6 +81,7 @@ public class GoodsParse implements ParseXml{
 				}
 				
 				goodslList.add(goods);
+				goods.convert();
 				goods = null;
 				
 			}

@@ -178,7 +178,7 @@ public class Boss extends TaskConsume{
 	}
 	
 	/**
-	 * 有持续效果的技能
+	 * 添加有持续效果的技能
 	 * @param player
 	 * @param skillId 技能id
 	 */

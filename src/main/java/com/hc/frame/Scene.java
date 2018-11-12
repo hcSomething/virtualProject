@@ -1,6 +1,8 @@
 package com.hc.frame;
 import java.util.*;
 import java.util.Map.Entry;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingQueue;
 
 import com.hc.frame.taskSchedule.TaskConsume;
 import com.hc.logic.base.Session;
@@ -30,6 +32,9 @@ public class Scene extends TaskConsume{
 	//当前场景，被攻击玩家列表: key:怪物id, value:每个怪物可以攻击的玩家
 	protected Map<Integer, List<Player>> attackPlayers = new HashMap<>();
 	
+	//一个阻塞队列，将任务放入这个，就会被执行。
+	BlockingQueue<Runnable> task = new LinkedBlockingQueue<>();
+
 
 	public Scene() {
 		exe(5, "scene"+id); //启动一个周期性调度器，周期20秒
@@ -43,31 +48,44 @@ public class Scene extends TaskConsume{
 	//这个方法会被自动周期性调用
     @Override
     public void execute() {
+    	while(!task.isEmpty()) {
+    		task.poll().run();
+    	}
     	//玩家每秒恢复的血量和法力
     	recoverHpMp();
     	//怪物攻击
     	attackPlayer();
     	
     }
+    
+    /**
+     * 添加任务。
+     * @param t
+     */
+    public void addTask(Runnable t) {
+    	try {
+			task.put(t);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+    }
 		
 	/**
 	 * 每秒恢复血量、法力
 	 */
 	public void recoverHpMp() {
-		//LevelConfig lc = Context.getLevelParse().getLevelConfigById(level);
 		for(Player p : players) {
 			LevelConfig lc = Context.getLevelParse().getLevelConfigById(p.getLevel());
 			int mhp = lc.getuHp();  //从配置文件中获得每秒增加的血量
 			int mmp = lc.getuMp(); //从配置文件中获得每秒增加的法力
-			//p.addHpMp(mhp, mmp);
 			
 			//使用恢复类丹药后，在一段时间内恢复血量和蓝量，每个玩家都不同
-			int[] recorHpMp = p.allRecover();  //返回长度为2的数组，第一个是恢复的血量，第二个是恢复的法力
-
+			int[] recorHpMp = p.allRecover();  //返回长度为2的数组，第一个是恢复的血量，第二个是恢复的法力	 
 			mhp += recorHpMp[0];
-			mmp += recorHpMp[1];
-			
+			mmp += recorHpMp[1];	
 			p.addHpMp(mhp, mmp);
+			p.skillRecHp();   //技能导致的持续回血		
+			p.skillContiAttack(); //技能的持续攻击效果
 		}
 	}
 
@@ -77,7 +95,9 @@ public class Scene extends TaskConsume{
 	 * 每个怪物，每次只能选一个玩家进行攻击，这里选择第一个攻击它的玩家
 	 */
 	public void attackPlayer() {
+		//System.out.println("*****" + attackPlayers.size() + ", " + attackPlayers.toString());
 		for(Entry<Integer, List<Player>> enti : attackPlayers.entrySet()) {
+			System.out.println("啦啦啦" + attackPlayers.toString());
 			int mId = enti.getKey();
 			List<Player> attackP = enti.getValue();
 			if(attackP.isEmpty()) return;
@@ -120,20 +140,25 @@ public class Scene extends TaskConsume{
 	 * @param p ： 怪物可以攻击的玩家
 	 */
 	public void addAttackPlayer(int mId, Player p) {
+		System.out.println("------------scene.addattackplayer----" + attackPlayers.toString());
 		if(!attackPlayers.containsKey(mId)) {
 			attackPlayers.put(mId, new ArrayList<Player>());
 		}
 		//不重复添加。一个怪物列表中，不能有重复的玩家
 		if(attackPlayers.get(mId).contains(p)) return;
 		attackPlayers.get(mId).add(p);
+		System.out.println("------------scene.addattackplayer--后--" + attackPlayers.toString());
 	}
 	/**
 	 * 当一个玩家去到别的场景时，怪物就攻击不到，从怪物的攻击列表中删除
+	 * 同时也删除技能的持续效果
 	 * @param p
 	 */
 	public void deleteAttackPlayer(Player p) {
 		System.out.println(" 当一个玩家去到别的场景时，怪物就攻击不到，从怪物的攻击列表中删除");
 		//boolean find = false;
+		System.out.println("前 "+attackPlayers.toString());
+		List<Integer> monsIds = new ArrayList<>();
 		for(Entry<Integer, List<Player>> enti : attackPlayers.entrySet()) {
 			int mId = enti.getKey();
 			List<Player> attackP = enti.getValue();
@@ -142,22 +167,32 @@ public class Scene extends TaskConsume{
 					attackP.remove(p);
 				}
 				if(attackP.isEmpty()) {
-					attackPlayers.remove(mId);
+					//attackPlayers.remove(mId);
+					monsIds.add(mId);
 				}
 				break;
 			}
 		}
-		
+		//当玩家传送后，清空技能的持续效果
+		p.getSkillAttack().cleanup();
+		System.out.println("后 "+attackPlayers.toString() + ", " + monsIds.toString());
+		delNullList(monsIds);
+	}
+	private void delNullList(List<Integer> delMId) {
+		for(int i : delMId) {
+			attackPlayers.remove(new Integer(i));
+		}
 	}
 	/**
 	 * 当怪物被击杀，就不能攻击玩家了，需要删除
 	 * @param mId
 	 */
-	public void deleteAttackMonst() {
+	public void deleteAttackMonst(Monster monster) {
 		System.out.println("================这里被击杀了");
-		attackPlayers.clear();
+		attackPlayers.remove(new Integer(monster.getMonstId()));
 	}
 
+	
 
 	/**
 	 * 判断当前场景是否有这个传送阵id
@@ -187,8 +222,8 @@ public class Scene extends TaskConsume{
 	 * @param mid 怪物id
 	 */
 	public boolean hasMonst(int mId) {
-		for(LiveCreature ii : creatures) {
-			if(ii.getcId() == mId) {
+		for(Monster ii : monsters) {
+			if(ii.getMonstId() == mId) {
 				return true;
 			}
 		}

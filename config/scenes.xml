@@ -19,7 +19,7 @@
 	<scene id="2">
 		<name>新手村</name>
 		<description>欢迎来到新手村</description>
-		<monst>1</monst>
+		<monst>1,2,3</monst>
 		<npc>1</npc>
 		<teleport>2,3</teleport>
 	</scene>
@@ -27,7 +27,7 @@
 	<scene id="3">
 		<name>青云镇</name>
 		<description>欢迎来到青云镇</description>
-		<monst>2</monst>
+		<monst>2,3</monst>
 		<npc>2</npc>
 		<teleport>1</teleport>
 	</scene>

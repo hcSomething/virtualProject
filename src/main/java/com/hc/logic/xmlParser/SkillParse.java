@@ -64,6 +64,9 @@ public class SkillParse implements ParseXml{
 					}else if(nodeName.equals("protect")) {
 						String spo = child.getStringValue();
 						skill.setProtect(Integer.parseInt(spo));
+					}else if(nodeName.equals("cure")) {
+						String scur = child.getStringValue();
+						skill.setCure(Integer.parseInt(scur));
 					}else if(nodeName.equals("mp")) {
 						String smp = child.getStringValue();
 						skill.setMp(Integer.parseInt(smp));
@@ -79,6 +82,12 @@ public class SkillParse implements ParseXml{
 					}else if(nodeName.equals("dizziness")) {
 						String sdi = child.getStringValue();
 						skill.setDizziness(Integer.parseInt(sdi));
+					}else if(nodeName.equals("profession")) {
+						String sprof = child.getStringValue();
+						skill.setProfession(Integer.parseInt(sprof));
+					}else if(nodeName.equals("summon")) {
+						String ssumm = child.getStringValue();
+						skill.setSummonBoss(Integer.parseInt(ssumm));
 					}
 				}
 				

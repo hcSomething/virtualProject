@@ -286,7 +286,19 @@ public class World implements ApplicationContextAware{
 		future.cancel(true);
 		System.out.println("boss线程 pid=" + playerId + ", bossId=" + bossId + " 已停止");
 	}
-	
+	/**
+	 * 停止召唤物线程
+	 * @param playerId
+	 * @param bossId
+	 */
+	public void delSummonsThread(int playerId, int bossId) {
+		System.out.println("summon线程 前--" + futureMap.toString() );
+		Future future = futureMap.remove("summon" + bossId + playerId);
+		if(future == null) return;
+		future.cancel(true);
+		System.out.println("summon线程 pid=" + playerId + ", bossId" + bossId + " 已停止");
+		System.out.println("summon线程 停止--" + futureMap.toString() );
+	}
 
 	public Scene getSceneById(int sceneId) {
 		return sceneResource.get(sceneId);

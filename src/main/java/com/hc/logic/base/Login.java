@@ -58,6 +58,8 @@ public class Login {
 			}
 		}
 		
+		//是否选了职业
+		if(!hasProfession(player)) return;
 		
 		//登陆时，要将玩家加入在线玩家列表OnlinePlayer，如果玩家没有登陆，就不会加入在线玩家列表
 		Context.getOnlinPlayer().addPlayer(player);
@@ -70,8 +72,20 @@ public class Login {
 		//将登陆的玩家的session的channel更新
 		Session pSession = player.getSession();
 		pSession.setChannel(session.getChannel());
-		//pSession.sendMessage("登陆成功");
-	    
+			    
+	}
+	
+	/**
+	 * 判断是否选了职业
+	 * @param player
+	 * @return
+	 */
+	private boolean hasProfession(Player player) {
+		if(!player.haveProf()) {
+			player.getSession().sendMessage("请先选择职业，再登陆");
+			return false;
+		}
+		return true;
 	}
 	
 	/**

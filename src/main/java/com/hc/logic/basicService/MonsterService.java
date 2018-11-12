@@ -5,6 +5,7 @@ import org.springframework.stereotype.Component;
 import com.hc.frame.Context;
 import com.hc.logic.base.Session;
 import com.hc.logic.config.MonstConfig;
+import com.hc.logic.creature.Monster;
 
 @Component
 public class MonsterService {
@@ -13,7 +14,12 @@ public class MonsterService {
 	 * 当前怪物的详细信息
 	 */
 	public void mDescribe(Session session, int mId) {
-		MonstConfig mc = Context.getSceneParse().getMonsters().getMonstConfgById(mId);
+		//MonstConfig mc = Context.getSceneParse().getMonsters().getMonstConfgById(mId);
+		Monster mc = session.getPlayer().getScene().getMonsteById(mId);
+		if(mc == null) {
+			session.sendMessage("该怪物不在当前场景");
+			return;
+		}
 		StringBuilder sb = new StringBuilder();
 		sb.append(mc.getDescription() + "\n");
 		sb.append("血量：");

@@ -34,8 +34,8 @@
 		<continue>7</continue>                                    <!-- 耐久度 -->
 		<mp>0</mp>
 		<hp>0</hp>
-		<protect>4</protect>
-		<attack>0</attack>
+		<protect>4,3,3,3</protect>
+		<attack>0,0,0,0</attack>
 		<superposition>1</superposition>
 		<price>6</price>
 	</good>
@@ -47,8 +47,8 @@
 		<continue>50</continue>
 		<mp>0</mp>
 		<hp>0</hp>
-		<protect>0</protect>
-		<attack>18</attack>
+		<protect>0,0,0,0</protect>
+		<attack>18,16,15,14</attack>
 		<superposition>1</superposition>
 		<price>20</price>
 	</good>
@@ -86,8 +86,8 @@
 		<continue>30</continue>
 		<mp>0</mp>
 		<hp>0</hp>
-		<protect>7</protect>
-		<attack>0</attack>
+		<protect>7,6,5,5</protect>
+		<attack>0,0,0,0</attack>
 		<superposition>1</superposition>
 		<price>35</price>
 	</good>
@@ -99,8 +99,8 @@
 		<continue>30</continue>
 		<mp>0</mp>
 		<hp>0</hp>
-		<protect>0</protect>
-		<attack>19</attack>
+		<protect>0,0,0,0</protect>
+		<attack>19,15,13,10</attack>
 		<superposition>1</superposition>
 		<price>37</price>
 	</good>

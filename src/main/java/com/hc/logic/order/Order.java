@@ -3,6 +3,7 @@ package com.hc.logic.order;
 import com.hc.frame.Context;
 import com.hc.frame.Scene;
 import com.hc.logic.base.Login;
+import com.hc.logic.base.Profession;
 import com.hc.logic.base.Register;
 import com.hc.logic.base.Session;
 import com.hc.logic.base.Teleport;
@@ -10,9 +11,9 @@ import com.hc.logic.basicService.EnterWorld;
 import com.hc.logic.basicService.MonsterService;
 import com.hc.logic.basicService.NpcService;
 import com.hc.logic.basicService.OrderVerifyService;
-import com.hc.logic.basicService.SkillService;
 import com.hc.logic.basicService.TransferService;
 import com.hc.logic.creature.Player;
+import com.hc.logic.skill.SkillService;
 
 import io.netty.channel.Channel;
 
@@ -34,7 +35,8 @@ public enum Order {
 			}
 			String playerName = args[1];
 			String password = args[2];
-			new Register(playerName, password).register(session);;
+			//new Register(playerName, password).register(session);;
+			Context.getRegister().register(session, playerName, password);
 		}
 	},
 	LOGIN("login", "登陆"){
@@ -129,12 +131,7 @@ public enum Order {
 	ATTACKM("attackM", "攻击怪物"){
 	    @Override
 	    public void doService(String[] args, Session session) {
-	    	if(!OrderVerifyService.twoInt(args)){
-				session.sendMessage("命令参数不正确");
-				return;
-			}
-	    	SkillService skillSer = Context.getSkillService();
-	    	skillSer.doAttack(session, Integer.parseInt(args[1]), Integer.parseInt(args[2]));
+	    	 Context.getSkillService().desOrder(session,args);
 	    }
 	},
 	PSTATE("pState", "玩家状态"){
@@ -330,6 +327,17 @@ public enum Order {
 			}
 			Context.getParty().desOrder(session, args);
 		}
+	},
+	JOB("job", "职业"){
+		@Override 
+		public void doService(String[] args, Session session) {
+			if(!OrderVerifyService.ontInt(args)) {
+				session.sendMessage("命令参数不正确");
+				return;
+			}
+			int index = Integer.parseInt(args[1]);
+			Context.getRegister().inChoiceProf(session, index);
+		}
 	};
 	
 	
@@ -353,7 +361,7 @@ public enum Order {
 		//这些可以用session存储状态来实现。
 		System.out.println("getService");
 		boolean isLoged = true;
-		if(!st[0].equals("login") && !st[0].equals("register")) {	
+		if(!st[0].equals("login") && !st[0].equals("register") && !st[0].equals("job")) {	
 		    Player pp = session.getPlayer();
 		    if(pp == null) {
 		    	session.sendMessage("请登陆");

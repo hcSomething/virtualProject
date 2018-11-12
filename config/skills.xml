@@ -7,32 +7,85 @@
 		<cd>5</cd>                                                <!-- 冷却时间 -->
 		<attack>5</attack>                                        <!-- 对对手造成的伤害 -->
 		<protect>0</protect>                                      <!-- 技能对自身有什么保护(待续)，0：没有 -->
+		<cure>0</cure>                                            <!-- 恢复生命值 -->
 		<mp>5</mp>                                                <!-- 消耗法力 -->
 		<continue>0</continue>                                    <!-- 技能持续时间 -->
+		<scope>1</scope>                                          <!-- 技能范围.0：所有，.. -->
 		<weapon>4</weapon>                                        <!-- 使用该技能需要的武器(物品id), 0表示不需要 -->
+    	<profession>0</profession>                               <!-- 10：所有人都可以学。0，1，2，3：战士，牧师，法师，召唤师。只能哪种职业的玩家学，其他职业学不了 -->
 	</skill>
 
 	<skill id="2">
 		<name>青云剑诀【2】</name>
 		<description>很厉害的内功，学会之后，前途不可限量</description>
-		<cd>20</cd>
+		<cd>15</cd>
 		<attack>20</attack>
 		<protect>0</protect>
+		<cure>0</cure> 
 		<mp>20</mp>
 		<continue>0</continue>
+		<scope>1</scope>
 		<weapon>4</weapon>
+		<profession>0</profession>              <!-- 0表示只有战士可以学 -->
 	</skill>
 
 	<skill id="3">
 		<name>护盾【3】</name>
 		<description>在一定时间内，减少伤害</description>
-		<cd>20</cd>
+		<cd>10</cd>
 		<attack>0</attack>
 		<protect>30</protect>
+		<cure>0</cure> 
 		<mp>10</mp>
 		<continue>10</continue>
+		<scope>1</scope>
 		<weapon>0</weapon>
+		<profession>10</profession>          <!-- 10表示所有职业都可以学 -->
 	</skill>
+	
+	<skill id="4">
+		<name>虚无烈焰【4】</name>
+		<description>利用法力产生无边的火海，对所有处于祸害中的敌人造成巨大伤害</description>
+		<cd>15</cd>
+		<attack>8</attack>
+		<protect>0</protect>
+		<cure>0</cure> 
+		<mp>20</mp>
+		<continue>10</continue>
+		<scope>0</scope>
+		<weapon>0</weapon>
+		<profession>2</profession>                <!-- 2表示只有法师可以学 -->
+	</skill>
+	
+	<skill id="5">
+		<name>圣光照耀【5】</name>
+		<description>只要处于圣光的照耀下，就会恢复生命值</description>
+		<cd>15</cd>
+		<attack>0</attack>
+		<protect>10</protect>
+		<cure>20</cure>                        <!-- 每秒恢复队友和自己的生命值，用于牧师 -->
+		<mp>20</mp>
+		<continue>3</continue>
+		<scope>0</scope>
+		<weapon>0</weapon>
+		<profession>1</profession>              <!-- 1表示只有牧师可以学 -->
+	</skill>
+	
+	<skill id="6">
+		<name>召唤术【6】</name>
+		<description>召唤师沟通阴阳，获得一只攻击敌人的强大boss</description>
+		<cd>15</cd>
+		<attack>0</attack>
+		<protect>10</protect>
+		<cure>0</cure>                        <!-- 每秒恢复队友和自己的生命值，用于牧师 -->
+		<summon>101</summon>                  <!-- 可以召唤的boss id -->
+		<mp>20</mp>
+		<continue>0</continue>
+		<scope>0</scope>
+		<weapon>0</weapon>
+		<profession>3</profession>              <!-- 1表示只有牧师可以学 -->
+	</skill>
+	
 	
 	
 	
@@ -76,7 +129,7 @@
 	   <name>眩晕【103】</name>
 	   <description>召唤来自地狱深处的业火，在一段时间内，持续造成伤害</description>
 	   <cd>30</cd>
-	   <attack>3</attack>
+	   <attack>0</attack>
 	   <protect>0</protect>
        <continue>0</continue>
 	   <scope>1</scope>  

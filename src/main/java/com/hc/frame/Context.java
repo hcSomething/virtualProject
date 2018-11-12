@@ -9,13 +9,13 @@ import org.springframework.context.ApplicationContextAware;
 import org.springframework.stereotype.Component;
 
 import com.hc.frame.taskSchedule.TaskProducer;
+import com.hc.logic.base.Register;
 import com.hc.logic.base.Session;
 import com.hc.logic.base.World;
 import com.hc.logic.basicService.AwardService;
 import com.hc.logic.basicService.GoodsService;
 import com.hc.logic.basicService.MonsterService;
 import com.hc.logic.basicService.NpcService;
-import com.hc.logic.basicService.SkillService;
 import com.hc.logic.basicService.TransferService;
 import com.hc.logic.chat.ChatService;
 import com.hc.logic.chat.EmailService;
@@ -25,6 +25,7 @@ import com.hc.logic.copys.CopyService;
 import com.hc.logic.copys.Party;
 import com.hc.logic.pk.PkService;
 import com.hc.logic.pk.TwoPlayerPk;
+import com.hc.logic.skill.SkillService;
 import com.hc.logic.xmlParser.CopysParse;
 import com.hc.logic.xmlParser.GoodsParse;
 import com.hc.logic.xmlParser.LevelParse;
@@ -109,6 +110,8 @@ public class Context implements ApplicationContextAware{
 	private static TwoPlayerPk twoPlayerPK;
 	//组队服务
 	private static Party party;
+	//注册
+	private static Register register;
 	
 	
 	//玩家id
@@ -332,13 +335,17 @@ public class Context implements ApplicationContextAware{
 		Context.party = party;
 	}
 
+	public static Register getRegister() {
+		return register;
+	}
+	@Autowired
+	public void setRegister(Register register) {
+		this.register = register;
+	}
 
 
 
-	
-	
-	
-	
+
 
 
 

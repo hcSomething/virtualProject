@@ -8,13 +8,13 @@ public class SkillConfig {
 	private int cd;  //冷却时间
 	private int attack;  //攻击力
 	private int protect;  //对自身的保护，比如能加防御，
+	private int cure;     //（牧师）专有，恢复生命值
 	private int mp;      //消耗的法力
 	private int weapon;   //需要的武器(物品id)
 	private int continueT;   //(秒)技能持续时间
 	private int dizziness;  //眩晕（秒），期间不能使用技能
-	
-	
-	//boss专用
+	private int profession; //能学此技能的职业。0，1，2，3：战士，牧师，法师，召唤师。10：所有职业都可以学
+	private int summonBoss;  //（召唤师）召唤的boss id
 	private int scope;  //能同时攻击多少玩家;0：无限；1：一个,。 。 。
 	
 	
@@ -58,6 +58,13 @@ public class SkillConfig {
 	public void setProtect(int protect) {
 		this.protect = protect;
 	}
+	
+	public int getCure() {
+		return cure;
+	}
+	public void setCure(int cure) {
+		this.cure = cure;
+	}
 	public int getMp() {
 		return mp;
 	}
@@ -87,6 +94,20 @@ public class SkillConfig {
 	}
 	public void setWeapon(int weapon) {
 		this.weapon = weapon;
+	}
+	
+	public int getProfession() {
+		return profession;
+	}
+	public void setProfession(int profession) {
+		this.profession = profession;
+	}
+	
+	public int getSummonBoss() {
+		return summonBoss;
+	}
+	public void setSummonBoss(int summonBoss) {
+		this.summonBoss = summonBoss;
 	}
 	@Override
 	public String toString() {

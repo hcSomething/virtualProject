@@ -11,17 +11,22 @@ import java.util.Set;
 
 import com.hc.frame.Context;
 import com.hc.frame.Scene;
+import com.hc.logic.base.Profession;
 import com.hc.logic.base.Session;
 import com.hc.logic.basicService.BagService;
 import com.hc.logic.basicService.GoodsService;
 import com.hc.logic.chat.Email;
 import com.hc.logic.config.LevelConfig;
+import com.hc.logic.config.SkillConfig;
 import com.hc.logic.copys.Copys;
 import com.hc.logic.dao.impl.UpdateTask;
 import com.hc.logic.domain.CopyEntity;
 import com.hc.logic.domain.Equip;
 import com.hc.logic.domain.GoodsEntity;
 import com.hc.logic.domain.PlayerEntity;
+import com.hc.logic.skill.SkillAttack;
+import com.hc.logic.skill.SkillAttackMonst;
+import com.hc.logic.skill.SkillAttackPlayer;
 
 /**
  * 玩家
@@ -42,6 +47,10 @@ public class Player extends LiveCreature{
 	private Map<Integer, Date> cdSkill = new HashMap<>();
 	//使用技能，有一段时间减少伤害。key:技能id，value：技能使用的时间；用来判断是否还有效
 	private Map<Integer, Date> reduceAtt = new HashMap<>();
+	//使用有持续攻击的技能。key：技能id， value：技能持续的终点
+	private SkillAttack skillAttack;
+	//使用有持续回血的技能。key：技能id，value：技能持续终点
+	private Map<Integer, Long> continueRecover = new HashMap<>();
 	
 	//玩家实体
 	private PlayerEntity playerEntity;
@@ -107,6 +116,7 @@ public class Player extends LiveCreature{
 		this.isAlive = true;
 		this.email = new Email(playerEntity.getEmails());
 	}
+
 	
 	/**
 	 * 玩家断线时，需要做的一些工作
@@ -125,10 +135,11 @@ public class Player extends LiveCreature{
 		
 		StringBuilder sb = new StringBuilder();
 		sb.append("是否还活着：" + isAlive + "\n");
+		sb.append("职业：" + getProf().getTitle() + "\n");
 		sb.append("等级：" + playerEntity.getLevel()+ "\n");
-		sb.append("经验：" + playerEntity.getExp() + "/" + lc.getExp() + "\n");
-		sb.append("血量: " + playerEntity.getHp() + "/" + lc.getHp() + "\n");
-		sb.append("剩余法力: " + playerEntity.getMp() + "/" + lc.getMp() + "\n");
+		sb.append("经验：" + playerEntity.getExp() + "/" + lc.getExpByProf(getProfIndex()) + "\n");
+		sb.append("血量: " + playerEntity.getHp() + "/" + lc.getHpByProf(getProfIndex()) + "\n");
+		sb.append("剩余法力: " + playerEntity.getMp() + "/" + lc.getMpByProf(getProfIndex()) + "\n");
 		sb.append("金币：" + playerEntity.getGold() + "\n");
 		sb.append("所在商店页面：" + getPageNumber());
 		session.sendMessage(sb.toString());
@@ -286,7 +297,9 @@ public class Player extends LiveCreature{
 		//this.mp = mp;
 		playerEntity.setMp(mp);
 	}
-	
+	public SkillAttack getSkillAttack() {
+		return skillAttack;
+	}
 	public int getGold() {
 		return playerEntity.getGold();
 	}
@@ -317,8 +330,8 @@ public class Player extends LiveCreature{
 	public void addHpMp(int shp, int smp) {
 		//验证是否超过最大法力
 		LevelConfig lc = Context.getLevelParse().getLevelConfigById(playerEntity.getLevel());
-		int mHp = lc.getHp();
-		int mMp = lc.getMp();
+		int mHp = lc.getHpByProf(getProfIndex());
+		int mMp = lc.getMpByProf(getProfIndex());
 		shp += playerEntity.getHp();
 		smp += playerEntity.getMp();
 		if(shp > mHp) shp = mHp;
@@ -337,9 +350,19 @@ public class Player extends LiveCreature{
 		//playerEntity.setMp(mp);
 	}
 
+	/**
+	 * 学习技能
+	 * @param sk 技能id
+	 * @return
+	 */
 	public boolean addSkill(int sk) {
-		if(Context.getSkillParse().getSkillConfigById(sk) == null) {
+		SkillConfig skillConfig = Context.getSkillParse().getSkillConfigById(sk);
+		if(skillConfig == null) {
 			session.sendMessage("技能不存在");
+			return false;
+		}
+		if(skillConfig.getProfession() != getProfIndex() && skillConfig.getProfession() != 10) {
+			session.sendMessage("当前职业学不会此技能");
 			return false;
 		}
 		skills.add(sk);
@@ -473,12 +496,85 @@ public class Player extends LiveCreature{
 
 	
 	/**
-	 * 添加减免伤害的技能
+	 * 添加减免伤害的技能, 对怪物用
 	 * @param skiId
+	 * @param monst 需要攻击的怪物
 	 */
-	public void addReduceAtt(int skiId) {
-		this.reduceAtt.put(skiId, new Date());
+	public void addContinueAtttib(int skiId, Monster monst) {
+		//System.out.println("------------player.addcontinueattib----" + skiId +", " + monst.toString());
+		SkillConfig sc = Context.getSkillParse().getSkillConfigById(skiId);
+		if(sc.getContinueT() == 0) return;
+		if(sc.getAttack() > 0) { //持续攻击
+			if(skillAttack ==null) this.skillAttack = new SkillAttackMonst();
+			this.skillAttack.addContiAttack(monst, skiId);
+		}
 	}
+	/**
+	 * 添加减免伤害的技能, 对玩家用
+	 * @param skiId
+	 * @param player 需要攻击的玩家
+	 */
+	public void addContinueAttib(int skiId, Player player) {
+		SkillConfig sc = Context.getSkillParse().getSkillConfigById(skiId);
+		if(sc.getContinueT() == 0) return;
+		if(sc.getAttack() > 0) { //持续攻击
+			if(skillAttack ==null) this.skillAttack = new SkillAttackPlayer();
+			this.skillAttack.addContiAttack(player, skiId);
+		}
+	}
+	/**
+	 * 添加恢复队友和自己血量的技能持续效果
+	 * 添加防御的技能的持续效果
+	 * @param skiId
+	 * @param sc
+	 */
+	public void addContinueRecov(int skiId) {
+		SkillConfig sc = Context.getSkillParse().getSkillConfigById(skiId);
+		long termi = System.currentTimeMillis() + sc.getContinueT() * 1000;
+		if(sc.getProtect() > 0) this.reduceAtt.put(skiId, new Date()); //持续防御
+		if(sc.getCure() > 0) {  //持续补血
+			if(playerEntity.getCopyEntity() != null && playerEntity.getCopyEntity().getPlayers() != null) {
+				for(PlayerEntity pe : playerEntity.getCopyEntity().getPlayers()) {
+					//只有活着的队友需要恢复生命值
+					Context.getOnlinPlayer().getPlayerById(pe.getId()).getContinueRecover().put(skiId, termi);
+				}
+			}else {
+				this.continueRecover.put(skiId, termi);
+			}			
+		}
+		//System.out.println("--------addRecover--------时间为" + System.currentTimeMillis() +", " + continueRecover.get(new Integer(skiId)));
+	}
+	
+	/**
+	 * 使用技能导致的回血
+	 * 在scene中被调用
+	 */
+	public void skillRecHp() {
+		List<Integer> delRevo = new ArrayList<>();
+		for(Entry<Integer, Long> rec : continueRecover.entrySet()) {
+			SkillConfig skic = Context.getSkillParse().getSkillConfigById(rec.getKey());
+			if(System.currentTimeMillis() < rec.getValue()) {
+				addHpMp(skic.getCure(), 0);
+			}else {
+				delRevo.add(rec.getKey());
+			}
+		}
+		deltimeoutRevo(delRevo);
+	}
+	private void deltimeoutRevo(List<Integer> timeouts) {
+		for(int i : timeouts) {
+			continueRecover.remove(new Integer(i));
+		}
+	}
+	/**
+	 * 技能持续进行攻击
+	 */
+	public void skillContiAttack() {
+		if(skillAttack != null) {
+			skillAttack.doContiAttack(this);
+		}
+	}
+	
 	/**
 	 * 计算所有技能带来的减伤效果
 	 * 并且删除过期了的技能
@@ -601,7 +697,7 @@ public class Player extends LiveCreature{
 	    	if(eq.getState() == 0) continue;  //0表示未穿着。则不加防御
 	    	int ii = eq.geteId();
 	    	//判断并减少防御性装备的耐久度, 也就是所有增加防御的装备都要减少耐久度
-	    	if(Context.getGoodsParse().getGoodsConfigById(ii).getProtect() > 0) {
+	    	if(Context.getGoodsParse().getGoodsConfigById(ii).getProtectByPfog(getProfIndex()) > 0) {
 		    	if(eq.getDuraion() < 1) {
 		    		continue;
 		    	}else {
@@ -625,7 +721,7 @@ public class Player extends LiveCreature{
 	    	Equip e = (Equip)ge;
 			if(e.getState() == 0) continue;
 			int ii = e.geteId();
-			eAtt += Context.getGoodsParse().getGoodsConfigById(ii).getAttack();
+			eAtt += Context.getGoodsParse().getGoodsConfigById(ii).getAttackByProf(getProfIndex());
 		}
 		return eAtt;
 	}
@@ -638,7 +734,7 @@ public class Player extends LiveCreature{
 	public int AllAttack(int skiId) {
 		int allAt = 0;
 		//等级对于攻击
-		allAt += Context.getLevelParse().getLevelConfigById(getLevel()).getlAttack();
+		allAt += Context.getLevelParse().getLevelConfigById(getLevel()).getAttackByProf(getProfIndex());
 		//技能对于攻击
 		allAt += Context.getSkillParse().getSkillConfigById(skiId).getAttack();
 		//所穿装备对于攻击
@@ -842,6 +938,10 @@ public class Player extends LiveCreature{
 		}
 		return false;
 	}
+	
+	public Map<Integer, Long> getContinueRecover() {
+		return continueRecover;
+	}
 	/**
 	 * 玩家同意组队
 	 * @param pname 同意组队的玩家的名字
@@ -879,8 +979,35 @@ public class Player extends LiveCreature{
 	public void setSponserNmae(String sponserNmae) {
 		this.sponserNmae = sponserNmae;
 	}
-
-
+	/**
+	 * 是否选了职业
+	 * @return
+	 */
+	public boolean haveProf() {
+		return !(playerEntity.getProfession() == -1);
+	}
+	/**
+	 * 得到职业对于的枚举对象
+	 * @return
+	 */
+	public Profession getProf() {
+		if(!haveProf()) return null;
+		return Profession.getProfByIndex(playerEntity.getProfession());
+	}
+	/**
+	 * 设置职业
+	 * @param index > -1
+	 */
+	public void setProf(int index) {
+		playerEntity.setProfession(index-1);
+	}
+	/**
+	 * 职业对应的位置
+	 * @return
+	 */
+	public int getProfIndex() {
+		return playerEntity.getProfession();
+	}
 	@Override
 	public boolean equals(Object o) {
 		if(this == o) return true;

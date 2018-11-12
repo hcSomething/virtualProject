@@ -33,6 +33,9 @@ public abstract class TaskConsume implements TaskManage{
 			if(taskId.length() > 4 && taskId.substring(0, 4).equals("boss")) {
 				Context.getWorld().getFutureMap().put(taskId, future);
 			}
+			if(taskId.length() > 6 && taskId.substring(0, 6).equals("summon")) {
+				Context.getWorld().getFutureMap().put(taskId, future);
+			}
 		}
 		execute();		
 	}

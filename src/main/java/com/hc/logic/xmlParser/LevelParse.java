@@ -52,14 +52,11 @@ public class LevelParse implements ParseXml{
 					Element child = (Element)sIt.next();
 					String nodeName = child.getName();
 					if(nodeName.equals("exp")) {
-						String sExp = child.getStringValue(); 
-						level.setExp(Integer.parseInt(sExp));
+						level.setExp(child.getStringValue());
 					}else if(nodeName.equals("hp")) {
-						String sHp = child.getStringValue(); 
-						level.setHp(Integer.parseInt(sHp));
+						level.setHp(child.getStringValue());
 					}else if(nodeName.equals("mp")) {
-						String sMp = child.getStringValue(); 
-						level.setMp(Integer.parseInt(sMp));
+						level.setMp(child.getStringValue());
 					}else if(nodeName.equals("uHp")) {
 						String sUhp = child.getStringValue(); 
 						level.setuHp(Integer.parseInt(sUhp));
@@ -67,12 +64,12 @@ public class LevelParse implements ParseXml{
 						String sUmp = child.getStringValue();
 						level.setuMp(Integer.parseInt(sUmp));
 					}else if(nodeName.equals("attack")) {
-						String sAtt = child.getStringValue();
-						level.setlAttack(Integer.parseInt(sAtt));
+						level.setlAttack(child.getStringValue());
 					}
 				}
 				
 				levelList.add(level);
+				level.convert();
 				level = null;
 				
 			}

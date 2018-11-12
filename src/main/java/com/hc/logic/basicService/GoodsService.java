@@ -33,12 +33,13 @@ public class GoodsService {
 	 * @param pe
 	 * @param gid 物品id
 	 */
-	public void delGoods(PlayerEntity pe, int gid) {
+	public GoodsEntity delGoods(PlayerEntity pe, int gid) {
 		for(GoodsEntity ge : pe.getGoods()) {
 			if(ge.geteId() == gid) {
-				if(delGood(ge, pe)) return;
+				if(delGood(ge, pe)) return ge;
 			}
 		}
+		return null;
 	}
 	
 	private boolean delGood(GoodsEntity goodsEntity, PlayerEntity playerEntity) {
@@ -124,5 +125,24 @@ public class GoodsService {
 		}
 		sb.append("- - - - - - - - - - - - -  - - - - - - - - - - - - - - - - - - - - - - - - - - - - -\n");
 		return sb.toString();
+	}
+	
+	/**
+	 * 判断是否有这个物品，数量是否够
+	 * @param gName: 物品id，或者是"gold"
+	 * @param amount
+	 * @return
+	 */
+	public boolean goodsEnough(PlayerEntity pe, String gName, int amount) {
+		if(!OrderVerifyService.isDigit(gName)) {
+			return pe.getGold() >= amount;
+		}
+		int gid = Context.getGoodsParse().getGoodsConfigById(Integer.parseInt(gName)).getId();
+		int numb = 0;
+		for(GoodsEntity ge : pe.getGoods()) {
+			if(ge.geteId() == gid)
+				numb++;
+		}
+		return numb >= amount;
 	}
 }

@@ -4,6 +4,7 @@ import org.springframework.stereotype.Component;
 
 import com.hc.frame.Context;
 import com.hc.logic.base.Session;
+import com.hc.logic.basicService.OrderVerifyService;
 import com.hc.logic.creature.Player;
 import com.hc.logic.dao.impl.PlayerDaoImpl;
 import com.hc.logic.dao.impl.UpdateTask;
@@ -29,7 +30,7 @@ public class EmailService {
 			session.sendMessage("请先进入邮箱系统");
 			return;
 		}else if(args.length == 2) {
-			if(!pisDigit(args[1])) {
+			if(!OrderVerifyService.isDigit(args[1])) {
 				session.sendMessage("参数类型错误，请重新输入");
 				return;
 			}
@@ -41,7 +42,7 @@ public class EmailService {
 			//查看邮件列表
 			lookEmails(session, Integer.parseInt(args[1]));
 		}else if(args.length == 3 ) {
-			if(!pisDigit(args[2])) {
+			if(!OrderVerifyService.isDigit(args[2])) {
 				session.sendMessage("参数类型错误，请重新输入");
 				return;
 			}

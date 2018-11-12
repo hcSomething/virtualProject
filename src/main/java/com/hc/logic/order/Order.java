@@ -86,6 +86,11 @@ public enum Order {
 			}
 			int targetId = Integer.parseInt(args[1]);
 			int sceneId = session.getPlayer().getSceneId();
+			if(session.getPlayer().getDeal() != null) {
+				session.sendMessage("交易结束");
+				Context.getDealService().stopDeal(session);
+				return;
+			}
 			Context.getTransferService().allTransfer(targetId, sceneId, session);	
 		} 
 	},
@@ -180,8 +185,11 @@ public enum Order {
 			}
 			int gId = Integer.parseInt(args[1]);
 			int amount = Integer.parseInt(args[2]);
-			boolean deleted = session.getPlayer().delGoods(gId, amount);
-			if(deleted) session.sendMessage("删除成功");
+			if(session.getPlayer().getDeal() != null) {
+				session.sendMessage("在交易中，不能删除物品");
+				return;
+			}
+			if(session.getPlayer().delGoods(gId, amount) != null) session.sendMessage("删除成功");
 			else session.sendMessage("删除失败，请检查是否有这么多物品");
 		}
 	},
@@ -190,6 +198,10 @@ public enum Order {
 		public void doService(String[] args, Session session) {
 			if(!OrderVerifyService.ontInt(args)) {
 				session.sendMessage("命令参数不正确");
+				return;
+			}
+			if(session.getPlayer().getDeal() != null) {
+				session.sendMessage("在交易中，不能穿着装备");
 				return;
 			}
 			session.getPlayer().addEquip(Integer.parseInt(args[1]));
@@ -259,6 +271,10 @@ public enum Order {
 		public void doService(String[] args, Session session) {
 			if(!OrderVerifyService.ontInt(args)) {
 				session.sendMessage("命令参数不正确");
+				return;
+			}
+			if(session.getPlayer().getDeal() != null) {
+				session.sendMessage("在交易中，不能购买物品");
 				return;
 			}
 			int page = Integer.parseInt(args[1]);
@@ -337,6 +353,12 @@ public enum Order {
 			}
 			int index = Integer.parseInt(args[1]);
 			Context.getRegister().inChoiceProf(session, index);
+		}
+	},
+	DEAL("deal", "面对面交易"){
+		@Override 
+		public void doService(String[] args, Session session) {
+			Context.getDealService().desOrder(session, args);
 		}
 	};
 	

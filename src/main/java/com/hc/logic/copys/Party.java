@@ -80,6 +80,10 @@ public class Party {
 	public void acceptParty(Session session, String[] args) {
 		String tName = args[2];
 		Player tPlayer = Context.getOnlinPlayer().getPlayerByName(tName);
+		if(tPlayer == null) {
+			session.sendMessage("目标玩家不在线，不能组队");
+			return;
+		}
 		if(!isSponser(session, tName)) {
 			return;
 		}

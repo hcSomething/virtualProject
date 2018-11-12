@@ -20,6 +20,7 @@ import com.hc.logic.config.LevelConfig;
 import com.hc.logic.config.SkillConfig;
 import com.hc.logic.copys.Copys;
 import com.hc.logic.dao.impl.UpdateTask;
+import com.hc.logic.deal.Deal;
 import com.hc.logic.domain.CopyEntity;
 import com.hc.logic.domain.Equip;
 import com.hc.logic.domain.GoodsEntity;
@@ -76,6 +77,10 @@ public class Player extends LiveCreature{
 	private Map<String, Boolean> teammate = new HashMap<>();
 	//组队的发起者名，只要在组队中，就不是null
 	private String sponserNmae;
+	//交易
+	private Deal deal;
+	
+	
 	
 	@Override
 	public void setDescribe() {
@@ -762,20 +767,34 @@ public class Player extends LiveCreature{
 		}
 		return true;
 	}
+	/**
+	 * 添加物品
+	 * @param ge
+	 * @return
+	 */
+	public boolean addGoods(GoodsEntity ge) {
+		Map<Integer, Integer> map = new HashMap<>();
+		map.put(ge.geteId(), 1);
+		boolean inserted = bagService.insertBag(map); //显示		
+		if(!inserted) return false;
+		playerEntity.getGoods().add(ge);
+		return true;
+	}
 
 	/**
 	 * 删除物品
 	 * @param gId
 	 * @param amount
 	 */
-	public boolean delGoods(int gId, int amount) {
+	public List<GoodsEntity> delGoods(int gId, int amount) {
+		List<GoodsEntity> dg = new ArrayList<>();
 		boolean hasDel = bagService.getGoods(gId, amount);
-		if(!hasDel) return false;
+		if(!hasDel) return dg;
 		GoodsService gs = Context.getGoodsService();
 		for(int i = 0; i < amount; i++) {
-			gs.delGoods(playerEntity, gId);
+			dg.add(gs.delGoods(playerEntity, gId));
 		}		
-		return true;		
+		return dg;		
 	}
 	
 	public BagService getBagService() {
@@ -791,7 +810,7 @@ public class Player extends LiveCreature{
 		int typeId = Context.getGoodsParse().getGoodsConfigById(gId).getTypeId();
 		if(typeId != 1) return false;
 		//验证此物品数量是否足够, 并且删除
-		if(!delGoods(gId, 1)) return false;
+		if(delGoods(gId, 1)  == null) return false;
 		this.recoverHpMp.put(gId, new Date());
 		return true;
 	}
@@ -1008,6 +1027,28 @@ public class Player extends LiveCreature{
 	public int getProfIndex() {
 		return playerEntity.getProfession();
 	}
+	/**
+	 * 初始化交易
+	 * @param tPlayer
+	 */
+	public void beginDeal(String tPlayer) {
+		this.deal = new Deal(tPlayer);
+	}
+	/**
+	 * 同意进行交易
+	 * @param deal
+	 */
+	public void accDeal(Deal deal) {
+		this.deal = deal;
+	}
+	public Deal getDeal() {
+		return deal;
+	}
+	public void stopDeal() {
+		this.deal = null;
+	}
+	
+	
 	@Override
 	public boolean equals(Object o) {
 		if(this == o) return true;

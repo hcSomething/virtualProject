@@ -49,7 +49,8 @@ public class LogOut implements Runnable{
 		
 		//若在缓存中没有，也就是数据库中没有，则插入一条数据到数据库，同时也在缓存中缓存一条数据
 		if(pe == null) {
-			System.out.println("logout，进行数据库插入");			
+			System.out.println("logout，进行数据库插入");	
+			if(cPE.getProfession() == -1) return;
 			new PlayerDaoImpl().insert(cPE);
 			Context.getWorld().addPlayerEntity(cPE);  //加入缓存
 		}else {

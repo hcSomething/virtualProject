@@ -23,6 +23,7 @@ import com.hc.logic.chat.WorldChat;
 import com.hc.logic.chat.WorldChatObservable;
 import com.hc.logic.copys.CopyService;
 import com.hc.logic.copys.Party;
+import com.hc.logic.deal.DealService;
 import com.hc.logic.pk.PkService;
 import com.hc.logic.pk.TwoPlayerPk;
 import com.hc.logic.skill.SkillService;
@@ -112,6 +113,8 @@ public class Context implements ApplicationContextAware{
 	private static Party party;
 	//×¢²á
 	private static Register register;
+	//½»Ò×
+	private static DealService dealService;
 	
 	
 	//Íæ¼Òid
@@ -340,11 +343,23 @@ public class Context implements ApplicationContextAware{
 	}
 	@Autowired
 	public void setRegister(Register register) {
-		this.register = register;
+		Context.register = register;
+	}
+
+	public static DealService getDealService() {
+		return dealService;
+	}
+	@Autowired
+	public void setDealService(DealService dealService) {
+		Context.dealService = dealService;
 	}
 
 
 
+	
+	
+	
+	
 
 
 

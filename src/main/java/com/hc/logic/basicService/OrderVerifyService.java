@@ -35,6 +35,7 @@ public class OrderVerifyService {
 		if(args.length < 3 || args.length > 3) return false;
 		if(!isDigit(args[1])) return false;
 		if(!isDigit(args[2])) return false;
+		if(!validInt(args[1]) && !validInt(args[2])) return false;
 		return true;
 	}
 	
@@ -46,6 +47,7 @@ public class OrderVerifyService {
 	public static boolean ontInt(String[] args) {
 		if(args.length < 2 || args.length > 2) return false;
 		if(!isDigit(args[1])) return false;
+		if(!validInt(args[1])) return false;
 		return true;
 	}
 
@@ -70,6 +72,7 @@ public class OrderVerifyService {
 				return false;
 			}
 		}
+		if(!validInt(s)) return false;
 		return true;
 	}
 	
@@ -80,6 +83,12 @@ public class OrderVerifyService {
 	 */
 	public static boolean threePara(String[] args) {
 		if(args.length < 3) return false;
+		return true;
+	}
+	
+	public static boolean validInt(String a) {
+		if(a.length() > 9)
+			return false;
 		return true;
 	}
 }

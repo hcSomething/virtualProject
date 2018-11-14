@@ -66,6 +66,10 @@ public class PlayerEntity{
 	@Transient
 	private boolean needDel=false;   //是否需要从数据库中删除对应的CopyEntity
 	
+	@Column
+	private String unionName;   //玩家所在工会的名字。
+	@Column
+	private int unionTitle = -1;  //所在工会的职位.title id: 1,2,
 
 	//技能id
 	@Column
@@ -80,7 +84,7 @@ public class PlayerEntity{
 	private List<EmailEntity> emails = new ArrayList<>();
 	//所有装备/武器，不包括已经穿戴的//orphanRemoval：在这个自段中删除Equip时，会在Equip表中删除相应的Equip
 
-	
+
 	
 	
 	//private boolean isChanged = false;
@@ -273,6 +277,20 @@ public class PlayerEntity{
 	}
 	public void setProfession(int profession) {
 		this.profession = profession;
+	}
+	
+	public String getUnionName() {
+		return unionName;
+	}
+	public void setUnionName(String unionName) {
+		this.unionName = unionName;
+	}
+	
+	public int getUnionTitle() {
+		return unionTitle;
+	}
+	public void setUnionTitle(int unionTitle) {
+		this.unionTitle = unionTitle;
 	}
 	@Override
 	public String toString() {

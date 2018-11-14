@@ -44,6 +44,17 @@ public class BagService {
 	}
 	
 	/**
+	 * 用作工会仓库。每个工会一个
+	 * @param gid2amount： key：物品的物品 id，value：数量
+	 * @param size： 仓库大小
+	 */
+	public BagService(Map<Integer, Integer> gid2amount, int size) {
+		this.size = size;
+		this.bags = new HashMap[size];
+		insertBag(gid2amount);
+	}
+	
+	/**
 	 * 返回客户端背包状态
 	 * @param session
 	 */
@@ -64,6 +75,17 @@ public class BagService {
 		//getGoods(1, 7);
 		//System.out.println("***************************88888*************");
 		//test(bags);
+	}
+	
+	public String bagGoodsdis() {
+		StringBuilder sb = new StringBuilder();
+		for(int i = 0; i < bags.length; i++) {
+			if(bags[i] == null) break;  //当某个格子为null，则后面的格子都应该为null
+			int goodId = bags[i].keySet().iterator().next();
+			String name = Context.getGoodsParse().getGoodsConfigById(goodId).getName();
+			sb.append(name + ", 数量：" + bags[i].get(goodId) + "\n");
+		}
+		return sb.toString();
 	}
 	
 	

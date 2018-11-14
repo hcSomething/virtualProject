@@ -28,6 +28,7 @@ import com.hc.logic.domain.PlayerEntity;
 import com.hc.logic.skill.SkillAttack;
 import com.hc.logic.skill.SkillAttackMonst;
 import com.hc.logic.skill.SkillAttackPlayer;
+import com.hc.logic.union.Union;
 
 /**
  * 玩家
@@ -785,9 +786,19 @@ public class Player extends LiveCreature{
 	 * 删除物品
 	 * @param gId
 	 * @param amount
+	 * @return: 要删掉的值
 	 */
 	public List<GoodsEntity> delGoods(int gId, int amount) {
 		List<GoodsEntity> dg = new ArrayList<>();
+		int remail = 0;
+		for(GoodsEntity ge : playerEntity.getGoods()) {
+			if(ge.geteId() == gId) {
+				remail++;
+			}
+		}
+		if(remail < amount) {
+			return dg;
+		}
 		boolean hasDel = bagService.getGoods(gId, amount);
 		if(!hasDel) return dg;
 		GoodsService gs = Context.getGoodsService();
@@ -795,6 +806,25 @@ public class Player extends LiveCreature{
 			dg.add(gs.delGoods(playerEntity, gId));
 		}		
 		return dg;		
+	}
+	
+	/**
+	 * 验证是否有这么多物品
+	 * @param gId
+	 * @param amount
+	 * @return
+	 */
+	public boolean hasEnoughGoods(int gId, int amount) {
+		int remail = 0;
+		for(GoodsEntity ge : playerEntity.getGoods()) {
+			if(ge.geteId() == gId) {
+				remail++;
+			}
+		}
+		if(remail < amount) {
+			return false;
+		}
+		return true;
 	}
 	
 	public BagService getBagService() {
@@ -1047,8 +1077,42 @@ public class Player extends LiveCreature{
 	public void stopDeal() {
 		this.deal = null;
 	}
-	
-	
+	/**
+	 * 获得玩家所在的工会名
+	 * 若工会已经被解散，则设置玩家所在工会为null，也就是没有加入工会
+	 * @return
+	 */
+	public String getUnionName() {
+		String uname = playerEntity.getUnionName();
+		if(Context.getWorld().getUnionEntityByName(uname) == null) {
+			playerEntity.setUnionName(null);
+		}
+		return playerEntity.getUnionName();
+	}
+	/**
+	 * 加入工会
+	 * @param name
+	 */
+	public void enterUnion(String name, int tit) {
+		playerEntity.setUnionName(name);
+		playerEntity.setUnionTitle(tit);
+	}
+	public Union getUnion() {
+		String uname = getUnionName();
+		if(uname == null) return null;
+		return Context.getWorld().getUnionEntityByName(uname).getUnion();
+	}
+	public void delUnion() {
+		playerEntity.setUnionName(null);
+		playerEntity.setUnionTitle(-1);
+	}
+	/**
+	 * 获得自己在工会中的职位
+	 * @return
+	 */
+	public int getUnionTitle() {
+		return playerEntity.getUnionTitle();
+	}
 	@Override
 	public boolean equals(Object o) {
 		if(this == o) return true;

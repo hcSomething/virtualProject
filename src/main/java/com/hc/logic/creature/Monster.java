@@ -12,6 +12,7 @@ public class Monster extends LiveCreature{
 	private int Hp;  //怪物血量
 	private int attack; //攻击力
 	private boolean isAlive = true; //初始时，默认是活的
+	private Lock lock = new ReentrantLock();
 	
 	MonstConfig monstConfig;	
 	
@@ -45,7 +46,6 @@ public class Monster extends LiveCreature{
 	 * @return
 	 */
 	public int attack(int attack) {
-		Lock lock = new ReentrantLock();
 		lock.lock();
 		try {
 			int diff = Hp - attack;

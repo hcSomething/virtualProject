@@ -6,6 +6,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Future;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 import javax.annotation.PostConstruct;
 
@@ -33,6 +35,7 @@ import com.hc.logic.domain.CopyEntity;
 import com.hc.logic.domain.Equip;
 import com.hc.logic.domain.GoodsEntity;
 import com.hc.logic.domain.PlayerEntity;
+import com.hc.logic.domain.UnionEntity;
 import com.hc.logic.xmlParser.MonstParse;
 import com.hc.logic.xmlParser.NpcParse;
 import com.hc.logic.xmlParser.SceneParse;
@@ -59,6 +62,10 @@ public class World implements ApplicationContextAware{
 	private ConcurrentHashMap<String, Future> futureMap = new ConcurrentHashMap<>();
 	//所有副本实体
 	private List<CopyEntity> copyEntitys = new ArrayList<>();
+	//所有工会实体
+	private List<UnionEntity> unionEntitys = new ArrayList<>();
+	
+	private Lock lock = new ReentrantLock();
 	
 	ApplicationContext context;
 	
@@ -79,6 +86,9 @@ public class World implements ApplicationContextAware{
 		//System.out.println("这里是world的init方法");
 		String hql = "from PlayerEntity";
 		allPlayerEntity = new PlayerDaoImpl().find(hql);
+		
+		String hql1 = "from UnionEntity";
+		unionEntitys = new PlayerDaoImpl().find(hql1);
 		
 		//从数据库中加载玩家数据后，设置最大id
 		int maxId = getMaxId();
@@ -405,6 +415,61 @@ public class World implements ApplicationContextAware{
 		}
 		return null;
 	}
+	
+	/**
+	 * 根据公会名获得工会实体
+	 * @param name
+	 * @return
+	 */
+	public UnionEntity getUnionEntityByName(String name) {
+		lock.lock();
+		try {
+			for(UnionEntity ue : unionEntitys) {
+				if(ue.getName().equals(name)) {
+					return ue;
+				}
+			}
+			return null;
+		}finally {
+			lock.unlock();
+		}
+	}
+	public List<UnionEntity> getUnionEntity(){
+		return unionEntitys;
+	}
+	/**
+	 * 创建工会
+	 * @param uname
+	 * @param pname
+	 * @return
+	 */
+	public boolean createUnion(String uname, String pname) {
+		lock.lock();
+		try {
+			if(getUnionEntityByName(uname) != null) {
+				return false;
+			}
+			UnionEntity ue = new UnionEntity(uname, pname);
+			unionEntitys.add(ue);
+			new PlayerDaoImpl().insert(ue);  //插入数据库
+			return true;
+		}finally {
+			lock.unlock();
+		}
+	}
+	/**
+	 * 通过工会名，解散union
+	 * @param name
+	 */
+	public void delUnionEntity(String name) {
+		for(UnionEntity ue : unionEntitys) {
+			if(ue.getName().equals(name)) {
+				unionEntitys.remove(ue);
+				return;
+			}
+		}
+	}
+	
 	
 	
 }

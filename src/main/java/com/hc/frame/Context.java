@@ -27,11 +27,14 @@ import com.hc.logic.deal.DealService;
 import com.hc.logic.pk.PkService;
 import com.hc.logic.pk.TwoPlayerPk;
 import com.hc.logic.skill.SkillService;
+import com.hc.logic.union.UnionService;
 import com.hc.logic.xmlParser.CopysParse;
 import com.hc.logic.xmlParser.GoodsParse;
 import com.hc.logic.xmlParser.LevelParse;
 import com.hc.logic.xmlParser.SceneParse;
 import com.hc.logic.xmlParser.SkillParse;
+import com.hc.logic.xmlParser.TitlParse;
+import com.hc.logic.xmlParser.UnionParse;
 import com.hc.login.store.Store;
 import com.hc.login.store.StoreService;
 
@@ -64,6 +67,8 @@ public class Context implements ApplicationContextAware{
     private static LevelParse levelParse;   //等级
     private static GoodsParse goodsParse;   //物品，包括丹药和装备
     private static CopysParse copysParse;   //副本
+    private static UnionParse unionParse;   //工会
+    private static TitlParse  titlParse;    //工会职位
 	
 	//*************************************************
 
@@ -115,6 +120,9 @@ public class Context implements ApplicationContextAware{
 	private static Register register;
 	//交易
 	private static DealService dealService;
+	//工会
+	private static UnionService unionService;
+	
 	
 	
 	//玩家id
@@ -354,10 +362,32 @@ public class Context implements ApplicationContextAware{
 		Context.dealService = dealService;
 	}
 
+	public static UnionParse getUnionParse() {
+		return unionParse;
+	}
+	@Autowired
+	public void setUnionParse(UnionParse unionParse) {
+		Context.unionParse = unionParse;
+	}
+
+	public static TitlParse getTitlParse() {
+		return titlParse;
+	}
+	@Autowired
+	public void setTitlParse(TitlParse titlParse) {
+		Context.titlParse = titlParse;
+	}
+
+	public static UnionService getUnionService() {
+		return unionService;
+	}
+	@Autowired
+	public void setUnionService(UnionService unionService) {
+		Context.unionService = unionService;
+	}
 
 
-	
-	
+
 	
 	
 

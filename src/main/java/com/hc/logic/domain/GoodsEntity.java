@@ -1,13 +1,9 @@
 package com.hc.logic.domain;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import javax.persistence.Column;
 import javax.persistence.DiscriminatorColumn;
 import javax.persistence.DiscriminatorType;
 import javax.persistence.DiscriminatorValue;
-import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -43,6 +39,9 @@ public class GoodsEntity {
 	@ManyToOne
 	private PlayerEntity playerEntity;
 	
+	@ManyToOne
+	private UnionEntity unionEntity;
+	
 	
 	
 	
@@ -56,9 +55,10 @@ public class GoodsEntity {
 	 * @param goo  物品
 	 * @param pe   玩家实体
 	 */
-	public GoodsEntity(int gId, PlayerEntity pe) {
+	public GoodsEntity(int gId, PlayerEntity pe, UnionEntity ue) {
 		this.eId = gId;
 		this.playerEntity = pe;
+		this.unionEntity = ue;
 	}
 	
 	
@@ -81,6 +81,13 @@ public class GoodsEntity {
 	}
 	public void setPlayerEntity(PlayerEntity playerEntity) {
 		this.playerEntity = playerEntity;
+	}
+	
+	public UnionEntity getUnionEntity() {
+		return unionEntity;
+	}
+	public void setUnionEntity(UnionEntity unionEntity) {
+		this.unionEntity = unionEntity;
 	}
 	@Override
 	public String toString() {

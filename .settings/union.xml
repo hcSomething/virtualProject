@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<unions>
+   <union id="1">                          <!-- id也是等级 -->
+      <name>黄阶</name>
+      <exp>1000</exp>                      <!-- 升级经验 -->
+      <num>30</num>                        <!-- 此阶段，工会的人数限制 -->
+      <sign>5</sign>                       <!-- 每日签到为工会贡献的经验 -->
+      <warehouse>200</warehouse>           <!-- 工会仓库的容量 -->
+      <group>10</group>                    <!-- 组队刷副本，可贡献的经验 -->
+   </union>
+   
+   <union id="2">                        
+      <name>玄阶</name>
+      <exp>3500</exp>                   
+      <num>36</num>                       
+      <sign>7</sign>                 
+      <warehouse>300</warehouse>           
+      <group>15</group>                  
+   </union>
+   
+   <union id="3">               
+      <name>地阶</name>
+      <exp>6000</exp>                   
+      <num>40</num>                       
+      <sign>10</sign>                 
+      <warehouse>410</warehouse>          
+      <group>15/group>                    
+   </union>
+   
+   <union id="4">                        
+      <name>黄阶</name>
+      <exp>10000</exp>                
+      <num>50</num>                   
+      <sign>14</sign>                     
+      <warehouse>550</warehouse>         
+      <group>20</group>                    
+   </union>
+   
+   
+</unions>

@@ -6,6 +6,7 @@ import com.hc.frame.Context;
 import com.hc.logic.domain.Equip;
 import com.hc.logic.domain.GoodsEntity;
 import com.hc.logic.domain.PlayerEntity;
+import com.hc.logic.domain.UnionEntity;
 
 @Component
 public class GoodsService {
@@ -21,9 +22,9 @@ public class GoodsService {
 		
 		GoodsEntity ge = null;
 		if(tID != 2 && tID != 3) { //添加物品
-			ge = new GoodsEntity(gid, pe);		
+			ge = new GoodsEntity(gid, pe, null);		
 		}else {//添加装备
-			ge = new Equip(gid, cont, pe);
+			ge = new Equip(gid, cont, pe, null);
 		}
 		pe.getGoods().add(ge);
 	}
@@ -145,4 +146,22 @@ public class GoodsService {
 		}
 		return numb >= amount;
 	}
+	
+	/**
+	 * 交换物品
+	 * @param ge
+	 */
+	public GoodsEntity changeGoods(GoodsEntity ge) {
+		GoodsEntity res = null;
+		if(ge instanceof Equip){
+			Equip eq = (Equip)ge;
+			res = new Equip(eq.geteId(), eq.getDuraion(), null, null);
+			return res;
+		}
+		res = new GoodsEntity(ge.geteId(), null, null);
+		return res;
+	}
+	
+	
+	
 }

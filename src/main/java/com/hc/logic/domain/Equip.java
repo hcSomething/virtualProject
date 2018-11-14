@@ -26,8 +26,8 @@ public class Equip extends GoodsEntity{
 	 * @param eId 物品id
 	 * @param dr  耐久度
 	 */
-	public Equip(int eId, int dr, PlayerEntity pe) {
-		super(eId, pe);
+	public Equip(int eId, int dr, PlayerEntity pe, UnionEntity ue) {
+		super(eId, pe, ue);
 	    this.duraion = dr;
 	    this.state = 0;  //新加的物品默认放在背包
 	}

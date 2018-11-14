@@ -24,7 +24,8 @@ public class Deal {
 	private boolean spAccep;
 	private Lock lock = new ReentrantLock();
 	//需要交换的物品
-	private List<GoodsEntity> exchange;
+	private List<GoodsEntity> exchange = new ArrayList<>();
+	private List<GoodsEntity> aexchange = new ArrayList<>();
 
 	public Deal(String p) {
 		this.tpName = p;
@@ -54,10 +55,18 @@ public class Deal {
 		try {
 			Player tPlayer = Context.getOnlinPlayer().getPlayerByName(tpName);
 			Player sPlayer = Context.getOnlinPlayer().getPlayerByName(spName);
+			//playerDelGoods(tPlayer, tpDeal, exchange);
+			//playerAddGoods(tPlayer, spDeal);
+			//playerAddGoods(sPlayer, tpDeal, exchange);
+			//playerDelGoods(sPlayer, spDeal, exchange);
 			playerDelGoods(tPlayer, tpDeal, exchange);
-			playerAddGoods(tPlayer, spDeal);
+			playerDelGoods(sPlayer, spDeal, aexchange);
+			System.out.println("---------前--exchange---" + exchange.size());
+			System.out.println("-----------前---" + aexchange.size());
+			playerAddGoods(tPlayer, spDeal, aexchange);
 			playerAddGoods(sPlayer, tpDeal, exchange);
-			playerDelGoods(sPlayer, spDeal, exchange);
+			System.out.println("----------后--exchange--" + exchange.size());
+			System.out.println("--------------" + aexchange.size());
 			notHopeDeal(tpName);
 		}finally{
 			lock.unlock();
@@ -74,11 +83,15 @@ public class Deal {
 			if(!OrderVerifyService.isDigit(ent.getKey())) { //金币
 				player.minusGold(ent.getValue());
 			}else {  //物品
+				//this.exchange = new ArrayList<>();
 			    int gid = Integer.parseInt(ent.getKey());
-			    this.exchange = new ArrayList<>(player.delGoods(gid, ent.getValue()));
+			    List<GoodsEntity> glist = player.delGoods(gid, ent.getValue());
+			    for(GoodsEntity ge : glist) {  //交换物品(玩家和工会之间)
+					GoodsEntity nge = Context.getGoodsService().changeGoods(ge);
+					changex.add(nge);
+				}
 			}
 		}
-		if(exchange != null) System.out.println("-----------exchange.tostrp----" + exchange.toString());
 	}
 	/**
 	 * 获得交换的物品
@@ -86,15 +99,16 @@ public class Deal {
 	 * @param goods  获得的物品
 	 * @param changex  如果获得的是物品，则再这里面，否则这个为null
 	 */
-	private void playerAddGoods(Player player, Map<String, Integer> goods, List<GoodsEntity> exchanges) {
-		if(exchange == null) {
+	private void playerAddGoods(Player player, Map<String, Integer> goods, List<GoodsEntity> changes) {
+		if(changes.size() == 0) {
 			player.addGold(goods.get("gold"));
 			return;
 		}
-		for(GoodsEntity ge : exchanges) {
+		for(GoodsEntity ge : changes) {
+			ge.setPlayerEntity(player.getPlayerEntity());
 			player.addGoods(ge);
 		}
-		exchange = null;
+		changes = null;
 	}
 	private void playerAddGoods(Player player, Map<String, Integer> goods) {
 		for(Entry<String, Integer> ent : goods.entrySet()) {

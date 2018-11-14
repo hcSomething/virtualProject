@@ -360,6 +360,12 @@ public enum Order {
 		public void doService(String[] args, Session session) {
 			Context.getDealService().desOrder(session, args);
 		}
+	},
+	UNION("union", "¹¤»á"){
+		@Override 
+		public void doService(String[] args, Session session) {
+			Context.getUnionService().desOrder(session, args);
+		}
 	};
 	
 	

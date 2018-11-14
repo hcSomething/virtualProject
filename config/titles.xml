@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<titles>
+   <title id="1">
+      <name>普通会员【1】</name>
+      <allow>0</allow>           <!-- 是否有处理加入申请的权限。0：没有；1：有 -->
+      <promotion>0</promotion>   <!-- 是否有提升下级职位的权限。0：没有；1：有 -->
+      <donate>20</donate>        <!-- 捐献物品到工会，获得的经验 -->
+      <exp>600</exp>             <!-- 在工会中的职位提升需要的经验 -->
+      <acquire>2</acquire>       <!-- 可从工会仓库中得到的物品数 -->
+   </title>
+   
+   <title id="2">
+      <name>精英会员【2】</name>
+      <allow>0</allow>           
+      <promotion>0</promotion>  
+      <donate>25</donate>       
+      <exp>1400</exp>   
+      <acquire>4</acquire>          
+   </title>
+   
+   <title id="3">
+      <name>副会长【3】</name>
+      <allow>1</allow>           
+      <promotion>1</promotion>  
+      <donate>30</donate>       
+      <exp>2000</exp>   
+      <acquire>5</acquire>          
+   </title>
+   
+   <title id="4">
+      <name>会长【4】</name>
+      <allow>1</allow>           
+      <promotion>1</promotion>  
+      <donate>40</donate>       
+      <exp>20000</exp>   
+      <acquire>6</acquire>          
+   </title>
+   
+   
+   
+</titles>

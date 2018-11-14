@@ -27,5 +27,6 @@
 		<mapping class="com.hc.logic.domain.Equip" />
 		<mapping class="com.hc.logic.domain.CopyEntity" />
 		<mapping class="com.hc.logic.domain.EmailEntity" />
+		<mapping class="com.hc.logic.domain.UnionEntity" />
 	</session-factory>
 </hibernate-configuration>

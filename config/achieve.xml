@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<achieves>
+   <achieve id="1">
+      <name>初露锋芒</name>
+      <desc>击杀树妖5只，达成此成就</desc>
+      <charac>atm2_5</charac>
+   </achieve>
+</achieves>

@@ -169,8 +169,9 @@ public class Scene extends TaskConsume{
 				if(attackP.isEmpty()) {
 					//attackPlayers.remove(mId);
 					monsIds.add(mId);
+					break;
 				}
-				break;
+				
 			}
 		}
 		//当玩家传送后，清空技能的持续效果

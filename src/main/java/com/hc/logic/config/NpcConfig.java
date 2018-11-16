@@ -8,6 +8,8 @@ public class NpcConfig  extends LiveCreature{
 	private String name;
 	private String description;
 	private String task;  //任务
+	private int receive;  //可以发放的任务id
+	private int checkout; //可以验证任务是否完成的任务id。即，可接收完成的任务id
 	
 	
 	
@@ -44,6 +46,18 @@ public class NpcConfig  extends LiveCreature{
 	}
 	
 	
+	public int getReceive() {
+		return receive;
+	}
+	public void setReceive(int receive) {
+		this.receive = receive;
+	}
+	public int getCheckout() {
+		return checkout;
+	}
+	public void setCheckout(int checkout) {
+		this.checkout = checkout;
+	}
 	@Override
 	public void setDescribe() {
 		this.describe = description;

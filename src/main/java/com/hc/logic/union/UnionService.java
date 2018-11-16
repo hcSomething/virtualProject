@@ -1,7 +1,6 @@
 package com.hc.logic.union;
 
 import java.util.List;
-import java.util.Set;
 
 import org.springframework.stereotype.Component;
 
@@ -9,7 +8,6 @@ import com.hc.frame.Context;
 import com.hc.logic.base.Session;
 import com.hc.logic.basicService.OrderVerifyService;
 import com.hc.logic.creature.Player;
-import com.hc.logic.domain.GoodsEntity;
 import com.hc.logic.domain.PlayerEntity;
 import com.hc.logic.domain.UnionEntity;
 

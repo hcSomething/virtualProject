@@ -94,22 +94,10 @@ public enum Order {
 			Context.getTransferService().allTransfer(targetId, sceneId, session);	
 		} 
 	},
-	NPCTALK("npcTalk", "和npc对话"){
+	NPCTALK("npc", "和npc对话"){
 		@Override
 		public void doService(String[] args, Session session) {
-			if(!OrderVerifyService.ontInt(args)){
-				session.sendMessage("命令参数不正确");
-				return;
-			}
-			NpcService npcS = Context.getNpcService();
-			int nId = Integer.parseInt(args[1]);
-			//验证npc是否在同一场景，当在副本中时也没有这个npc
-			if((session.getPlayer().getSceneId() == 0) || !npcS.isOnScene(session, nId)) {
-				session.sendMessage("没有这个npc");
-				return;
-			}
-			npcS.introduce(session, nId);
-			npcS.task(session, nId);
+			Context.getNpcService().desOrder(session, args);
 		}
 	},
 	DMONST("dMonst", "获得怪物详细信息"){
@@ -365,6 +353,18 @@ public enum Order {
 		@Override 
 		public void doService(String[] args, Session session) {
 			Context.getUnionService().desOrder(session, args);
+		}
+	},
+	ACHIEVE("achieve", "成就"){
+		@Override 
+		public void doService(String[] args, Session session) {
+			Context.getAchieveService().desOrder(session, args);
+		}
+	},
+	TASK("task", "任务"){
+		@Override 
+		public void doService(String[] args, Session session) {
+			Context.getTaskService().desOrder(session, args);
 		}
 	};
 	

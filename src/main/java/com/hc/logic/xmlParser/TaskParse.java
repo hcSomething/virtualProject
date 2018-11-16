@@ -12,40 +12,37 @@ import org.dom4j.Element;
 import org.dom4j.io.SAXReader;
 import org.springframework.stereotype.Component;
 
-import com.hc.logic.config.NpcConfig;
-
+import com.hc.logic.config.TaskConfig;
 
 @Component
-public class NpcParse implements ParseXml{
+public class TaskParse implements ParseXml{
 
-	private List<NpcConfig> npcList = null;
-	private NpcConfig npc = null;
+	private List<TaskConfig> tasksList = null;
+	private TaskConfig tasks = null;
 
-	public NpcParse() {
-		
-		File file = new File("config/npc.xml");
+	public TaskParse() {
+		File file = new File("config/tasks.xml");
 		parse(file);
 	}
 	
-
 	@Override
 	public void parse(File file) {
 		SAXReader reader = new SAXReader();
 		try {
 			Document document = reader.read(file);
-			Element npcs = document.getRootElement(); //获得<scenes>
-			Iterator sceneIt = npcs.elementIterator();
+			Element cop = document.getRootElement(); //获得<scenes>
+			Iterator sceneIt = cop.elementIterator();
 			
-			npcList = new ArrayList<>();
+			tasksList = new ArrayList<>();
 			while(sceneIt.hasNext()) {
-				npc = new NpcConfig();
+				tasks = new TaskConfig();
 				Element sceneElement = (Element)sceneIt.next(); //获得<scene>
 				List<Attribute> attributes = sceneElement.attributes();
 				//遍历<scene>标签的属性
 				for(Attribute attribute: attributes) {
 					if(attribute.getName().equals("id")) {
 						String id = attribute.getValue(); //获得scene id
-						npc.setNpcId(Integer.parseInt(id));
+						tasks.setId(Integer.parseInt(id));
 					}
 				}
 				
@@ -54,37 +51,36 @@ public class NpcParse implements ParseXml{
 					Element child = (Element)sIt.next();
 					String nodeName = child.getName();
 					if(nodeName.equals("name")) {
-						npc.setName(child.getStringValue());
-					}else if(nodeName.equals("description")) {
-						npc.setDescription(child.getStringValue());
-					}else if(nodeName.equals("task")) {
-						npc.setTask(child.getStringValue());
-					}else if(nodeName.equals("receive")) {
-						npc.setReceive(Integer.parseInt(child.getStringValue()));
-					}else if(nodeName.equals("checkout")) {
-						npc.setCheckout(Integer.parseInt(child.getStringValue()));
+						tasks.setName(child.getStringValue());
+					}else if(nodeName.equals("type")) {
+						tasks.setType(Integer.parseInt(child.getStringValue()));
+					}else if(nodeName.equals("need")) {
+						tasks.setNeed(child.getStringValue());
+					}else if(nodeName.equals("award")) {
+						tasks.setAward(child.getStringValue());
 					}
 				}
 				
-				npcList.add(npc);
-				npc = null;
+				tasksList.add(tasks);
+				tasks.convert();
 				
+				tasks = null;
 			}
 		}catch(DocumentException e) {
 			e.printStackTrace();
 		}
 
 	}
-	
+
 	/**
-	 * 通过npc的id获得npcConfig
-	 * @param id
+	 * 根据任务id获得相应的任务配置
+	 * @param tid
 	 * @return
 	 */
-	public NpcConfig getNpcConfigById(int id) {
-		for(NpcConfig nc : npcList) {
-			if(nc.getNpcId() == id) {
-				return nc;
+	public TaskConfig getTaskConfigByid(int tid) {
+		for(TaskConfig tc : tasksList) {
+			if(tc.getId() == tid) {
+				return tc;
 			}
 		}
 		return null;

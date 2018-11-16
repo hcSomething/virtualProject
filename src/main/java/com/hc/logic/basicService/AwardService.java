@@ -1,8 +1,10 @@
 package com.hc.logic.basicService;
 
+import java.util.Map;
+
 import org.springframework.stereotype.Component;
 
-import com.hc.logic.config.MonstConfig;
+import com.hc.frame.Context;
 import com.hc.logic.creature.Monster;
 import com.hc.logic.creature.Player;
 
@@ -23,5 +25,24 @@ public class AwardService {
 		//TODO 获得金币，武器等等（待续）
 		
 		
+	}
+	
+	/**
+	 * 获得奖励。格式：物品id：数量。
+	 *               0：数量。表示金币
+	 * @param player
+	 * @param award
+	 */
+	public void obtainAward(Player player, Map<Integer, Integer> award) {
+		for(Map.Entry<Integer, Integer> ent : award.entrySet()) {
+			if(ent.getKey() == 0) {
+				player.addGold(ent.getValue());
+				player.getSession().sendMessage("获得金币：" + ent.getValue() + " 个");
+			}else {
+				player.addGoods(ent.getKey(), ent.getValue());
+				String name = Context.getGoodsParse().getGoodsConfigById(ent.getKey()).getName();
+				player.getSession().sendMessage("获得" +name+": " + ent.getValue() + " 个");
+			}
+		}
 	}
 }

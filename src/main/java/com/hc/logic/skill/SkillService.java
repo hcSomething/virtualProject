@@ -6,6 +6,7 @@ import java.util.List;
 import org.springframework.stereotype.Component;
 
 import com.hc.frame.Context;
+import com.hc.logic.achieve.Achievement;
 import com.hc.logic.base.Session;
 import com.hc.logic.basicService.BroadcastService;
 import com.hc.logic.basicService.OrderVerifyService;
@@ -197,6 +198,8 @@ public class SkillService {
 			});
 			//击杀怪物/boss获得相应奖励
 			Context.getAwardService().obtainAward(player, monst);
+			//杀掉怪物就需要验证是否达成某成就
+			Achievement.getService(player, "KILLM", monst.getMonstId());
 			//需要广播给当前场景的所有玩家
 			String mesg = monst.getName() + "被玩家[" + player.getName() + "]击杀";
 			BroadcastService.broadInScene(session, mesg);

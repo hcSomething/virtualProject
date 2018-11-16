@@ -5,13 +5,25 @@
 		<name>老者【1】</name>
 		<description>老了，老了...</description>
 		<task>年轻人，要多出去闯一闯，外面的世界超乎你的想象，有兴趣去青云镇吗！-_-</task>
+		<receive>1</receive>       <!-- 这个npc负责发放的任务。格式：任务id. 0表示没有任务发放 -->
+		<checkout>0</checkout>     <!-- 这个npc负责验收的任务。格式：任务id。0表示没有任务验收 -->
 	</npc>
 
 	<npc id="2">
 		<name>青云道士【2】</name>
 		<description>我是隔壁青云山上的一个道士，我观你内有慧根，听过青云门吗 -)</description>
 		<task>学会这套青云剑诀【2】，就可以拜入青云了，有兴趣吗</task>
+		<receive>0</receive>
+		<checkout>1</checkout>
 	</npc>
-
+	
+	<npc id="3">
+	    <name>商店老板【3】</name>
+	    <description>我家世代经商，看我现在是不是很有前途啊</description>
+	    <task></task>
+	    <award></award>		
+	    <receive>0</receive>
+		<checkout>0</checkout>	    
+	</npc>
 
 </npcs>

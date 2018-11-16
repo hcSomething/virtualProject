@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<tasks>
+    <task id="1">
+        <type>1</type>           <!-- 任务的类型。1：击杀怪物 -->
+        <name>击杀两只树妖【1】</name>
+        <need>2:2</need>         <!-- 格式：怪物id：数量；。。。 -->
+        <award>0:5;1:2</award>/  <!-- 奖励格式：物品id：数量；其中0表示金币 -->
+    </task>
+    
+    <task id="2">
+        <type>2</type>       <!-- 2:采集类型的任务 -->
+        <name>采集树枝两个【2】</name>
+        <need>2:2</need>     <!-- 格式： 物品id:数量-->
+        <award>1:2;2:3</award>
+    </task>
+    
+    <task id="3">
+        <type>3</type>          <!-- 3:副本型的任务 -->
+        <name>通过副本坠魔谷【3】</name>  
+        <need>1</need>         <!-- 格式：副本id，。。。 -->
+        <award>0:15</award>
+    </task>
+
+</tasks>

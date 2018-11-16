@@ -84,7 +84,12 @@ public class PlayerEntity{
 	private List<EmailEntity> emails = new ArrayList<>();
 	//所有装备/武器，不包括已经穿戴的//orphanRemoval：在这个自段中删除Equip时，会在Equip表中删除相应的Equip
 
-
+	@OneToOne(fetch=FetchType.EAGER, cascade = CascadeType.ALL)
+	private AchieveEntity achieveEntity;
+	
+	@OneToOne(cascade = CascadeType.ALL)
+	private TaskEntity taskEntity;
+	
 	
 	
 	//private boolean isChanged = false;
@@ -103,6 +108,8 @@ public class PlayerEntity{
 		this.mp = mp;
 		this.exp = exp;
 		this.skills = skil;
+		this.achieveEntity = new AchieveEntity();
+		this.taskEntity = new TaskEntity(this);
 		//this.equips = new ArrayList<>(equips);  //已穿戴的装备
 		//this.goods = goods;
 		
@@ -185,6 +192,12 @@ public class PlayerEntity{
 
 	
 	
+	public TaskEntity getTaskEntity() {
+		return taskEntity;
+	}
+	public void setTaskEntity(TaskEntity taskEntity) {
+		this.taskEntity = taskEntity;
+	}
 	public String getSkills() {
 		return skills;
 	}
@@ -291,6 +304,13 @@ public class PlayerEntity{
 	}
 	public void setUnionTitle(int unionTitle) {
 		this.unionTitle = unionTitle;
+	}
+	
+	public AchieveEntity getAchieveEntity() {
+		return achieveEntity;
+	}
+	public void setAchieveEntity(AchieveEntity achieveEntity) {
+		this.achieveEntity = achieveEntity;
 	}
 	@Override
 	public String toString() {

@@ -11,6 +11,7 @@ import java.util.Set;
 
 import com.hc.frame.Context;
 import com.hc.frame.Scene;
+import com.hc.logic.achieve.PlayerTasks;
 import com.hc.logic.base.Profession;
 import com.hc.logic.base.Session;
 import com.hc.logic.basicService.BagService;
@@ -21,10 +22,12 @@ import com.hc.logic.config.SkillConfig;
 import com.hc.logic.copys.Copys;
 import com.hc.logic.dao.impl.UpdateTask;
 import com.hc.logic.deal.Deal;
+import com.hc.logic.domain.AchieveEntity;
 import com.hc.logic.domain.CopyEntity;
 import com.hc.logic.domain.Equip;
 import com.hc.logic.domain.GoodsEntity;
 import com.hc.logic.domain.PlayerEntity;
+import com.hc.logic.domain.TaskEntity;
 import com.hc.logic.skill.SkillAttack;
 import com.hc.logic.skill.SkillAttackMonst;
 import com.hc.logic.skill.SkillAttackPlayer;
@@ -79,8 +82,10 @@ public class Player extends LiveCreature{
 	//组队的发起者名，只要在组队中，就不是null
 	private String sponserNmae;
 	//交易
-	private Deal deal;
+	private Deal deal;	
 	
+	//玩家任务
+	private PlayerTasks playerTasks;
 	
 	
 	@Override
@@ -104,6 +109,7 @@ public class Player extends LiveCreature{
 		email = new Email(pe.getEmails());
 		if(playerEntity.getCopyEntity() != null)
 			this.sponserNmae = playerEntity.getCopyEntity().getSponsor();
+		this.playerTasks = new PlayerTasks(this);
 	}
 	//注册专用	
 	public Player(int id, int level, String name, String pass, int sceneId, int hp, int mp,
@@ -121,6 +127,7 @@ public class Player extends LiveCreature{
 		this.bagService = new BagService(this);
 		this.isAlive = true;
 		this.email = new Email(playerEntity.getEmails());
+		this.playerTasks = new PlayerTasks();
 	}
 
 	
@@ -1112,6 +1119,16 @@ public class Player extends LiveCreature{
 	 */
 	public int getUnionTitle() {
 		return playerEntity.getUnionTitle();
+	}
+	public AchieveEntity getAchieveEntity() {
+		return playerEntity.getAchieveEntity();
+	}
+	
+	public PlayerTasks getPlayerTasks() {
+		return playerTasks;
+	}
+	public TaskEntity getTaskEntity() {
+		return playerEntity.getTaskEntity();
 	}
 	@Override
 	public boolean equals(Object o) {

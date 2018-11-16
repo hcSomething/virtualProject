@@ -7,6 +7,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import com.hc.frame.Context;
+import com.hc.logic.achieve.Achievement;
 import com.hc.logic.basicService.BroadcastService;
 import com.hc.logic.creature.Monster;
 import com.hc.logic.creature.Player;
@@ -50,6 +51,8 @@ public class SkillAttackMonst implements SkillAttack{
 			}
 			if(attackSuccess == 1) {  //表示怪物被自己击杀
 				Context.getSkillService().doAttack(player.getSession(), m, 1);
+				//杀掉怪物就需要验证是否达成某成就
+				Achievement.getService(player, "KILLM", m.getMonstId());
 			}
 			if(attackSuccess == 0 && sumAttack > 0) {
 				String msg = m.getName() + "被玩家[" + player.getName() +"]的持续技能攻击，剩余血量为：" + m.getHp();

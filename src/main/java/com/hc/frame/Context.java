@@ -9,6 +9,8 @@ import org.springframework.context.ApplicationContextAware;
 import org.springframework.stereotype.Component;
 
 import com.hc.frame.taskSchedule.TaskProducer;
+import com.hc.logic.achieve.AchieveService;
+import com.hc.logic.achieve.TaskService;
 import com.hc.logic.base.Register;
 import com.hc.logic.base.Session;
 import com.hc.logic.base.World;
@@ -28,11 +30,13 @@ import com.hc.logic.pk.PkService;
 import com.hc.logic.pk.TwoPlayerPk;
 import com.hc.logic.skill.SkillService;
 import com.hc.logic.union.UnionService;
+import com.hc.logic.xmlParser.AchieveParse;
 import com.hc.logic.xmlParser.CopysParse;
 import com.hc.logic.xmlParser.GoodsParse;
 import com.hc.logic.xmlParser.LevelParse;
 import com.hc.logic.xmlParser.SceneParse;
 import com.hc.logic.xmlParser.SkillParse;
+import com.hc.logic.xmlParser.TaskParse;
 import com.hc.logic.xmlParser.TitlParse;
 import com.hc.logic.xmlParser.UnionParse;
 import com.hc.login.store.Store;
@@ -69,6 +73,8 @@ public class Context implements ApplicationContextAware{
     private static CopysParse copysParse;   //副本
     private static UnionParse unionParse;   //工会
     private static TitlParse  titlParse;    //工会职位
+    private static AchieveParse achieveParse;   //成就
+    private static TaskParse taskParse;   //任务
 	
 	//*************************************************
 
@@ -122,6 +128,10 @@ public class Context implements ApplicationContextAware{
 	private static DealService dealService;
 	//工会
 	private static UnionService unionService;
+	//成就
+	private static AchieveService achieveService;
+	//任务服务
+	private static TaskService taskService;
 	
 	
 	
@@ -386,10 +396,40 @@ public class Context implements ApplicationContextAware{
 		Context.unionService = unionService;
 	}
 
+	public static AchieveParse getAchieveParse() {
+		return achieveParse;
+	}
+	@Autowired
+	public void setAchieveParse(AchieveParse achieveParse) {
+		Context.achieveParse = achieveParse;
+	}
+
+	public static AchieveService getAchieveService() {
+		return achieveService;
+	}
+	@Autowired
+	public void setAchieveService(AchieveService achieveService) {
+		Context.achieveService = achieveService;
+	}
+
+	public static TaskParse getTaskParse() {
+		return taskParse;
+	}
+	@Autowired
+	public void setTaskParse(TaskParse taskParse) {
+		Context.taskParse = taskParse;
+	}
+
+	public static TaskService getTaskService() {
+		return taskService;
+	}
+	@Autowired
+	public void setTaskService(TaskService taskService) {
+		Context.taskService = taskService;
+	}
 
 
-	
-	
+
 
 
 

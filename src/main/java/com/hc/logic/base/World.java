@@ -49,7 +49,7 @@ import com.hc.logic.xmlParser.TelepParse;
 @DependsOn(value="sceneParse")
 @Component
 public class World implements ApplicationContextAware{
-  //
+  
 	//所有场景：（sceneId, scene），现在都是从配置文件中加载
 	private  Map<Integer, Scene> sceneResource = new HashMap<>();
 	//所有副本：(sceneId, (playerid, copys))。通过某个副本中的player的id可以唯一确定一个副本。
@@ -325,24 +325,8 @@ public class World implements ApplicationContextAware{
 		}
 		return null;
 	}
-	/**
-	 * 通过玩家id获得player
-	 * @param id
-	 * @return
-	 */
-	public Player getPlayerById(int id) {  
-		for(Player player : allRegisteredPlayer) {
-			if(player.getId() == id){
-				return player;
-			}
-		}
-		return null;
-	}
 	public void addAllRegisteredPlayer(Player player) {
 		this.allRegisteredPlayer.add(player);
-	}
-	public List<Player> getPlayers(){
-		return allRegisteredPlayer;
 	}
 
 	public void addPlayerEntity(PlayerEntity playerEntity) {
@@ -435,7 +419,12 @@ public class World implements ApplicationContextAware{
 		}
 	}
 	public List<UnionEntity> getUnionEntity(){
-		return unionEntitys;
+		lock.lock();
+		try {
+			return new ArrayList<>(unionEntitys);
+		}finally {
+			lock.unlock();
+		}
 	}
 	/**
 	 * 创建工会
@@ -462,11 +451,16 @@ public class World implements ApplicationContextAware{
 	 * @param name
 	 */
 	public void delUnionEntity(String name) {
-		for(UnionEntity ue : unionEntitys) {
-			if(ue.getName().equals(name)) {
-				unionEntitys.remove(ue);
-				return;
+		lock.lock();
+		try {
+			for(UnionEntity ue : unionEntitys) {
+				if(ue.getName().equals(name)) {
+					unionEntitys.remove(ue);
+					return;
+				}
 			}
+		}finally {
+			lock.unlock();
 		}
 	}
 	

@@ -96,7 +96,7 @@ public class CopyService {
 			return false;
 		}
 		if(player.getTeammate().size() > 0 && !player.goupComplete()) {
-			player.getSession().sendMessage("组队认数不够，不能进入副本！");
+			player.getSession().sendMessage("组队人数不够，不能进入副本！");
 			return false;
 		}
 		//创建副本

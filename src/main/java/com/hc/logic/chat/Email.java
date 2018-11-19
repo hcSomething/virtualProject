@@ -106,8 +106,8 @@ public class Email {
 	private String readNormalEmail(String[] content, int index) {
 		PlayerEntity tpe = Context.getWorld().getPlayerEntityByName(content[2]);
 		if(tpe == null) {
-			Player player = Context.getWorld().getPlayerByName(content[2]);
-			tpe = player.getPlayerEntity();
+			//Player player = Context.getWorld().getPlayerByName(content[2]);
+			tpe = Context.getWorld().getPlayerEntityByName(content[2]);
 		}
 		int pId = tpe.getId(); 
 		//int pId = Context.getWorld().getPlayerEntityByName(content[2]).getId();

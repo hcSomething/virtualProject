@@ -47,22 +47,18 @@ public class TransferService implements Teleport{
 	 */
 	@Override
 	public void transfer(Player player, int sId, int tId) {
-
+		if(player.getTeammate().size() != 0) {
+			player.getSession().sendMessage("组队中不能传送");
+			return;
+		}
 		Scene target = Context.getWorld().getSceneById(tId);
-		Scene source =  Context.getWorld().getSceneById(sId);
+		Scene source =  Context.getWorld().getSceneById(sId);		
+		//不再受原场景中的怪物攻击, 要在改变sceneId前
+		source.deleteAttackPlayer(player);
 		//在目标场景中加入玩家
 		target.addPlayer(player);
 		//也要在原场景中删除玩家
 		source.deletePlayer(player);
-		
-		//不再受原场景中的怪物攻击, 要在改变sceneId前
-		//player.getScene().deleteAttackPlayer(player);
-		player.getScene().addTask(new Runnable() {
-			public void run() {
-				source.deleteAttackPlayer(player);
-			}
-		});
-
 		
 		//重设玩家的sceneid字段。
 		player.setSceneId(tId);
@@ -86,11 +82,7 @@ public class TransferService implements Teleport{
 		Scene source =  Context.getWorld().getSceneById(sId);
 		
 		//source.deleteAttackPlayer(player);
-		source.addTask(new Runnable() {
-			public void run() {
-				source.deleteAttackPlayer(player);
-			}
-		});
+		source.deleteAttackPlayer(player);
 		source.deletePlayer(player);
 		
 		player.setSceneId(0);   //改变玩家sceneid
@@ -116,12 +108,7 @@ public class TransferService implements Teleport{
 	public void transferCopy(Player player, int sId) {
 		//获得进入副本前的场景id
 		int tId = Context.getCopysParse().getCopysConfById(sId).getPlace();
-		Scene target = Context.getWorld().getSceneById(tId);
-		//在目标场景中加入玩家
-		target.addPlayer(player);
-		
-		player.setSceneId(tId);
-		
+		Scene target = Context.getWorld().getSceneById(tId);		
 		
 		Copys copy = player.getCopys();
 		//无论是主动退出还是完成副本退出，都需要减少副本中的玩家
@@ -158,6 +145,10 @@ public class TransferService implements Teleport{
 		
 		player.setSponserNmae(null);  //清除组队状态
 		player.clearTeammate();
+		
+		//在目标场景中加入玩家
+		target.addPlayer(player);		
+		player.setSceneId(tId);
 		
 		System.out.println("-------------欢迎回到=---");
 		System.out.println("-----------" + player.getPlayerEntity().toString());

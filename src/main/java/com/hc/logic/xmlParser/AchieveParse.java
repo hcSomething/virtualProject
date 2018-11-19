@@ -55,8 +55,14 @@ public class AchieveParse implements ParseXml{
 						achieve.setName(child.getStringValue());
 					}else if(nodeName.equals("desc")) {
 						achieve.setDesc(child.getStringValue());
-					}else if(nodeName.equals("charac")) {
-						achieve.setCharac(child.getStringValue());
+					}else if(nodeName.equals("type")) {
+						achieve.setType(Integer.parseInt(child.getStringValue()));
+					}else if(nodeName.equals("dtype")) {
+						achieve.setDtype(Integer.parseInt(child.getStringValue()));
+					}else if(nodeName.equals("sid")) {
+						achieve.setSid(Integer.parseInt(child.getStringValue()));
+					}else if(nodeName.equals("num")) {
+						achieve.setNum(Integer.parseInt(child.getStringValue()));
 					}
 				}
 				
@@ -84,18 +90,18 @@ public class AchieveParse implements ParseXml{
 	}
 	
 	/**
-	 * 根据成就配置的charac字段获得相应的成就配置
-	 * 这个字段也是成就实体中的字段
+	 * 根据成就配置的类型获得所有相应的成就配置
 	 * @param charac
 	 * @return
 	 */
-	public AchieveConfig getAchieveConfigByCharac(String charac) {
+	public List<AchieveConfig> getAchieveConfigByType(int type) {
+		List<AchieveConfig> typeAchie = new ArrayList<>();
 		for(AchieveConfig ac : achieveList) {
-			if(ac.getCharac().equals(charac)) {
-				return ac;
+			if(ac.getType() == type) {
+				typeAchie.add(ac);
 			}
 		}
-		return null;
+		return typeAchie;
 	}
 
 

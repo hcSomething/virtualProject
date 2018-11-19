@@ -37,8 +37,8 @@ public class WorldChat {
 	 * 获得当前所有聊天记录
 	 * @return
 	 */
-	public Vector<String> getRecords(){
-		return records;
+	synchronized public Vector<String> getRecords(){
+		return new Vector<>(records);
 	}
 	
 }

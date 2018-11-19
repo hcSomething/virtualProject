@@ -3,11 +3,13 @@ package com.hc.logic.base;
 import java.util.Map;
 
 import com.hc.frame.Context;
+import com.hc.logic.achieve.PlayerAchieves;
 import com.hc.logic.achieve.PlayerTasks;
 import com.hc.logic.achieve.Task;
 import com.hc.logic.copys.Copys;
 import com.hc.logic.creature.Player;
 import com.hc.logic.dao.impl.PlayerDaoImpl;
+import com.hc.logic.domain.AchieveEntity;
 import com.hc.logic.domain.CopyEntity;
 import com.hc.logic.domain.PlayerEntity;
 import com.hc.logic.domain.TaskEntity;
@@ -48,6 +50,7 @@ public class LogOut implements Runnable{
 		manageCopy(player);
 		//更新任务实体
 		updateTaskEntity(player);
+		updateAchieveEntity(player);
 		
 		//若在缓存中没有，也就是数据库中没有，则插入一条数据到数据库，同时也在缓存中缓存一条数据
 		if(pe == null) {
@@ -93,6 +96,27 @@ public class LogOut implements Runnable{
 		}
 		if(sb.length() > 0) sb.deleteCharAt(sb.length() - 1);
 		te.setAwarded(sb.toString());
+	}
+	/**
+	 * 更新成就实体
+	 * @param player
+	 */
+	public void updateAchieveEntity(Player player) {
+		PlayerAchieves playerAchieve = player.getPlayerAchieves();
+		AchieveEntity achieveEntity = player.getAchieveEntity();
+		StringBuilder sb = new StringBuilder();
+		for(int id : playerAchieve.getAchieveCompletes()) {
+			sb.append(id + ",");
+		}
+		if(sb.length() > 0) sb.deleteCharAt(sb.length()-1);
+		achieveEntity.setCompleteAchieve(sb.toString());
+		
+		sb = new StringBuilder();
+		for(Map.Entry<Integer, Integer> ent : playerAchieve.getContinueAch().entrySet()) {
+			sb.append(ent.getKey() + ":" + ent.getValue() + ";");
+		}
+		if(sb.length() > 0) sb.deleteCharAt(sb.length()-1);
+		achieveEntity.setProgressAchieve(sb.toString());
 	}
 	
 	/**

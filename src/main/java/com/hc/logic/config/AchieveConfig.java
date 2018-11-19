@@ -5,7 +5,10 @@ public class AchieveConfig {
 	private int id;       
 	private String name;      //成就名
 	private String desc;      //成就描述
-	private String charac;    //这个值和成就实体中的字段相同
+	private int type;        //成就类型
+	private int dtype;       //子类型
+	private int sid;         //某种标识
+	private int num;         //某种数量
 	
 	
 	
@@ -28,17 +31,30 @@ public class AchieveConfig {
 	public void setDesc(String desc) {
 		this.desc = desc;
 	}
-	public String getCharac() {
-		return charac;
+	public int getType() {
+		return type;
 	}
-	public void setCharac(String charac) {
-		this.charac = charac;
+	public void setType(int type) {
+		this.type = type;
 	}
-	
-	@Override
-	public String toString() {
-		return "{name=" + name
-				+ ", charac=" + charac + "}";
+	public int getDtype() {
+		return dtype;
 	}
+	public void setDtype(int dtype) {
+		this.dtype = dtype;
+	}
+	public int getSid() {
+		return sid;
+	}
+	public void setSid(int sid) {
+		this.sid = sid;
+	}
+	public int getNum() {
+		return num;
+	}
+	public void setNum(int num) {
+		this.num = num;
+	}
+
 	
 }

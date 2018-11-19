@@ -157,7 +157,7 @@ public class BagService {
 	 * @param gid 需要调整的物品的id
 	 * @param pos 需要调整的物品的位置
 	 */
-	public void adjustBag( int gid, int pos) {
+	private void adjustBag( int gid, int pos) {
 		//消除空格子
 		remEmpty(pos);
 		//整理连续多个相同物品格子
@@ -213,7 +213,7 @@ public class BagService {
 	 * 消除空格子
 	 * @param pos 需要消除空格子的开始位置
 	 */
-	public void remEmpty(int pos) {
+	private void remEmpty(int pos) {
 		int isNull = -1;
 		for(int i = pos; i < bags.length; i++) {
 			if(bags[i] != null) break;
@@ -283,7 +283,7 @@ public class BagService {
 	 * @param pos 新加入需要排序的物品的放入的背包格子位置
 	 *        gid : 需要排序的物品id
 	 */
-	public void doSort(int gid, int pos) {
+	private void doSort(int gid, int pos) {
 		//System.out.println("doSort***gid: " + gid +" pos "+ pos );
 		int amount = bags[pos].get(gid);
 		int type = Context.getGoodsParse().getGoodsConfigById(gid).getTypeId(); //获得物品的类型id
@@ -306,7 +306,7 @@ public class BagService {
 	 * @param begin
 	 * @param end
 	 */
-	public void setBack(int end, int begin) {
+	private void setBack(int end, int begin) {
 		//System.out.println("begin " + begin + " end " + end);
 		for(int i = end; i > begin; i--) {
 			//System.out.println("i " + i);
@@ -322,7 +322,7 @@ public class BagService {
 	 * @param begin
 	 * @param step 需要前进的格数
 	 */
-	public void setForward(int begin, int step) {
+	private void setForward(int begin, int step) {
 		for(int i = begin; i < bags.length; i++) {
 			if(bags[i] == null) break;
 			bags[i-step] = bags[i];
@@ -336,7 +336,7 @@ public class BagService {
 	 *        gid   要插入物品的id
 	 * @return
 	 */
-	public int getInsetPos(int gid, int typeId) {
+	private int getInsetPos(int gid, int typeId) {
 		//System.out.println("getInsetPos " + typeId );
 		int insertPo = 10000;
 		for(int i = 0; i < bags.length; i++) {
@@ -367,7 +367,7 @@ public class BagService {
 	 * 寻找第一个空格子
 	 * @return -1: 代表满了
 	 */
-	public int firstEmpty() {
+	private int firstEmpty() {
 		for(int i=0; i<bags.length; i++) {
 			if(bags[i] == null) {
 				return i;
@@ -401,7 +401,7 @@ public class BagService {
 	 * 把背包的内容，转化为数据库中存储的形式
 	 * @return
 	 */
-	public String retBag(){
+	private String retBag(){
 		StringBuilder sb = new StringBuilder();
 		if(bags == null) return sb.toString();
 		for(int i = 0; i < bags.length; i++) {

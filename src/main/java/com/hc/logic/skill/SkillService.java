@@ -191,11 +191,7 @@ public class SkillService {
 		Player player = session.getPlayer();
 		
 		if(isalive == 1) {
-			player.getScene().addTask(new Runnable() {
-				public void run() {
-					player.getScene().deleteAttackMonst(monst);
-				}
-			});
+			player.getScene().deleteAttackMonst(monst);
 			//击杀怪物/boss获得相应奖励
 			Context.getAwardService().obtainAward(player, monst);
 			//杀掉怪物就需要验证是否达成某成就

@@ -246,11 +246,7 @@ public class SummonBoss extends TaskConsume{
 					delEnermys(monster.getMonstId());
 				}
 			});
-			player.getScene().addTask(new Runnable() {
-				public void run() {
-					player.getScene().deleteAttackMonst(monster);
-				}
-			});
+			player.getScene().deleteAttackMonst(monster);
 		}
 	}
 	

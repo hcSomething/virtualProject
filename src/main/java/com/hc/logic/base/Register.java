@@ -15,16 +15,6 @@ import com.hc.logic.creature.Player;
  */
 @Component
 public class Register {
-
-	//private Player player;
-	
-	//private String name;
-	//private String password;
-	
-	//public Register(String name, String password) {
-	//	this.name = name;
-	//	this.password = password;
-	//}
 	
 	public void register(Session session, String name, String password) {
 		//防止重复注册
@@ -33,10 +23,8 @@ public class Register {
 			return;
 		}
 		int id = Context.getpID();
-		//int hp = Context.getLevelParse().getLevelConfigById(1).getHp();
 		int hp = 0;
 		int mp = 0;
-		//int mp = Context.getLevelParse().getLevelConfigById(1).getMp();
 		//血量和法力在选择职业后设置
 		int[] skills = {}; //默认没有技能
 		Player player = new Player(id, 1, name, password, 1, hp, mp, 0, skills, session, true, new ArrayList<>());

@@ -48,7 +48,7 @@ public class Task {
 	}
 	
 	/**
-	 * 验证是否是同意类型
+	 * 验证是否是同一类型
 	 * @param typeId
 	 * @return
 	 */

@@ -103,7 +103,7 @@ public class UnionService {
 	public void establishUnion(Session session, String[] args) {
 		Player player = session.getPlayer();
 		if(player.getUnion() != null) {
-			session.sendMessage("创建工会失败，你以及在一个工会中");
+			session.sendMessage("创建工会失败，你已经在一个工会中");
 			return;
 		}
 		boolean sess = Context.getWorld().createUnion(args[2], player.getName());

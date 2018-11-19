@@ -3,6 +3,8 @@ import java.util.*;
 import java.util.Map.Entry;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 import com.hc.frame.taskSchedule.TaskConsume;
 import com.hc.logic.base.Session;
@@ -34,6 +36,7 @@ public class Scene extends TaskConsume{
 	
 	//一个阻塞队列，将任务放入这个，就会被执行。
 	BlockingQueue<Runnable> task = new LinkedBlockingQueue<>();
+	private Lock lock = new ReentrantLock();
 
 
 	public Scene() {
@@ -74,18 +77,25 @@ public class Scene extends TaskConsume{
 	 * 每秒恢复血量、法力
 	 */
 	public void recoverHpMp() {
-		for(Player p : players) {
-			LevelConfig lc = Context.getLevelParse().getLevelConfigById(p.getLevel());
-			int mhp = lc.getuHp();  //从配置文件中获得每秒增加的血量
-			int mmp = lc.getuMp(); //从配置文件中获得每秒增加的法力
-			
-			//使用恢复类丹药后，在一段时间内恢复血量和蓝量，每个玩家都不同
-			int[] recorHpMp = p.allRecover();  //返回长度为2的数组，第一个是恢复的血量，第二个是恢复的法力	 
-			mhp += recorHpMp[0];
-			mmp += recorHpMp[1];	
-			p.addHpMp(mhp, mmp);
-			p.skillRecHp();   //技能导致的持续回血		
-			p.skillContiAttack(); //技能的持续攻击效果
+		lock.lock();
+		try {
+			for(Player p : players) {
+				LevelConfig lc = Context.getLevelParse().getLevelConfigById(p.getLevel());
+				int mhp = lc.getuHp();  //从配置文件中获得每秒增加的血量
+				int mmp = lc.getuMp(); //从配置文件中获得每秒增加的法力
+				
+				//使用恢复类丹药后，在一段时间内恢复血量和蓝量，每个玩家都不同
+				int[] recorHpMp = p.allRecover();  //返回长度为2的数组，第一个是恢复的血量，第二个是恢复的法力	 
+			    //System.out.println("--------------恢复类药品------" + p.getRecoverHpMp());
+			   // System.out.println("--------------技能恢复------" + p.getContinueRecover() );
+				mhp += recorHpMp[0];
+				mmp += recorHpMp[1];	
+				p.addHpMp(mhp, mmp);
+				p.skillRecHp();   //技能导致的持续回血		
+				p.skillContiAttack(); //技能的持续攻击效果
+			}
+		}finally {
+			lock.unlock();
 		}
 	}
 
@@ -96,20 +106,25 @@ public class Scene extends TaskConsume{
 	 */
 	public void attackPlayer() {
 		//System.out.println("*****" + attackPlayers.size() + ", " + attackPlayers.toString());
-		for(Entry<Integer, List<Player>> enti : attackPlayers.entrySet()) {
-			System.out.println("啦啦啦" + attackPlayers.toString());
-			int mId = enti.getKey();
-			List<Player> attackP = enti.getValue();
-			if(attackP.isEmpty()) return;
-			Player pp = attackP.get(0); //每次只攻击第一个攻击它的玩家
-			int dHp = Context.getSceneParse().getMonsters().getMonstConfgById(mId).getAttack();
-			
-			//玩家可以减少伤害的buff，比如护盾
-			pp.attackPlayerReduce(dHp);
-			
-			String name = Context.getSceneParse().getMonsters().getMonstConfgById(mId).getName();
-			pp.getSession().sendMessage("正在被 " + name + " 攻击，减少血量：" + dHp);
+		lock.lock();
+		try {
+			for(Entry<Integer, List<Player>> enti : attackPlayers.entrySet()) {
+				System.out.println("啦啦啦" + attackPlayers.toString());
+				int mId = enti.getKey();
+				List<Player> attackP = enti.getValue();
+				if(attackP.isEmpty()) return;
+				Player pp = attackP.get(0); //每次只攻击第一个攻击它的玩家
+				int dHp = Context.getSceneParse().getMonsters().getMonstConfgById(mId).getAttack();
+				
+				//玩家可以减少伤害的buff，比如护盾
+				pp.attackPlayerReduce(dHp);
+				
+				String name = Context.getSceneParse().getMonsters().getMonstConfgById(mId).getName();
+				pp.getSession().sendMessage("正在被 " + name + " 攻击，减少血量：" + dHp);
 
+			}
+		}finally {
+			lock.unlock();
 		}
 
 	}
@@ -117,19 +132,29 @@ public class Scene extends TaskConsume{
 	
 	//场景中能加入玩家，就要删除玩家。
 	public void deletePlayer(Player player) {
-		this.players.remove(player);
+		lock.lock();
+		try {
+			this.players.remove(player);
+		}finally {
+			lock.unlock();
+		}
 	}
 	
 	/**
 	 * 根据用户名获得玩家
 	 */
 	public Player getPlayerByName(String name) {
-		for(Player p : players) {
-			if(p.getName().equals(name)) {
-				return p;
+		lock.lock();
+		try {
+			for(Player p : players) {
+				if(p.getName().equals(name)) {
+					return p;
+				}
 			}
+			return null;
+		}finally {
+			lock.unlock();
 		}
-		return null;
 	}
 
 	
@@ -140,14 +165,19 @@ public class Scene extends TaskConsume{
 	 * @param p ： 怪物可以攻击的玩家
 	 */
 	public void addAttackPlayer(int mId, Player p) {
-		System.out.println("------------scene.addattackplayer----" + attackPlayers.toString());
-		if(!attackPlayers.containsKey(mId)) {
-			attackPlayers.put(mId, new ArrayList<Player>());
+		lock.lock();
+		try {
+			System.out.println("------------scene.addattackplayer----" + attackPlayers.toString());
+			if(!attackPlayers.containsKey(mId)) {
+				attackPlayers.put(mId, new ArrayList<Player>());
+			}
+			//不重复添加。一个怪物列表中，不能有重复的玩家
+			if(attackPlayers.get(mId).contains(p)) return;
+			attackPlayers.get(mId).add(p);
+			System.out.println("------------scene.addattackplayer--后--" + attackPlayers.toString());
+		}finally {
+			lock.unlock();
 		}
-		//不重复添加。一个怪物列表中，不能有重复的玩家
-		if(attackPlayers.get(mId).contains(p)) return;
-		attackPlayers.get(mId).add(p);
-		System.out.println("------------scene.addattackplayer--后--" + attackPlayers.toString());
 	}
 	/**
 	 * 当一个玩家去到别的场景时，怪物就攻击不到，从怪物的攻击列表中删除
@@ -155,29 +185,34 @@ public class Scene extends TaskConsume{
 	 * @param p
 	 */
 	public void deleteAttackPlayer(Player p) {
-		System.out.println(" 当一个玩家去到别的场景时，怪物就攻击不到，从怪物的攻击列表中删除");
-		//boolean find = false;
-		System.out.println("前 "+attackPlayers.toString());
-		List<Integer> monsIds = new ArrayList<>();
-		for(Entry<Integer, List<Player>> enti : attackPlayers.entrySet()) {
-			int mId = enti.getKey();
-			List<Player> attackP = enti.getValue();
-			for(int j = 0; j < attackP.size(); j++) {
-				if(attackP.get(j).getName().equals(p.getName())) {
-					attackP.remove(p);
+		lock.lock();
+		try {
+			System.out.println(" 当一个玩家去到别的场景时，怪物就攻击不到，从怪物的攻击列表中删除");
+			//boolean find = false;
+			System.out.println("前 "+attackPlayers.toString());
+			List<Integer> monsIds = new ArrayList<>();
+			for(Entry<Integer, List<Player>> enti : attackPlayers.entrySet()) {
+				int mId = enti.getKey();
+				List<Player> attackP = enti.getValue();
+				for(int j = 0; j < attackP.size(); j++) {
+					if(attackP.get(j).getName().equals(p.getName())) {
+						attackP.remove(p);
+					}
+					if(attackP.isEmpty()) {
+						//attackPlayers.remove(mId);
+						monsIds.add(mId);
+						break;
+					}
+					
 				}
-				if(attackP.isEmpty()) {
-					//attackPlayers.remove(mId);
-					monsIds.add(mId);
-					break;
-				}
-				
 			}
+			//当玩家传送后，清空技能的持续效果
+			if(p.getSkillAttack() != null) p.getSkillAttack().cleanup();
+			System.out.println("后 "+attackPlayers.toString() + ", " + monsIds.toString());
+			delNullList(monsIds);
+		}finally {
+			lock.unlock();
 		}
-		//当玩家传送后，清空技能的持续效果
-		p.getSkillAttack().cleanup();
-		System.out.println("后 "+attackPlayers.toString() + ", " + monsIds.toString());
-		delNullList(monsIds);
 	}
 	private void delNullList(List<Integer> delMId) {
 		for(int i : delMId) {
@@ -190,7 +225,12 @@ public class Scene extends TaskConsume{
 	 */
 	public void deleteAttackMonst(Monster monster) {
 		System.out.println("================这里被击杀了");
-		attackPlayers.remove(new Integer(monster.getMonstId()));
+		lock.lock();
+		try {
+			attackPlayers.remove(new Integer(monster.getMonstId()));
+		}finally {
+			lock.unlock();
+		}
 	}
 
 	
@@ -309,7 +349,12 @@ public class Scene extends TaskConsume{
 	}
 
 	public void addPlayer(Player player) {
-		this.players.add(player);
+		lock.lock();
+		try {
+			this.players.add(player);
+		}finally {
+			lock.unlock();
+		}
 	}
 	
 	public List<String> getTeleport() {

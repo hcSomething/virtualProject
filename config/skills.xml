@@ -65,7 +65,7 @@
 		<protect>10</protect>
 		<cure>20</cure>                        <!-- 每秒恢复队友和自己的生命值，用于牧师 -->
 		<mp>20</mp>
-		<continue>3</continue>
+		<continue>10</continue>
 		<scope>0</scope>
 		<weapon>0</weapon>
 		<profession>1</profession>              <!-- 1表示只有牧师可以学 -->

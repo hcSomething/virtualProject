@@ -111,7 +111,7 @@ public class EmailService {
 		}
 		System.out.println("sendNormalEmail--------------" + subjcont);
 		if((Context.getWorld().getPlayerEntityByName(targetPlayer) == null) 
-				&& (Context.getWorld().getPlayerByName(targetPlayer) == null)) {
+				&& (Context.getOnlinPlayer().getPlayerByName(targetPlayer) == null)) {
 			session.sendMessage("你所要发送的玩家不存在！");
 			return;
 		}
@@ -141,8 +141,8 @@ public class EmailService {
 	private void createEmail(String tPName , String content) {
 		PlayerEntity tpe = Context.getWorld().getPlayerEntityByName(tPName);
 		if(tpe == null) {
-			Player player = Context.getWorld().getPlayerByName(tPName);
-			tpe = player.getPlayerEntity();
+			//Player player = Context.getWorld().getPlayerByName(tPName);
+			tpe = Context.getWorld().getPlayerEntityByName(tPName);
 		}
 		EmailEntity emiE = new EmailEntity(content, tpe);
 		tpe.getEmails().add(emiE);

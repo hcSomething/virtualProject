@@ -11,6 +11,7 @@ import java.util.Set;
 
 import com.hc.frame.Context;
 import com.hc.frame.Scene;
+import com.hc.logic.achieve.PlayerAchieves;
 import com.hc.logic.achieve.PlayerTasks;
 import com.hc.logic.base.Profession;
 import com.hc.logic.base.Session;
@@ -86,6 +87,7 @@ public class Player extends LiveCreature{
 	
 	//玩家任务
 	private PlayerTasks playerTasks;
+	private PlayerAchieves playerAchieve;
 	
 	
 	@Override
@@ -110,6 +112,7 @@ public class Player extends LiveCreature{
 		if(playerEntity.getCopyEntity() != null)
 			this.sponserNmae = playerEntity.getCopyEntity().getSponsor();
 		this.playerTasks = new PlayerTasks(this);
+		this.playerAchieve = new PlayerAchieves(this);
 	}
 	//注册专用	
 	public Player(int id, int level, String name, String pass, int sceneId, int hp, int mp,
@@ -128,6 +131,7 @@ public class Player extends LiveCreature{
 		this.isAlive = true;
 		this.email = new Email(playerEntity.getEmails());
 		this.playerTasks = new PlayerTasks();
+		this.playerAchieve = new PlayerAchieves();
 	}
 
 	
@@ -851,6 +855,9 @@ public class Player extends LiveCreature{
 		this.recoverHpMp.put(gId, new Date());
 		return true;
 	}
+	public Map<Integer, Date> getRecoverHpMp(){
+		return this.recoverHpMp;
+	}
 	/**
 	 * 获得此时hp/mp总的恢复量, 使用恢复类药品的效果持续
 	 * @return
@@ -866,6 +873,7 @@ public class Player extends LiveCreature{
 			long dual = Context.getGoodsParse().getGoodsConfigById(gId).getContinueT() * 1000;
 			long pTime = d.getTime();
 			long nTime = new Date().getTime();
+			//System.out.println("------------------player.allrecover90------" + dual + ", " + (nTime-pTime));
 			//验证药品是否过期
 			if((nTime - pTime) > dual) {
 				deleRed.add(gId);  
@@ -876,7 +884,7 @@ public class Player extends LiveCreature{
 		}
 		//在返回前，删除过期了的技能持续效果
 		for(int i : deleRed) {
-			reduceAtt.remove(i);
+			recoverHpMp.remove(new Integer(i));
 		}
 		return new int[] {allHp, allMp};
 	}
@@ -973,6 +981,14 @@ public class Player extends LiveCreature{
 		Set<String> ts = teammate.keySet();
 		System.out.println("----------teammate.size " + ts.size());
 		return new ArrayList<>(ts);
+	}
+	public boolean teamContain(String pname) {
+		for(String ss : teammate.keySet()) {
+			if(ss.equals(pname)) {
+				return true;
+			}
+		}
+		return false;
 	}
 	/**
 	 * 取消组队
@@ -1126,6 +1142,9 @@ public class Player extends LiveCreature{
 	
 	public PlayerTasks getPlayerTasks() {
 		return playerTasks;
+	}
+	public PlayerAchieves getPlayerAchieves() {
+		return playerAchieve;
 	}
 	public TaskEntity getTaskEntity() {
 		return playerEntity.getTaskEntity();

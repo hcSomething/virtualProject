@@ -1,6 +1,7 @@
 package com.hc.logic.achieve;
 
 import java.lang.reflect.Field;
+import java.util.List;
 
 import org.springframework.stereotype.Component;
 
@@ -23,22 +24,15 @@ public class AchieveService {
 	 */
 	public void finishAchi(Session session) {
 		Player player = session.getPlayer();
-		AchieveEntity ae = player.getPlayerEntity().getAchieveEntity();
+		List<Integer> completedAchieve = player.getPlayerAchieves().getAchieveCompletes();
 		StringBuilder sb = new StringBuilder();
 		sb.append("已经达成的成就如下：\n");
-		for(Field field : ae.getClass().getDeclaredFields()) {
-	    	field.setAccessible(true);
-	    	try {
-	    		String charac = field.getName();
-	    		if(charac.equals("playerEntity")) continue;
-	    		int val = (int)field.get(ae);
-	    		if(val != -1) continue;
-	    		AchieveConfig acig = Context.getAchieveParse().getAchieveConfigByCharac(charac);
-	    		sb.append(acig.getName() + " " + acig.getDesc() + "\n");
-	    	}catch(Exception e) {
-	    		e.printStackTrace();
-	    	}
-	    }
+		for(int i : completedAchieve) {
+			AchieveConfig achieveConfig = Context.getAchieveParse().getAchieveConfigByid(i);
+			sb.append(achieveConfig.getName() + " " + achieveConfig.getDesc() + "\n");
+		}
+		sb.deleteCharAt(sb.length()-1);
+		sb.deleteCharAt(sb.length()-1);
 	    session.sendMessage(sb.toString());
 	}
 }

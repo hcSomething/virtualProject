@@ -63,9 +63,16 @@ public class Party {
 				session.sendMessage("组队失败，只能邀请同一场景中的玩家进行组队");
 				return;
 			}
+			if(player.getName().equals(args[i])) {
+				session.sendMessage("不能和自己组队！");
+				return;
+			}
 			players.add(p);
-			Context.getChatService().privateChat(session, p.getId(), TEAM_INIT);
 		}
+		for(Player pp : players) {
+			Context.getChatService().privateChat(session, pp	.getId(), TEAM_INIT);
+		}
+		player.clearTeammate();
 		player.addTeammate(players);
 		System.out.println("------发起组队------" + players);
 		//session.getPlayer().setInParty(true);		
@@ -82,6 +89,10 @@ public class Party {
 		Player tPlayer = Context.getOnlinPlayer().getPlayerByName(tName);
 		if(tPlayer == null) {
 			session.sendMessage("目标玩家不在线，不能组队");
+			return;
+		}
+		if(!tPlayer.teamContain(session.getPlayer().getName())) {
+			session.sendMessage("需要邀请才能同意，或者队伍已取消");
 			return;
 		}
 		if(!isSponser(session, tName)) {

@@ -2,8 +2,116 @@
 
 <achieves>
    <achieve id="1">
+      <name>成就1</name>
+      <desc>击2只，达成此成就</desc>
+      <type>1</type>   <!-- 成就类型。1：杀怪 -->
+      <sid>3</sid>     <!-- 杀怪中表示要杀的怪物id -->
+      <num>1</num>     <!-- 数量：杀怪中表示杀怪的数量 -->
+   </achieve>
+   
+   <achieve id="2">
       <name>初露锋芒</name>
-      <desc>击杀树妖5只，达成此成就</desc>
-      <charac>atm2_5</charac>
+      <desc>击杀树妖2只，达成此成就</desc>
+      <type>1</type>   <!-- 成就类型。1：杀怪 -->
+      <sid>2</sid>     <!-- 杀怪中表示要杀的怪物id -->
+      <num>2</num>     <!-- 数量：杀怪中表示杀怪的数量 -->
+   </achieve>
+   
+   <achieve id="3">
+      <name>成就3</name>
+      <desc>一些描述</desc>
+      <type>2</type>   <!-- 成就类型。2：等级相关 -->
+      <sid>0</sid>     <!-- 等级类型成就中 无 -->
+      <num>2</num>     <!-- 数量：等级中表示等级 -->
+   </achieve>
+   
+   <achieve id="4">
+      <name>成就4</name>
+      <desc>一些描述</desc>
+      <type>3</type>   <!-- 成就类型。3：对话 -->
+      <sid>2</sid>     <!-- 对话类型成就中 表示npcid -->
+      <num>0</num>     <!-- 数量：对话中 没有 -->
+   </achieve>
+   
+   <achieve id="5">
+      <name>成就5</name>
+      <desc>获得2件极品装备</desc>
+      <type>4</type>   <!-- 成就类型。4：装备相关 -->
+      <dtype>1</dtype>  <!-- 成就子类型。装备-->
+      <sid>500</sid>     <!-- 装备子类型=1中表示极品装备 -->
+      <num>2</num>     <!-- 数量：等级中表示等级 -->
+   </achieve>
+   
+    <achieve id="6">
+      <name>成就6</name>
+      <desc>一些描述</desc>
+      <type>5</type>   <!-- 成就类型。5：副本相关 -->
+      <sid>1</sid>     <!-- 副本类型成就中 表示副本id -->
+      <num>2</num>     <!-- 数量：副本中表示次数 -->
+   </achieve>
+   
+   <achieve id="7">
+      <name>成就7</name>
+      <desc>穿戴的装备等级综合达到10</desc>
+      <type>4</type>   <!-- 成就类型。4：装备相关 -->
+      <dtype>2</dtype>  <!-- 成就子类型。装备 子类型成就=2表示装备等级-->
+      <sid>0</sid>     <!-- 装备类型成就中 无 -->
+      <num>10</num>     <!-- 数量：等级中表示等级 -->
+   </achieve>
+   
+   <achieve id="8">
+      <name>成就8</name>
+      <desc>添加好友</desc>
+      <type>6</type>   <!-- 成就类型。6：社交相关 -->
+      <sid>0</sid>     <!-- 社交类型成就中 无 -->
+      <num>1</num>     <!-- 数量：社交中表示数量 -->
+   </achieve>
+   
+   <achieve id="9">
+      <name>成就9</name>
+      <desc>组队</desc>
+      <type>7</type>   <!-- 成就类型。7：组队相关 -->
+      <sid>0</sid>     <!-- 组队类型成就中 无 -->
+      <num>1</num>     <!-- 数量：组队中表示数量 -->
+   </achieve>
+   
+   <achieve id="10">
+      <name>成就10</name>
+      <desc>公会</desc>
+      <type>8</type>   <!-- 成就类型。8：公会相关 -->
+      <sid>0</sid>     <!-- 公会类型成就中 无 -->
+      <num>1</num>     <!-- 数量：公会中表示数量 -->
+   </achieve>
+   
+   <achieve id="11">
+      <name>成就11</name>
+      <desc>交易</desc>
+      <type>9</type>   <!-- 成就类型。9：交易相关 -->
+      <sid>0</sid>     <!-- 交易类型成就中 无 -->
+      <num>1</num>     <!-- 数量：交易中表示数量 -->
+   </achieve>
+   
+   <achieve id="12">
+      <name>成就12</name>
+      <desc>pk</desc>
+      <type>10</type>   <!-- 成就类型。10：PK相关 -->
+      <sid>0</sid>     <!-- PK类型成就中 无 -->
+      <num>1</num>     <!-- 数量：pk中表示数量 -->
+   </achieve>
+   
+   <achieve id="13">
+      <name>成就13</name>
+      <desc>金币</desc>
+      <type>11</type>   <!-- 成就类型。11：金币相关 -->
+      <sid>0</sid>     <!-- 金币类型成就中 无 -->
+      <num>1</num>     <!-- 数量：金币中表示数量 -->
+   </achieve>
+   
+   <achieve id="14">
+      <name>成就14</name>
+      <desc>任务</desc>
+      <type>12</type>   <!-- 成就类型。12：任务相关 -->
+      <sid>2</sid>     <!-- 任务类型成就中 表示一系列任务 -->
+      <num>1</num>     <!-- 数量：任务中 无 -->
    </achieve>
 </achieves>

@@ -45,16 +45,18 @@ public class Copys extends Scene{
     	//if(bossIndex >= bosses.size()) complete();
     	if(bosses.size() == 0) createBoss(allBoss.get(bossIndex)); 
     	this.openTime = System.currentTimeMillis();  //副本开启时，记录开启时间
-    	exe(2, "copys"+id + players.get(0).getId()); //启动一个周期性调度器，周期2秒
+    	//exe(2, "copys"+id + players.get(0).getId()); //启动一个周期性调度器，周期2秒
+    	Context.getTaskConsume().exe(2, "copys"+id + players.get(0).getId(), this);
     }
     
     
 	//这个方法会被自动周期性调用
     @Override
-    public void execute() {
+    public void run() {
     	//System.out.println("-------------------aaaaaaaaa");
     	//玩家每秒恢复的血量和法力
-    	recoverHpMp();
+    	//recoverHpMp();
+    	super.letPlayerProgress();
     	//刷新boss
     	//System.out.println("刷新boss列表" + System.currentTimeMillis());
     	haveAvailableBoss();
@@ -126,7 +128,8 @@ public class Copys extends Scene{
     	Boss boss = new Boss(bid, players);
     	bosses.add(boss);
     	//启动Boss的周期性调度线程，1秒
-    	boss.exe(1, "boss"+bid+players.get(0).getId());
+    	//boss.exe(1, "boss"+bid+players.get(0).getId());
+    	Context.getTaskConsume().exe(1, "boss"+bid+players.get(0).getId(), boss);
     	return boss;
     }
     

@@ -109,7 +109,7 @@ public class World implements ApplicationContextAware{
 		List<SceneConfig> sParseList = sceneP.getAllSceneConfig();
 		Scene scene = null;
 		for(SceneConfig sConfig : sParseList) {
-			scene = new Scene();
+			scene = new Scene(context);
 			scene.setId(sConfig.getSceneId());
 			scene.setName(sConfig.getName());
 			scene.setDescribe(sConfig.getDescription());

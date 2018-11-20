@@ -2,6 +2,7 @@ package com.hc.frame.handlers;
 
 
 import com.hc.frame.Context;
+import com.hc.frame.taskSchedule.TaskProducer;
 import com.hc.logic.base.LogOut;
 import com.hc.logic.base.Session;
 import com.hc.logic.creature.Player;
@@ -71,7 +72,7 @@ public class ServerHandler extends ChannelInboundHandlerAdapter{
 			//执行登出操作, 在线程池中做
 			//new LogOut(pl).updateDB(pl);;
 			System.out.println( "------------task前");
-			Context.getTaskProducer().addTask(new LogOut(pl));
+			TaskProducer.addTask(new LogOut(pl));
 			System.out.println( "------------task后");
 		}		
 	

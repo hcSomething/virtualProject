@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 import com.hc.frame.Context;
 import com.hc.frame.Scene;
@@ -29,6 +30,7 @@ import com.hc.logic.domain.Equip;
 import com.hc.logic.domain.GoodsEntity;
 import com.hc.logic.domain.PlayerEntity;
 import com.hc.logic.domain.TaskEntity;
+import com.hc.logic.order.DoOrder;
 import com.hc.logic.skill.SkillAttack;
 import com.hc.logic.skill.SkillAttackMonst;
 import com.hc.logic.skill.SkillAttackPlayer;
@@ -89,6 +91,8 @@ public class Player extends LiveCreature{
 	private PlayerTasks playerTasks;
 	private PlayerAchieves playerAchieve;
 	
+	private ConcurrentLinkedQueue<Runnable> orderQueue = new ConcurrentLinkedQueue<>();
+	
 	
 	@Override
 	public void setDescribe() {
@@ -133,7 +137,47 @@ public class Player extends LiveCreature{
 		this.playerTasks = new PlayerTasks();
 		this.playerAchieve = new PlayerAchieves();
 	}
+	
+	/**
+	 * 被周期性的调用
+	 */
+	public void periodCall() {
+		revoverPeriod();
+		processOrder();		
+	}
+	
+	public void revoverPeriod() {
+		LevelConfig lc = Context.getLevelParse().getLevelConfigById(getLevel());
+		int mhp = lc.getuHp();  //从配置文件中获得每秒增加的血量
+		int mmp = lc.getuMp(); //从配置文件中获得每秒增加的法力
+		
+		//使用恢复类丹药后，在一段时间内恢复血量和蓝量，每个玩家都不同
+		int[] recorHpMp = allRecover();  //返回长度为2的数组，第一个是恢复的血量，第二个是恢复的法力	 
+		mhp += recorHpMp[0];
+		mmp += recorHpMp[1];	
+	    addHpMp(mhp, mmp);
+		skillRecHp();   //技能导致的持续回血		
+		skillContiAttack(); //技能的持续攻击效果
 
+	}
+	
+	/**
+	 * 添加需要处理的命令
+	 * @param doOrder
+	 */
+	public void addOrder(Runnable doOrder) {
+		orderQueue.add(doOrder);
+	}
+	
+	/**
+	 * 处理队列中的命令
+	 */
+	public void processOrder() {
+		while(orderQueue.peek() != null) {
+			Runnable aOrder = orderQueue.poll();
+			if(aOrder != null) aOrder.run();
+		}
+	}
 	
 	/**
 	 * 玩家断线时，需要做的一些工作

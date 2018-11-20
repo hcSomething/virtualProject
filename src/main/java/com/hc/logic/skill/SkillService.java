@@ -176,7 +176,8 @@ public class SkillService {
 		SkillConfig skConfig = Context.getSkillParse().getSkillConfigById(skillId);
 		Monster m = new Monster(skConfig.getSummonBoss());
 		SummonBoss summonBoss = new SummonBoss(m, player.getScene().getMonsters(), player);
-		summonBoss.exe(1, "summon" + m.getMonstId() + player.getId());
+		//summonBoss.exe(1, "summon" + m.getMonstId() + player.getId());
+		Context.getTaskConsume().exe(2, "summon" + m.getMonstId() + player.getId(), summonBoss);
 		session.sendMessage("召唤成功");
 		//更新技能和武器
 		updateWeapon(player, skillId);

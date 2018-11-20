@@ -37,6 +37,7 @@ public enum Order {
 			String password = args[2];
 			//new Register(playerName, password).register(session);;
 			Context.getRegister().register(session, playerName, password);
+			System.out.println("----------这里是注册------------");
 		}
 	},
 	LOGIN("login", "登陆"){
@@ -47,6 +48,7 @@ public enum Order {
 				return;
 			}
 			new Login(args[1], args[2]).login(session);
+			System.out.println("----------这里是登陆------------");
 		}
 	},
 	ENTERWORLD("enterWorld", "进入世界"){
@@ -341,6 +343,7 @@ public enum Order {
 			}
 			int index = Integer.parseInt(args[1]);
 			Context.getRegister().inChoiceProf(session, index);
+			System.out.println("----------这里是职业选择------------");
 		}
 	},
 	DEAL("deal", "面对面交易"){
@@ -419,7 +422,8 @@ public enum Order {
 		
 		for(Order or : Order.values()) {	
 			if(st[0].equals(or.getKey())) {
-				or.doService(st, session);
+				//or.doService(st, session);
+				Context.getOrderService().distributeOrder(or, session, st);
 				break;
 			}
 		}

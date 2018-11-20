@@ -6,13 +6,16 @@ import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
+import org.springframework.context.ApplicationContext;
+
 import com.hc.frame.taskSchedule.TaskConsume;
 import com.hc.logic.base.Session;
 import com.hc.logic.config.LevelConfig;
 import com.hc.logic.config.SceneConfig;
 import com.hc.logic.creature.*;
+import com.hc.logic.xmlParser.SceneParse;
 
-public class Scene extends TaskConsume{
+public class Scene implements Runnable{
 
 	//这个场景的描述
 	protected String describe;
@@ -34,13 +37,13 @@ public class Scene extends TaskConsume{
 	//当前场景，被攻击玩家列表: key:怪物id, value:每个怪物可以攻击的玩家
 	protected Map<Integer, List<Player>> attackPlayers = new HashMap<>();
 	
-	//一个阻塞队列，将任务放入这个，就会被执行。
-	BlockingQueue<Runnable> task = new LinkedBlockingQueue<>();
 	private Lock lock = new ReentrantLock();
 
 
-	public Scene() {
-		exe(5, "scene"+id); //启动一个周期性调度器，周期20秒
+	public Scene(ApplicationContext ctx) {
+		//exe(5, "scene"+id); //启动一个周期性调度器，周期20秒
+		ctx.getBean("taskConsume", TaskConsume.class).exe(1, "scene"+id, this);
+		//doTask();
 	}
 	
 	public Scene(int interval) {
@@ -50,55 +53,22 @@ public class Scene extends TaskConsume{
 	
 	//这个方法会被自动周期性调用
     @Override
-    public void execute() {
-    	while(!task.isEmpty()) {
-    		task.poll().run();
-    	}
-    	//玩家每秒恢复的血量和法力
-    	recoverHpMp();
+    public void run() {
     	//怪物攻击
     	attackPlayer();
-    	
+    	letPlayerProgress();
     }
-    
-    /**
-     * 添加任务。
-     * @param t
-     */
-    public void addTask(Runnable t) {
-    	try {
-			task.put(t);
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		}
-    }
-		
-	/**
-	 * 每秒恢复血量、法力
-	 */
-	public void recoverHpMp() {
-		lock.lock();
-		try {
-			for(Player p : players) {
-				LevelConfig lc = Context.getLevelParse().getLevelConfigById(p.getLevel());
-				int mhp = lc.getuHp();  //从配置文件中获得每秒增加的血量
-				int mmp = lc.getuMp(); //从配置文件中获得每秒增加的法力
-				
-				//使用恢复类丹药后，在一段时间内恢复血量和蓝量，每个玩家都不同
-				int[] recorHpMp = p.allRecover();  //返回长度为2的数组，第一个是恢复的血量，第二个是恢复的法力	 
-			    //System.out.println("--------------恢复类药品------" + p.getRecoverHpMp());
-			   // System.out.println("--------------技能恢复------" + p.getContinueRecover() );
-				mhp += recorHpMp[0];
-				mmp += recorHpMp[1];	
-				p.addHpMp(mhp, mmp);
-				p.skillRecHp();   //技能导致的持续回血		
-				p.skillContiAttack(); //技能的持续攻击效果
-			}
-		}finally {
-			lock.unlock();
-		}
-	}
 
+    public void letPlayerProgress() {
+    	lock.lock();
+    	try {
+    		for(Player p : players) {
+    			p.periodCall();
+    		}
+    	}finally {
+    		lock.unlock();
+    	}
+    }
 	/**
 	 * 攻击玩家, 
 	 * 其实就是减少玩家的血量

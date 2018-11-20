@@ -22,7 +22,7 @@ import com.hc.logic.creature.Player;
  * @author hc
  *
  */
-public class SummonBoss extends TaskConsume{
+public class SummonBoss implements Runnable{
 
 	//boss id
 	private int bid;
@@ -73,7 +73,7 @@ public class SummonBoss extends TaskConsume{
 	
 	
 	@Override
-	public void execute() {
+	public void run() {
 		while(!tasks.isEmpty()) {
 			try {
 				tasks.take().run();

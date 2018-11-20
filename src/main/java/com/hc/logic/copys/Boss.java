@@ -19,7 +19,7 @@ import com.hc.logic.creature.Player;
  * @author hc
  *
  */
-public class Boss extends TaskConsume{
+public class Boss implements Runnable{
 
 	//boss id
 	private int bid;
@@ -59,7 +59,7 @@ public class Boss extends TaskConsume{
 	
 	
 	@Override
-	public void execute() {
+	public void run() {
 		//System.out.println("boss线程, bid=" + bid + ", 时间 " + System.currentTimeMillis());
 		//攻击玩家
 		bossAttackPlayer();

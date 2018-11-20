@@ -1,9 +1,7 @@
 package com.hc.logic.dao.impl;
 
-import com.hc.frame.Context;
-import com.hc.logic.base.LogOut;
-import com.hc.logic.domain.GoodsEntity;
-import com.hc.logic.domain.PlayerEntity;
+import com.hc.frame.taskSchedule.TaskProducer;
+
 
 public class UpdateTask implements Runnable{
 
@@ -11,7 +9,7 @@ public class UpdateTask implements Runnable{
 	
 	public UpdateTask(Object pp) {
 		this.pe = pp;
-		Context.getTaskProducer().addTask(this);
+		TaskProducer.addTask(this);
 	}
 	
 	@Override

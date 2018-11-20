@@ -29,7 +29,7 @@ public class Register {
 		int[] skills = {}; //默认没有技能
 		Player player = new Player(id, 1, name, password, 1, hp, mp, 0, skills, session, true, new ArrayList<>());
 		
-		Context.getWorld().getSceneById(1).addPlayer(player); //在场景1中注册了玩家，
+		//Context.getWorld().getSceneById(1).addPlayer(player); //在场景1中注册了玩家，
 		
 		Context.getWorld().addAllRegisteredPlayer(player);  //充当数据库，解决客户端重连问题
 		session.setPlayer(player);  

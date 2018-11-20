@@ -8,6 +8,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.stereotype.Component;
 
+import com.hc.frame.taskSchedule.TaskConsume;
 import com.hc.frame.taskSchedule.TaskProducer;
 import com.hc.logic.achieve.AchieveService;
 import com.hc.logic.achieve.TaskService;
@@ -26,6 +27,7 @@ import com.hc.logic.chat.WorldChatObservable;
 import com.hc.logic.copys.CopyService;
 import com.hc.logic.copys.Party;
 import com.hc.logic.deal.DealService;
+import com.hc.logic.order.OrderService;
 import com.hc.logic.pk.PkService;
 import com.hc.logic.pk.TwoPlayerPk;
 import com.hc.logic.skill.SkillService;
@@ -87,9 +89,6 @@ public class Context implements ApplicationContextAware{
 	//所有客户端的channel和session的对应,
 	private static ConcurrentHashMap<Channel, Session> channel2Session = new ConcurrentHashMap<>();
 	
-	//一个周期性调用的线程池
-	private static TaskProducer taskProducer;
-	
 	//传送服务
 	private static TransferService transferService;
 	//npc服务
@@ -132,6 +131,10 @@ public class Context implements ApplicationContextAware{
 	private static AchieveService achieveService;
 	//任务服务
 	private static TaskService taskService;
+	//线程池
+	private static TaskConsume taskConsume;
+	//命令
+	private static OrderService orderService;
 	
 	
 	
@@ -202,14 +205,6 @@ public class Context implements ApplicationContextAware{
 	@Autowired
 	public void setOnlinPlayer(OnlinePlayer onlinPlayer) {
 		Context.onlinPlayer = onlinPlayer;
-	}
-
-	public static TaskProducer getTaskProducer() {
-		return taskProducer;
-	}
-	@Autowired
-	public void setTaskProducer(TaskProducer taskProducer) {
-		Context.taskProducer = taskProducer;
 	}
 	
 	public static SceneParse getSceneParse() {
@@ -428,7 +423,26 @@ public class Context implements ApplicationContextAware{
 		Context.taskService = taskService;
 	}
 
+	public static TaskConsume getTaskConsume() {
+		return taskConsume;
+	}
+	@Autowired
+	public void setTaskConsume(TaskConsume taskConsume) {
+		Context.taskConsume = taskConsume;
+	}
 
+	public static OrderService getOrderService() {
+		return orderService;
+	}
+	@Autowired
+	public void setOrderService(OrderService orderService) {
+		Context.orderService = orderService;
+	}
+
+
+	
+	
+	
 
 
 

@@ -55,10 +55,10 @@ public class TransferService implements Teleport{
 		Scene source =  Context.getWorld().getSceneById(sId);		
 		//不再受原场景中的怪物攻击, 要在改变sceneId前
 		source.deleteAttackPlayer(player);
-		//在目标场景中加入玩家
-		target.addPlayer(player);
 		//也要在原场景中删除玩家
 		source.deletePlayer(player);
+		//在目标场景中加入玩家
+		target.addPlayer(player);	
 		
 		//重设玩家的sceneid字段。
 		player.setSceneId(tId);

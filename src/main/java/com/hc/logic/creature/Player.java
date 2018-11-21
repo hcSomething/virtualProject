@@ -173,7 +173,8 @@ public class Player extends LiveCreature{
 	 * 处理队列中的命令
 	 */
 	public void processOrder() {
-		while(orderQueue.peek() != null) {
+		while(!orderQueue.isEmpty()) {
+			System.out.println("----------processorder-----------");
 			Runnable aOrder = orderQueue.poll();
 			if(aOrder != null) aOrder.run();
 		}

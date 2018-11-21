@@ -62,8 +62,10 @@ public class Scene implements Runnable{
     public void letPlayerProgress() {
     	lock.lock();
     	try {
-    		for(Player p : players) {
-    			p.periodCall();
+    		//System.out.println("------------³¡¾°ÐÄÌø----------" + id);
+    		Iterator<Player> it = players.iterator();
+    		while(it.hasNext()) {
+    			it.next().periodCall();
     		}
     	}finally {
     		lock.unlock();

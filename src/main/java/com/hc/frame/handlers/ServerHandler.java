@@ -13,6 +13,7 @@ import io.netty.buffer.Unpooled;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
+import io.netty.util.ReferenceCountUtil;
 
 public class ServerHandler extends ChannelInboundHandlerAdapter{
 	
@@ -48,7 +49,7 @@ public class ServerHandler extends ChannelInboundHandlerAdapter{
 
 		Order.getService(st, Context.getSessionByChannel(ctx.channel()));
 		
-
+		ReferenceCountUtil.release(msg);
 	}
 	
 	@Override

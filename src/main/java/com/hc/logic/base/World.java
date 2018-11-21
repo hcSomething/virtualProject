@@ -2,6 +2,7 @@ package com.hc.logic.base;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -54,10 +55,13 @@ public class World implements ApplicationContextAware{
 	private  Map<Integer, Scene> sceneResource = new HashMap<>();
 	//所有副本：(sceneId, (playerid, copys))。通过某个副本中的player的id可以唯一确定一个副本。
 	private Map<Integer, Map<Integer, Copys>> allCopys = new HashMap<>();
-	//所有注册的玩家，
+	//注册的玩家，
 	private List<Player> allRegisteredPlayer = new ArrayList<>();
 	//所有玩家实体，在启动时，从数据库加载
-	private List<PlayerEntity> allPlayerEntity = new ArrayList<>();
+	//private List<PlayerEntity> allPlayerEntity = new ArrayList<>();
+	private List<PlayerEntity> allPlayerEntity = new LinkedList<>();
+	private final int capacity = 2000;  //缓存的大小
+	
 	//任务调度线程的标识。格式：key：copys+副本id+玩家id, value: 对应的future
 	private ConcurrentHashMap<String, Future> futureMap = new ConcurrentHashMap<>();
 	//所有副本实体
@@ -84,8 +88,8 @@ public class World implements ApplicationContextAware{
 	@PostConstruct
 	private void init() {
 		//System.out.println("这里是world的init方法");
-		String hql = "from PlayerEntity";
-		allPlayerEntity = new PlayerDaoImpl().find(hql);
+		//String hql = "from PlayerEntity";
+		//allPlayerEntity = new PlayerDaoImpl().find(hql);
 		
 		String hql1 = "from UnionEntity";
 		unionEntitys = new PlayerDaoImpl().find(hql1);
@@ -255,20 +259,6 @@ public class World implements ApplicationContextAware{
 		int copyId = copyEntity.getCopyId();
 		int pid = player.getId();
 		delCopyThread(pid, copyId);
-		/**
-		System.out.println("---------删除副本线程------");
-		CopyEntity copyEntity = player.getCopEntity(); 
-		if(copyEntity == null) return;
-		int copyId = copyEntity.getCopyId();
-		System.out.println("---------future----" + futureMap.size() + ", " + player.getId());
-		Future future = futureMap.remove("copys"+copyId+player.getId());
-		System.out.println("---------future-后---" + futureMap.size());
-		if(future == null) return;	
-		for(int bossId : Context.getCopysParse().getCopysConfById(copyEntity.getCopyId()).getBosses()) {
-			delBossThread(player.getId(), bossId);
-		}	
-		future.cancel(true);
-		*/
 	}
 	
 	public void delCopyThread(int pid, int copyId) {
@@ -320,6 +310,7 @@ public class World implements ApplicationContextAware{
 	public Player getPlayerByName(String name) {
 		for(Player player : allRegisteredPlayer) {
 			if(player.getName().equals(name)) {
+				allRegisteredPlayer.remove(player);
 				return player;
 			}
 		}
@@ -330,14 +321,26 @@ public class World implements ApplicationContextAware{
 	}
 
 	public void addPlayerEntity(PlayerEntity playerEntity) {
-		this.allPlayerEntity.add(playerEntity);
+		if(allPlayerEntity.size() >= capacity) {
+			allPlayerEntity.remove(allPlayerEntity.size()-1);
+		}
+		this.allPlayerEntity.add(0, playerEntity);
 	}
 
 	public PlayerEntity getPlayerEntityByName(String name) {
 		for(PlayerEntity p : allPlayerEntity) {
 			if(p.getName().equals(name)) {
+				allPlayerEntity.remove(p);
+				allPlayerEntity.add(0,  p);  //每次调用，就需要将其放入最前端
 				return p;
 			}
+		}
+		String hql = "select pe from PlayerEntity pe where name "
+				+ "like : name";
+		List<PlayerEntity> pe = new PlayerDaoImpl().find(hql, name);
+		if(pe.size() == 1) {
+			allPlayerEntity.add(0,  pe.get(0));
+			return pe.get(0);
 		}
 		return null;
 	}
@@ -353,15 +356,18 @@ public class World implements ApplicationContextAware{
 				break;
 			}
 		}
-		allPlayerEntity.add(pe);
+		//allPlayerEntity.add(pe);
+		allPlayerEntity.add(0, pe);  //放入首位
 	}
 	/**
 	 * 获得数据库中，最大的id
 	 * 从而在服务器，关闭，开启的时候，获得一个目前最大的id，来给新注册的玩家用
 	 */
 	public int getMaxId() {
+		String hql = "select pe from PlayerEntity pe";
+		List<PlayerEntity> pes = new PlayerDaoImpl().find(hql);
 		int result = 0;
-		for(PlayerEntity p : allPlayerEntity) {
+		for(PlayerEntity p : pes) {
 			if(p.getId() > result)
 				result = p.getId();
 		}

@@ -37,7 +37,7 @@ public class OrderService {
 		System.out.println("-------------·Ö·¢ÃüÁî---" + args[0]);
 		Player player = session.getPlayer();
 		DoOrder dOrder = new DoOrder(order, session, args);;	
-		if(args[0].equals("register") || args[0].equals("job") || args[0].equals("login")) {
+		if(args[0].equals("register") || args[0].equals("job") || args[0].equals("login") || args[0].equals("transfer")) {
 			dOrder.run();
 			return;
 		}

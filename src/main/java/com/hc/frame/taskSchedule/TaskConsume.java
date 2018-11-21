@@ -15,13 +15,9 @@ import com.hc.frame.Context;
 public class TaskConsume implements TaskManage{
 	
 	private AtomicBoolean isActive = new AtomicBoolean(false);
-	/**
-	 * 当前调度器的周期
-	 * 默认周期是10秒
-	 */
 	private AtomicInteger eInterval = new AtomicInteger(10);
 	
-	ScheduledExecutorService schedule = Executors.newScheduledThreadPool(20);
+	private ScheduledExecutorService schedule = Executors.newScheduledThreadPool(20);
 	
 	
 	private String taskId = "";

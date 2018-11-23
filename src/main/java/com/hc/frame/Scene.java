@@ -41,7 +41,7 @@ public class Scene implements Runnable{
 
 
 	public Scene(ApplicationContext ctx) {
-		//exe(5, "scene"+id); //启动一个周期性调度器，周期20秒
+		//exe(5, "scene"+id); //启动一个周期性调度器，周期1秒
 		ctx.getBean("taskConsume", TaskConsume.class).exe(1, "scene"+id, this);
 		//doTask();
 	}

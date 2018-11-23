@@ -20,6 +20,8 @@ import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.annotation.DependsOn;
 import org.springframework.stereotype.Component;
 
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
 import com.hc.frame.Context;
 import com.hc.frame.OnlinePlayer;
 import com.hc.frame.Scene;
@@ -59,8 +61,11 @@ public class World implements ApplicationContextAware{
 	private List<Player> allRegisteredPlayer = new ArrayList<>();
 	//所有玩家实体，在启动时，从数据库加载
 	//private List<PlayerEntity> allPlayerEntity = new ArrayList<>();
-	private List<PlayerEntity> allPlayerEntity = new LinkedList<>();
-	private final int capacity = 2000;  //缓存的大小
+	//private List<PlayerEntity> allPlayerEntity = new LinkedList<>();
+	//玩家实体缓存。key：玩家名；value：实体
+	Cache<String, PlayerEntity> cache = CacheBuilder.newBuilder()
+		                                             .maximumSize(1000)
+		                                             .build();
 	
 	//任务调度线程的标识。格式：key：copys+副本id+玩家id, value: 对应的future
 	private ConcurrentHashMap<String, Future> futureMap = new ConcurrentHashMap<>();
@@ -321,25 +326,18 @@ public class World implements ApplicationContextAware{
 	}
 
 	public void addPlayerEntity(PlayerEntity playerEntity) {
-		if(allPlayerEntity.size() >= capacity) {
-			allPlayerEntity.remove(allPlayerEntity.size()-1);
-		}
-		this.allPlayerEntity.add(0, playerEntity);
+		cache.put(playerEntity.getName(), playerEntity);
 	}
 
 	public PlayerEntity getPlayerEntityByName(String name) {
-		for(PlayerEntity p : allPlayerEntity) {
-			if(p.getName().equals(name)) {
-				allPlayerEntity.remove(p);
-				allPlayerEntity.add(0,  p);  //每次调用，就需要将其放入最前端
-				return p;
-			}
+		if(cache.getIfPresent(name) != null) {
+			return cache.getIfPresent(name);
 		}
 		String hql = "select pe from PlayerEntity pe where name "
 				+ "like : name";
 		List<PlayerEntity> pe = new PlayerDaoImpl().find(hql, name);
 		if(pe.size() == 1) {
-			allPlayerEntity.add(0,  pe.get(0));
+			cache.put(name, pe.get(0));
 			return pe.get(0);
 		}
 		return null;
@@ -350,27 +348,16 @@ public class World implements ApplicationContextAware{
 	 * @param pe
 	 */
 	public void updatePlayerEntity(PlayerEntity pe) {
-		for(PlayerEntity p: allPlayerEntity) {
-			if(p.getId() == pe.getId() ) {
-				allPlayerEntity.remove(p);
-				break;
-			}
-		}
-		//allPlayerEntity.add(pe);
-		allPlayerEntity.add(0, pe);  //放入首位
+		cache.put(pe.getName(), pe);
 	}
 	/**
 	 * 获得数据库中，最大的id
 	 * 从而在服务器，关闭，开启的时候，获得一个目前最大的id，来给新注册的玩家用
 	 */
 	public int getMaxId() {
-		String hql = "select pe from PlayerEntity pe";
-		List<PlayerEntity> pes = new PlayerDaoImpl().find(hql);
-		int result = 0;
-		for(PlayerEntity p : pes) {
-			if(p.getId() > result)
-				result = p.getId();
-		}
+		String hql = "select max(pe.id) from PlayerEntity pe";
+		List<Integer> pes = new PlayerDaoImpl().find(hql);
+		int result = pes.get(0);
 		return result + 1;
 	}
 

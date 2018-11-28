@@ -14,6 +14,8 @@ import com.hc.frame.taskSchedule.TaskProducer;
 import com.hc.logic.base.Session;
 import com.hc.logic.creature.Player;
 
+import io.netty.channel.Channel;
+
 @Component
 public class OrderService {
 
@@ -34,7 +36,7 @@ public class OrderService {
 	 * @param args
 	 */
 	public void distributeOrder(Order order, Session session, String[] args) {
-		System.out.println("-------------分发命令---" + args[0]);
+		//System.out.println("-------------分发命令---" + args[0]);
 		Player player = session.getPlayer();
 		DoOrder dOrder = new DoOrder(order, session, args);;	
 		if(args[0].equals("register") || args[0].equals("job") || args[0].equals("login") || args[0].equals("transfer")) {
@@ -43,4 +45,20 @@ public class OrderService {
 		}
 		player.addOrder(dOrder);
 	}
+	
+	public Player hasAccount(Channel channel) {
+		return Context.getOnlinPlayer().containChannel(channel);
+	}
+	
+	public boolean aliveBeforeOrder(Session session) {
+		if(session.getPlayer() == null) {
+			return true;
+		}
+		if(!session.getPlayer().isAlive()) {
+			session.sendMessage("您已经死亡，请先复活");
+			return false;
+		}
+		return true;
+	}
+
 }

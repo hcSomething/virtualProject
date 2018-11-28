@@ -22,10 +22,12 @@ import com.hc.logic.chat.Email;
 import com.hc.logic.config.LevelConfig;
 import com.hc.logic.config.SkillConfig;
 import com.hc.logic.copys.Copys;
+import com.hc.logic.dao.impl.PlayerDaoImpl;
 import com.hc.logic.dao.impl.UpdateTask;
 import com.hc.logic.deal.Deal;
 import com.hc.logic.domain.AchieveEntity;
 import com.hc.logic.domain.CopyEntity;
+import com.hc.logic.domain.EmailEntity;
 import com.hc.logic.domain.Equip;
 import com.hc.logic.domain.GoodsEntity;
 import com.hc.logic.domain.PlayerEntity;
@@ -123,9 +125,10 @@ public class Player extends LiveCreature{
 			      int exp, int[] skil, Session session, boolean isAlive, List<Equip> equips) {
 		//playerEntity = new PlayerEntity();
 		StringBuilder sb = new StringBuilder();
-		for(int ii : skills) {
+		for(int ii : skil) {
 			sb.append(ii + ",");
 		}
+		this.skills.add(skil[0]);  //天生会技能0
 		if(sb.length() > 0) sb.deleteCharAt(sb.length()-1);
 		playerEntity = new PlayerEntity(id, level, name, pass, sceneId, hp, mp, exp, sb.toString(), new ArrayList<>(), null);
 		
@@ -147,6 +150,7 @@ public class Player extends LiveCreature{
 	}
 	
 	public void revoverPeriod() {
+		if(!isAlive) return;
 		LevelConfig lc = Context.getLevelParse().getLevelConfigById(getLevel());
 		int mhp = lc.getuHp();  //从配置文件中获得每秒增加的血量
 		int mmp = lc.getuMp(); //从配置文件中获得每秒增加的法力
@@ -174,7 +178,7 @@ public class Player extends LiveCreature{
 	 */
 	public void processOrder() {
 		while(!orderQueue.isEmpty()) {
-			System.out.println("----------processorder-----------");
+			System.out.println("玩家对象中处理命令");
 			Runnable aOrder = orderQueue.poll();
 			if(aOrder != null) aOrder.run();
 		}
@@ -280,7 +284,6 @@ public class Player extends LiveCreature{
 	 */
 	public boolean canUseSkill() {
 		long cur = System.currentTimeMillis();
-		System.out.println("-----palyer.canuseSkiill-----" + cur + ", " + canUSkill);
 		if(cur > canUSkill) return true;
 		return false;
 	}	
@@ -294,7 +297,6 @@ public class Player extends LiveCreature{
 	public void setCanUSkill(int dizz) {
 		long cur = System.currentTimeMillis();
 		this.canUSkill = cur + dizz * 1000;
-		System.out.println("----------------setCanUSkill---------" + canUSkill);
 	}
 
 
@@ -414,15 +416,28 @@ public class Player extends LiveCreature{
 
 	/**
 	 * 学习技能
-	 * @param sk 技能id
+	 * @param sk 技能书id
 	 * @return
 	 */
-	public boolean addSkill(int sk) {
-		SkillConfig skillConfig = Context.getSkillParse().getSkillConfigById(sk);
-		if(skillConfig == null) {
-			session.sendMessage("技能不存在");
+	public boolean addSkillByBook(int sbk) {
+		int sk = Context.getGoodsParse().getGoodsConfigById(sbk).getContinueT();
+		if(!hasEnoughGoods(sbk, 1)) {
+			session.sendMessage("没有相应的技能书，不能学习技能");
 			return false;
 		}
+		if(hasSkill(sk)) {
+			session.sendMessage("已经拥有这个技能，不能重复学习");
+			return false;
+		}
+		boolean sec = addSkill(sk);
+		if(sec) {
+			delGoods(sbk, 1);
+			return true;
+		}
+		return false;
+	}
+	private boolean addSkill(int sk) { //技能id
+		SkillConfig skillConfig = Context.getSkillParse().getSkillConfigById(sk);
 		if(skillConfig.getProfession() != getProfIndex() && skillConfig.getProfession() != 10) {
 			session.sendMessage("当前职业学不会此技能");
 			return false;
@@ -458,15 +473,21 @@ public class Player extends LiveCreature{
 		return playerEntity.getExp();
 	}
 
-	public void setExp(int exp) {
-		//this.exp = exp;
-		playerEntity.setExp(exp);
-	}
 	/**
 	 * 增加玩家经验
 	 */
 	public void addExp(int a) {
 		int exp = playerEntity.getExp() + a;
+		LevelConfig levelConfig = Context.getLevelParse().getLevelConfigById(getLevel());
+		if(levelConfig.getExpByProf(getProfIndex()) <= exp) {
+			if(Context.getLevelParse().getLevelConfigById(getLevel()+1) == null) {
+				playerEntity.setExp(levelConfig.getExpByProf(getProfIndex()));
+				return;
+			}
+			setLevel(getLevel() + 1);
+			playerEntity.setExp(exp - levelConfig.getExpByProf(getProfIndex()));
+			return;
+		}
 		playerEntity.setExp(exp);
 	}
 
@@ -534,6 +555,10 @@ public class Player extends LiveCreature{
 	 * @return
 	 */
 	public Date getCdTimeByid(int sId) {
+		Date date = cdSkill.get(sId);
+		if(date == null) {
+			cdSkill.put(sId, new Date());
+		}
 		return cdSkill.get(sId);
 	}
 	
@@ -672,8 +697,9 @@ public class Player extends LiveCreature{
 	public int allReduce() {
 		int allRed = 0;
 		allRed += skillReduce();  //所有技能带来的减伤
+		System.out.println("---------技能减伤----" + allRed);
 		allRed += equipReduce();  //所有装备带来的减伤
-		
+		System.out.println("---------装备减伤----" + allRed);
 		
 		return allRed;
 	}
@@ -767,7 +793,8 @@ public class Player extends LiveCreature{
 		    	}
 	    	}
 	    	
-	    	alRe += Context.getGoodsParse().getGoodsConfigById(ii).getProtect();
+	    	alRe += Context.getGoodsParse().getGoodsConfigById(ii).getProtectByPfog(getProfIndex());
+	    	System.out.println("------------减伤-000---"+alRe);
 	    }
 	    return alRe;
 	}
@@ -797,10 +824,13 @@ public class Player extends LiveCreature{
 		int allAt = 0;
 		//等级对于攻击
 		allAt += Context.getLevelParse().getLevelConfigById(getLevel()).getAttackByProf(getProfIndex());
+		System.out.println("等级攻击： " + allAt);
 		//技能对于攻击
 		allAt += Context.getSkillParse().getSkillConfigById(skiId).getAttack();
-		//所穿装备对于攻击
+		System.out.println("技能攻击： " + allAt);
+		//所穿装备对应攻击
 		allAt += equipAttack();
+		System.out.println("装备攻击： " + allAt);
 		
 		return allAt;
 	}
@@ -856,9 +886,11 @@ public class Player extends LiveCreature{
 			return dg;
 		}
 		boolean hasDel = bagService.getGoods(gId, amount);
+		System.out.println("背包中剩余物品是否足够：" + hasDel);
 		if(!hasDel) return dg;
 		GoodsService gs = Context.getGoodsService();
 		for(int i = 0; i < amount; i++) {
+			if(gs.delGoods(playerEntity, gId) == null) return dg;
 			dg.add(gs.delGoods(playerEntity, gId));
 		}		
 		return dg;		
@@ -896,7 +928,7 @@ public class Player extends LiveCreature{
 		int typeId = Context.getGoodsParse().getGoodsConfigById(gId).getTypeId();
 		if(typeId != 1) return false;
 		//验证此物品数量是否足够, 并且删除
-		if(delGoods(gId, 1)  == null) return false;
+		if(delGoods(gId, 1).size() < 1) return false;
 		this.recoverHpMp.put(gId, new Date());
 		return true;
 	}
@@ -921,6 +953,7 @@ public class Player extends LiveCreature{
 			//System.out.println("------------------player.allrecover90------" + dual + ", " + (nTime-pTime));
 			//验证药品是否过期
 			if((nTime - pTime) > dual) {
+				System.out.println("--------过期了药品" + gId + ", " + nTime + ", " + pTime + ", " + dual);
 				deleRed.add(gId);  
 				continue;
 			}
@@ -1024,7 +1057,7 @@ public class Player extends LiveCreature{
 
 	public List<String> getTeammate() {
 		Set<String> ts = teammate.keySet();
-		System.out.println("----------teammate.size " + ts.size());
+		System.out.println("玩家队友人数： " + ts.size());
 		return new ArrayList<>(ts);
 	}
 	public boolean teamContain(String pname) {

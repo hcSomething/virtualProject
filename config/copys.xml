@@ -15,6 +15,28 @@
 	   <reward>gold:100;exp:100</reward>  <!-- 副本挑战成功奖励。格式：奖励名：数量。 -->
 	</copy>
 	
+	<copy id="2">
+	   <name>试炼地</name>
+	   <description>倾力打造的选拔精英的试炼场，只有完成这里，才能代表人类，去完成使命</description>
+	   <times>0</times>           <!-- 可以重复进入的次数。0：无限；其他表示相应的次数 -->
+	   <condition>1</condition>    <!-- 进入的条件,等级 -->
+	   <place>12</place>            <!--(secneId) 可进入的地点，同时也是可传送目的 -->
+	   <continueT>10</continueT>      <!--(分钟) 副本持续时间，只有在规定时间内打完所有boss，才算成功 -->
+	   <bosses>102</bosses>        <!-- 此副本中拥有的boss id, 用逗号隔开 -->
+	   <reward>gold:1000;exp:2000</reward>  <!-- 副本挑战成功奖励。格式：奖励名：数量。 -->
+	</copy>
+	
+	<copy id="3">
+	   <name>51区</name>
+	   <description>这是三体人选择登陆的地方</description>
+	   <times>0</times>           <!-- 可以重复进入的次数。0：无限；其他表示相应的次数 -->
+	   <condition>1</condition>    <!-- 进入的条件,等级 -->
+	   <place>14</place>            <!--(secneId) 可进入的地点，同时也是可传送目的 -->
+	   <continueT>20</continueT>      <!--(分钟) 副本持续时间，只有在规定时间内打完所有boss，才算成功 -->
+	   <bosses>103,104</bosses>        <!-- 此副本中拥有的boss id, 用逗号隔开 -->
+	   <reward>gold:1000;exp:2000</reward>  <!-- 副本挑战成功奖励。格式：奖励名：数量。 -->
+	</copy>
+	
 	
 	
    

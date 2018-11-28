@@ -26,7 +26,7 @@ public class Register {
 		int hp = 0;
 		int mp = 0;
 		//血量和法力在选择职业后设置
-		int[] skills = {}; //默认没有技能
+		int[] skills = {0}; //默认没有技能
 		Player player = new Player(id, 1, name, password, 1, hp, mp, 0, skills, session, true, new ArrayList<>());
 		
 		//Context.getWorld().getSceneById(1).addPlayer(player); //在场景1中注册了玩家，

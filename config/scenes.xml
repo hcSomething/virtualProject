@@ -2,34 +2,117 @@
 
 <scenes>
 	<scene id="1">
-		<name>神州浩土：起始</name>
-		<description>
-			这世间本是没有什么神仙的，但自太古以来，人类眼见周遭世界，诸般奇异之事，电闪雷鸣，狂风暴雨，又有天灾人祸，伤亡无数，哀鸿遍野，决非人力所能为，
-			所能抵挡。遂以为九天之上，有诸般神灵，九幽之下，亦是阴魂归处，阎罗殿堂。于是神仙之说，流传于世。无数人类子民，诚心叩拜，向着自己臆想创造出的各种神明顶礼膜拜，祈福诉苦，香火鼎盛。
-
-			自古以来，凡人无不有一死。但世人皆恶死爱生，更有地府阎罗之说，平添了几分苦惧，在此之下，遂有长生不死之说。
-
-			相比与其他生灵物种，人类或在体质上处于劣势，但万物灵长，却是绝无虚言。在追求长生的原动力下，一代代聪明才智之士，前赴后继，投入毕生精力，苦苦钻研。至今为止，虽然真正意义上的长生不死仍未找到，却有一些修真炼道之士，参透些天地造化，以凡人之身，掌握强横力量，借助各般秘宝法器之力，竟可震撼天地，有雷霆之威。而一些得到高深的前辈，更传说已活上千年之久而不死。世上之人以为得道成仙，便有更多人投入修真炼道之路。
-
-			这个故事，便是从这里开始。
-		</description>
-		<teleport>1</teleport>
+		<name>广场</name>
+		<description>这是一个在城市里的广场，游人如织。传说这里是所有人的精神的归处。</description>
+		<monst>3</monst>
+		<npc>4</npc>		
+		<teleport>1,2,3</teleport>
 	</scene>
 
 	<scene id="2">
-		<name>新手村</name>
-		<description>欢迎来到新手村</description>
-		<monst>1,2,3</monst>
-		<npc>1</npc>
-		<teleport>2,3</teleport>
+		<name>食堂</name>
+		<description>大型食堂，附近很多居民都在这里吃饭，物美价廉，吸引了很多人。</description>
+		<monst>3,4</monst>
+		<npc>6</npc>
+		<teleport>3</teleport>
 	</scene>
 
 	<scene id="3">
-		<name>青云镇</name>
-		<description>欢迎来到青云镇</description>
-		<monst>2,3</monst>
-		<npc>2</npc>
-		<teleport>1</teleport>
+		<name>书店</name>
+		<description>书城，里面的书包罗万象，什么书都可以从这里找到。</description>
+		<monst>3</monst>
+		<npc>3,12</npc>
+		<teleport>4,7</teleport>
+	</scene>
+	
+	<scene id="4">
+		<name>医院</name>
+		<description>这座城市的第一医院，什么病都可以治。</description>
+		<monst>3</monst>
+		<npc>10</npc>
+		<teleport>5,7</teleport>
+	</scene>
+	
+	<scene id="5">
+		<name>小食街</name>
+		<description>用美味堆叠而成的街，只要是你能想到的小吃，这里都有。</description>
+		<monst>3,4</monst>
+		<npc>5</npc>
+		<teleport>5</teleport>
+	</scene>
+	
+	<scene id="6">
+		<name>居民区</name>
+		<description>人们生活的地方，环境优美。</description>
+		<monst>1</monst>
+		<npc>11</npc>
+		<teleport>5,7</teleport>
+	</scene>
+	
+	<scene id="7">
+		<name>学校</name>
+		<description> 一所学校，无论是小学，中学，还是大学，这里都会教。</description>
+		<monst>3</monst>
+		<npc>9</npc>
+		<teleport>1,2,6,8</teleport>
+	</scene>
+	
+	<!-- ddddddddddddddddddd -->
+	<scene id="8">
+		<name>觉醒之城</name>
+		<description>所有能从精神幻境中走出来的人，都会来到这里。</description>
+		<monst>10,11</monst>
+		<npc>14,19,20</npc>
+		<teleport>9,10,11</teleport>
+	</scene>
+	
+	<scene id="9">
+		<name>科技之城</name>
+		<description>先进的科技，这里应有尽有。</description>
+		<monst>6,11</monst>
+		<npc>15</npc>
+		<teleport>11</teleport>
+	</scene>
+	
+	<scene id="10">
+		<name>历史之城</name>
+		<description>这里将带你回到曾经的世界。</description>
+		<monst>5</monst>
+		<npc>13</npc>
+		<teleport>8,13</teleport>
+	</scene>
+	
+	<scene id="11">
+		<name>空中要塞</name>
+		<description>一座悬浮在空中的城市，科技让这里无所不能。</description>
+		<monst>7,11</monst>
+		<npc>16</npc>
+		<teleport>8,9,12</teleport>
+	</scene>
+	
+	<scene id="12">
+		<name>聚裂之源</name>
+		<description>一座从太阳吸取能源的机器城市。</description>
+		<monst>9</monst>
+		<npc>18</npc>
+		<teleport>10,14</teleport>
+	</scene>
+	
+	<scene id="13">
+		<name>太平洋之心</name>
+		<description>周围都是一望无边的大海，尽管漂亮，但总有腻的时候。</description>
+		<monst>8</monst>
+		<npc>17</npc>
+		<teleport>8,10</teleport>
+	</scene>
+
+
+	<scene id="14">
+		<name>泰山之巅</name>
+		<description>这居然是一个传送点，真是奇怪</description>
+		<monst>11</monst>
+		<npc>21</npc>
+		<teleport>14</teleport>        <!-- 待续 -->
 	</scene>
 	
 

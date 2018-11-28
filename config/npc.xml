@@ -7,6 +7,7 @@
 		<task>年轻人，要多出去闯一闯，外面的世界超乎你的想象，有兴趣去青云镇吗！-_-</task>
 		<receive>1</receive>       <!-- 这个npc负责发放的任务。格式：任务id. 0表示没有任务发放 -->
 		<checkout>0</checkout>     <!-- 这个npc负责验收的任务。格式：任务id。0表示没有任务验收 -->
+		<goods>0</goods>           <!-- 此npc可以卖的物品id。0表示什么都不卖 -->
 	</npc>
 
 	<npc id="2">
@@ -18,12 +19,166 @@
 	</npc>
 	
 	<npc id="3">
-	    <name>商店老板【3】</name>
-	    <description>我家世代经商，看我现在是不是很有前途啊</description>
-	    <task></task>
-	    <award></award>		
+	    <name>书店老板【3】</name>
+	    <description>我家世代经商，只有我在买书，你说我是不是混的好惨。</description>
+	    <task>好想吃炒花生，童年的味道。据说只有小食街有卖</task>	
+	    <receive>6</receive>
+		<checkout>6</checkout>	    
+	</npc>
+	
+	<npc id="4">
+	    <name>遛弯者【4】</name>
+	    <description>我经常在广场里遛弯，有益身心健康</description>
+	    <task>我有一件衣服忘在家里了，要是有人帮我拿就好了</task>
+	    <receive>5</receive>
+		<checkout>5</checkout>	    
+	</npc>
+	
+	<npc id="5">
+	    <name>小吃店老板【5】</name>
+	    <description>百年小吃店，是不是很少见</description>
+	    <task>总有很多人在这里买零食吃</task>
+	    <receive>0</receive>
+		<checkout>0</checkout>	  
+		<goods>10</goods>
+	</npc>
+	
+	<npc id="6">
+	    <name>食堂阿姨【6】</name>
+	    <description>我在这座食堂工作很多年了，我挺喜欢这里的工作的</description>
+	    <task>消灭老鼠</task>
+	    <receive>1</receive>
+		<checkout>1</checkout>	 
+		<goods>9</goods>   
+	</npc>
+	
+	<npc id="7">
+	    <name>食客甲【7】</name>
+	    <description>这饭真好吃，不过听说以前的饭没有这么好吃的。</description>
+	    <task>我要多吃点</task>
 	    <receive>0</receive>
 		<checkout>0</checkout>	    
 	</npc>
+	
+	<npc id="8">
+	    <name>食客乙【8】</name>
+	    <description>你听过过这个谣言吗？有人说我们这个世界是假的。我才不信呢，难道我们都是假的，真是笑话</description>
+	    <task>有些人就是危言耸听，别理他们就好</task>
+	    <receive>0</receive>
+		<checkout>0</checkout>	    
+	</npc>
+	
+	<npc id="9">
+	    <name>先知【9】</name>
+	    <description>我在这里教书很多年了，也曾渡化过很多有理想的人。年轻人，想知道这个世界的终极吗？哈哈</description>
+	    <task>为了证明你有探索真实的决心，也为了测试你的能力，通过副本坠魔谷</task>
+	    <receive>3</receive>
+		<checkout>3</checkout>	    
+	</npc>
+	
+	<npc id="10">
+	    <name>医生【10】</name>
+	    <description>我非常喜欢当医生，这是我儿时的梦想</description>
+	    <task>击杀监管者</task>
+	    <receive>7</receive>
+		<checkout>7</checkout>	    
+	</npc>
+	
+	<npc id="11">
+	    <name>老奶奶【11】</name>
+	    <description>天凉了，我就不愿跑那么远去吃饭</description>
+	    <task>帮我到食堂买一碗牛肉面</task>
+	    <receive>2</receive>
+		<checkout>2</checkout>	    
+	</npc>
+	
+	<npc id="12">
+	    <name>买书者【12】</name>
+	    <description>我经常在这里买书，我脑中有一另一个世界</description>
+	    <task>可以进入副本</task>
+	    <receive>8</receive>
+		<checkout>8</checkout>	    
+		<copys>1</copys>                             <!-- 副本id -->
+	</npc>
+	
+	<!-- dddddddddddddddddddddddddddddddddddddddddddddddddddddddddd-->
+	<npc id="13">
+	    <name>馆长【13】</name>
+	    <description>书是人类最宝贵的财富，我很荣幸能在这里当馆长</description>
+	    <task>我们探查到有三体人潜入，请消灭他们</task>
+	    <receive>10</receive>
+		<checkout>10</checkout>	                          
+	</npc>
+	
+	<npc id="14">
+	    <name>迎接者【14】</name>
+	    <description>我已经在这里迎接了无数觉醒的同胞，但大部分我都再也没见过了</description>
+	    <task>三体人已经意识到我们秘密基地的存在，正有监视者潜入</task>
+	    <receive>9</receive>
+		<checkout>9</checkout>	                          
+	</npc>
+	
+	<npc id="15">
+	    <name>城主【15】</name>
+	    <description>只有科技才能让人类反败为胜。成也科技，败也科技！</description>
+	    <task>我们的太空基地发现了另一伙外星人，请消灭这些入侵者。</task>
+	    <receive>11</receive>
+		<checkout>11</checkout>	                          
+	</npc>
+	
+	<npc id="16">
+	    <name>舰长【16】</name>
+	    <description>这里是我们世界唯一一个空中基地，毕竟三体人的探测能力太强了。</description>
+	    <task>总有一些无知的三体人闯入我们的基地，消灭他们</task>
+	    <receive>12</receive>
+		<checkout>12</checkout>	                          
+	</npc>
+	
+	<npc id="17">
+	    <name>领袖【17】</name>
+	    <description>为了我们这个基地的安全，特意将其建在水下。</description>
+	    <task>就算是我们自己也不可能完全的无懈可击。为了人类的未来，请消灭所有反叛者！</task>
+	    <receive>13</receive>
+		<checkout>13</checkout>	                          
+	</npc>
+	
+	<npc id="18">
+	    <name>工程师【18】</name>
+	    <description>我觉得当前最大的好处是，再也不用担心没有能源了</description>
+	    <task>传说这里存在着一个时光机，能将人送到过去。但由于技术问题，不能反向传送。</task>
+	    <receive>14</receive>
+		<checkout>14</checkout>	
+		<copys>2</copys>                           
+	</npc>
+	
+	<npc id="19">
+	    <name>工作人员【19】</name>
+	    <description>这里才是真实的世界，你以前的所有记忆都是幻觉。</description>
+	    <task>无</task>
+	    <receive>0</receive>
+		<checkout>0</checkout>	
+		<copys>0</copys>                           
+	</npc>
+	
+	<npc id="20">
+	    <name>路人【20】</name>
+	    <description>好好享受真实吧，虽然有时候不一定比幻觉好过。</description>
+	    <task>无</task>
+	    <receive>0</receive>
+		<checkout>0</checkout>	
+		<copys>0</copys>                           
+	</npc>
+	
+	<npc id="21">
+	    <name>51区接引者【21】</name>
+	    <description>欢迎回到过去。现在唯一的任务就是消灭三体的基地。</description>
+	    <task>无</task>
+	    <receive>15</receive>
+		<checkout>15</checkout>	
+		<copys>3</copys>                           
+	</npc>
+	
+	
+	
 
 </npcs>

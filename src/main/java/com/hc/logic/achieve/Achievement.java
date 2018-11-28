@@ -19,13 +19,13 @@ public enum Achievement {
 					                       .getAchieveConfigByType(KILLM.ordinal()+1);
 			for(AchieveConfig ac : achieves) {
 				if(ac.getSid() == args) {
+					//更新成就进度
 					int amount = player.getPlayerAchieves().achieveProgress(ac.getId());
-					if(ac.getNum() <= amount) {
+					if(ac.getNum() <= amount) {  //验证是否达成成就
 						player.getPlayerAchieves().isComplete(ac.getId());
 					}
 				}
-			}
-			
+			}			
 		}
 	},
 	LEVEL("level", "等级"){
@@ -68,8 +68,8 @@ public enum Achievement {
 	COPYS("copys", "副本相关"){
 		@Override
 		public void achieve(Player player, int para) {
-			player.getPlayerTasks().copyRecord(para);  //需要传入完成的副本id， 任务
-			
+			System.out.println("完成的副本id：" + para);
+			player.getPlayerTasks().copyRecord(para);  //需要传入完成的副本id， 任务			
 		}
 	},
 	SOCIAL("social", "社交相关"){

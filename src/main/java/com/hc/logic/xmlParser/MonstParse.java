@@ -75,6 +75,8 @@ public class MonstParse implements ParseXml{
 					}else if(nodeName.equals("attackP")) {
 						String sAtt = child.getStringValue();
 						monst.setAttackP(Integer.parseInt(sAtt));
+					}else if(nodeName.equals("revive")) {
+						monst.setRevive(Integer.parseInt(child.getStringValue()));
 					}
 				}
 				

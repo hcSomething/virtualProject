@@ -25,14 +25,15 @@ public class GoodsConfig{
 	private List<Integer> attacks = new ArrayList<>();
 	private int superposi;          //在背包中的可叠加数量
 	private int price;             //购买价格
+	private int inshop;            //是否在商店卖：0：不能，1：能
 	
 	
 	
 	public void convert() {
 		if(typeId != 2 && typeId != 3) {
 			//不是武器装备
-			convert(sprotect, protect);
-			convert(sattack, attack);
+			if(sprotect != null) this.protect = Integer.parseInt(sprotect);
+			if(sattack != null) this.attack = Integer.parseInt(sattack);
 		}else {
 			//武器装备
 			convert(sprotect, protects);
@@ -44,10 +45,6 @@ public class GoodsConfig{
 		for(int i = 0; i < names.length; i++) {
 			resu.add(Integer.parseInt(names[i]));
 		}
-	}
-	private void convert(String name, int resu) {
-		//不是武器装备
-		resu = Integer.parseInt(name);
 	}
 	
 	
@@ -154,6 +151,13 @@ public class GoodsConfig{
 	}
 	public void setAttacks(List<Integer> attacks) {
 		this.attacks = attacks;
+	}
+	
+	public int getInshop() {
+		return inshop;
+	}
+	public void setInshop(int inshop) {
+		this.inshop = inshop;
 	}
 	@Override
 	public String toString() {

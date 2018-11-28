@@ -1,6 +1,5 @@
 package com.hc.logic.achieve;
 
-import java.util.HashMap;
 import java.util.Map;
 
 import com.hc.frame.Context;
@@ -16,11 +15,21 @@ public class Task {
 		this.tid = tid;
 		this.taskConfig = Context.getTaskParse().getTaskConfigByid(tid);
 		this.taskTarget = TargetType.getTargetById(taskConfig.getType());
+		System.out.println("初始化的target：" + taskTarget.getTaskComplete().toString());
+		init();
 	}
 	//任务恢复
 	public Task(int tid, Map<Integer, Integer> maps) {
 		this(tid);
 		taskTarget.setTaskComplete(maps);
+	}
+	
+	public void init() {
+		for(Map.Entry<Integer, Integer> ent : taskConfig.getNeeded().entrySet()) {
+			taskTarget.getTaskComplete().put(ent.getKey(), 0);
+			//System.out.println("taskConfig中有：" + ent.getKey() + ", " + ent.getValue());
+		}
+		System.out.println("任务"+ taskConfig.getName() +"的需求：" + taskTarget.getTaskComplete().toString());
 	}
 	
 	/**
@@ -76,5 +85,8 @@ public class Task {
 		this.taskTarget = taskTarget;
 	}
 
-	
+	@Override
+	public String toString() {
+		return	tid+"";
+	}
 }

@@ -42,8 +42,10 @@ public class Login {
 		}
 		if(playerEnt != null) {
 			player = playerEnt.createPlayer(session);
+		}else {
+			Context.getWorld().addPlayerEntity(player.getPlayerEntity());
+			new PlayerDaoImpl().insert(player.getPlayerEntity());
 		}
-		
 		
 		if(!player.getPassword().equals(password)) {
 			session.sendMessage("密码错误");
@@ -168,10 +170,10 @@ public class Login {
 	}
 	
 	private void enterNormalScene(Player player, int sceneId) {
-		System.out.println("---------------今入normalscene" + player  + ", sceneId="+sceneId);
+		System.out.println("进入普通场景，玩家：" + player  + ", 场景id："+sceneId);
 		player.setSceneId(sceneId);
 		Scene sc = Context.getWorld().getSceneById(player.getSceneId());
-		System.out.println("---------------今入normalscene后-" + player.getSceneId());
+		//System.out.println("---------------今入normalscene后-" + player.getSceneId());
 		if(sc.getPlayerByName(player.getName()) == null) {
 			sc.addPlayer(player);
 		}

@@ -17,6 +17,7 @@ public class MonstConfig{
 	private boolean isAlive = true; //初始时，默认是活的
 	private int exp; //击杀获得经验
 	private int attackP;  //是否会主动攻击玩家。0：不会，1：会
+	private int revive;   //复活需要的时间（秒）
 		
 	//boss专用
 	private int gold;
@@ -107,6 +108,15 @@ public class MonstConfig{
 	public void setAlive(boolean isAlive) {
 		this.isAlive = isAlive;
 	}	
+	
+	public int getRevive() {
+		return revive;
+	}
+
+	public void setRevive(int revive) {
+		this.revive = revive;
+	}
+
 	@Override
 	public String toString() {
 		return name;

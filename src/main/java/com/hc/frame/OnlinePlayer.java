@@ -4,6 +4,8 @@ import java.util.*;
 import org.springframework.stereotype.Component;
 
 import com.hc.logic.creature.*;
+
+import io.netty.channel.Channel;
 /**
  * 所有场景中的在线玩家
  * @author hc
@@ -43,6 +45,15 @@ public class OnlinePlayer {
 	public Player getPlayerByName(String name) {
 		for(Player p : onlinePlayers) {
 			if(p.getName().equals(name)) {
+				return p;
+			}
+		}
+		return null;
+	}
+	
+	public Player containChannel(Channel channel) {
+		for(Player p : onlinePlayers) {
+			if(p.getSession().getChannel().equals(channel)) {
 				return p;
 			}
 		}

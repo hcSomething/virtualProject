@@ -31,8 +31,8 @@ public class Scene implements Runnable{
 	protected List<Player> players = new ArrayList<>();
 	//当前场景的所有传送阵,列表中存放的是目标场景id的集合
 	protected List<String> teleports = new ArrayList<>();
-	//当前场景，所有的传送阵id
-	protected List<Integer> telepIds = new ArrayList<>();
+	//当前场景，所有的传送阵id。（场景id--传送阵id）
+	protected Map<Integer, Integer> tSid2tid = new HashMap<>();
 	
 	//当前场景，被攻击玩家列表: key:怪物id, value:每个怪物可以攻击的玩家
 	protected Map<Integer, List<Player>> attackPlayers = new HashMap<>();
@@ -54,18 +54,28 @@ public class Scene implements Runnable{
 	//这个方法会被自动周期性调用
     @Override
     public void run() {
-    	//怪物攻击
-    	attackPlayer();
-    	letPlayerProgress();
+    	try {
+    		//怪物攻击
+        	attackPlayer();
+        	letPlayerProgress();
+    	}catch(Exception e){
+    		System.out.println("-------scene 中的异常" + id + ", players.size=" + players.size());
+    		e.printStackTrace();
+    	}
     }
 
     public void letPlayerProgress() {
     	lock.lock();
     	try {
     		//System.out.println("------------场景心跳----------" + id);
-    		Iterator<Player> it = players.iterator();
-    		while(it.hasNext()) {
-    			it.next().periodCall();
+    		if(players == null || players.size() < 1) {
+    			return;
+    		}
+    		//System.out.println("场景："+ id +" lePlayerProgress中，玩家队列的大小" + players.size());
+    		for(int i = 0; i < players.size(); i++) {
+    			if(players.get(i) != null) {
+    				players.get(i).periodCall();
+    			}
     		}
     	}finally {
     		lock.unlock();
@@ -86,10 +96,14 @@ public class Scene implements Runnable{
 				List<Player> attackP = enti.getValue();
 				if(attackP.isEmpty()) return;
 				Player pp = attackP.get(0); //每次只攻击第一个攻击它的玩家
+				if(!pp.isAlive()) {
+					deleteAttackPlayer(pp);
+					return;
+				}
 				int dHp = Context.getSceneParse().getMonsters().getMonstConfgById(mId).getAttack();
 				
 				//玩家可以减少伤害的buff，比如护盾
-				pp.attackPlayerReduce(dHp);
+				dHp = pp.attackPlayerReduce(dHp);
 				
 				String name = Context.getSceneParse().getMonsters().getMonstConfgById(mId).getName();
 				pp.getSession().sendMessage("正在被 " + name + " 攻击，减少血量：" + dHp);
@@ -160,8 +174,6 @@ public class Scene implements Runnable{
 		lock.lock();
 		try {
 			System.out.println(" 当一个玩家去到别的场景时，怪物就攻击不到，从怪物的攻击列表中删除");
-			//boolean find = false;
-			System.out.println("前 "+attackPlayers.toString());
 			List<Integer> monsIds = new ArrayList<>();
 			for(Entry<Integer, List<Player>> enti : attackPlayers.entrySet()) {
 				int mId = enti.getKey();
@@ -180,7 +192,7 @@ public class Scene implements Runnable{
 			}
 			//当玩家传送后，清空技能的持续效果
 			if(p.getSkillAttack() != null) p.getSkillAttack().cleanup();
-			System.out.println("后 "+attackPlayers.toString() + ", " + monsIds.toString());
+			//System.out.println("后 "+attackPlayers.toString() + ", " + monsIds.toString());
 			delNullList(monsIds);
 		}finally {
 			lock.unlock();
@@ -196,7 +208,6 @@ public class Scene implements Runnable{
 	 * @param mId
 	 */
 	public void deleteAttackMonst(Monster monster) {
-		System.out.println("================这里被击杀了");
 		lock.lock();
 		try {
 			attackPlayers.remove(new Integer(monster.getMonstId()));
@@ -208,19 +219,34 @@ public class Scene implements Runnable{
 	
 
 	/**
-	 * 判断当前场景是否有这个传送阵id
+	 * 判断当前场景是否有这个目标场景id
 	 * @param id
 	 * @return
 	 */
-	public boolean hasTelepId(int id) {
-		for(int ii : telepIds) {
-			if(ii == id) {
+	public boolean hasTargetSceneId(int sid) {
+		System.out.println("当前场景的传送阵：" + tSid2tid.toString() + ", 要传送的目标场景id：" + sid);
+		for(int ii : tSid2tid.keySet()) {
+			if(ii == sid) {
 				return true;
 			}
 		}
 		return false;
 	}
-
+	/**
+	 * 返回当前场景中的能进入目标场景的传送阵的id
+	 * @param targetSId: 目标场景id
+	 * @return
+	 */
+	public int getTelepIdsByTid(int targetSId){  //目标场景id
+		return tSid2tid.get(new Integer(targetSId));
+	}
+	/**
+	 * （场景id--传送阵id）
+	 * @return
+	 */
+	public Map<Integer, Integer> getTelepIds(){ //返回
+		return tSid2tid;
+	}
 
 	/**
 	 * 所有当前场景可以传送到的场景
@@ -248,11 +274,13 @@ public class Scene implements Runnable{
 	 * @param session
 	 */
 	public void allThing(Session session) {
-		session.sendMessage("所有npc" + getCreatures() + "");
-		session.sendMessage("所有怪物" + getMonsters() + "\n");
-		session.sendMessage("所有玩家" + getPlayers() + "\n");
+		StringBuilder sb = new StringBuilder();
+		sb.append("所有npc" + getCreatures() + "\n");
+		sb.append("所有怪物" + getMonsters() + "\n");
+		sb.append("所有玩家" + getPlayers() + "\n");
 		//更改了传送的方式
-		session.sendMessage("所有可传送目标：" + allTransportableScene());
+		sb.append("所有可传送目标：" + allTransportableScene());
+		session.sendMessage(sb.toString());
 	}
 	
 	
@@ -317,7 +345,12 @@ public class Scene implements Runnable{
 	}
 
 	public List<Player> getPlayers() {
-		return players;
+		lock.lock();
+		try{
+			return new ArrayList<>(players);
+		}finally {
+			lock.unlock();
+		}
 	}
 
 	public void addPlayer(Player player) {
@@ -333,10 +366,9 @@ public class Scene implements Runnable{
 		return teleports;
 	}
 
-	public void addTeleport(String te) {
+	public void addTeleport(String te, int tid, int sourceId) {  //tid是传送阵id, sourceId是传送阵所在场景id
 		teleports.add(te);
-		String sid = te.substring(te.length()-2, te.length()-1);
-		telepIds.add(Integer.parseInt(sid));
+		tSid2tid.put(sourceId, tid);
 	}
 
 
@@ -347,9 +379,6 @@ public class Scene implements Runnable{
 		this.name = n;
 	}
 
-	public List<Integer> getTelepIds() {
-		return telepIds;
-	}
 	
 
 }

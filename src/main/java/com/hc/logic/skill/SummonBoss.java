@@ -57,7 +57,7 @@ public class SummonBoss implements Runnable{
 		this.summBoss = summboss;
 		this.monsters = new ArrayList<>(monsters);
 		init();
-		this.terminate = System.currentTimeMillis() + 11*1000;  //默认存在7秒
+		this.terminate = System.currentTimeMillis() + 13*1000;  //默认存在7秒
 		System.out.println("summonboss初始化" + terminate + ", 当前时间" + System.currentTimeMillis());
 		System.out.println("召唤物可攻击列表：" + monsters.toString());
 	}

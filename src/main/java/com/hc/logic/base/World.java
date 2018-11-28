@@ -35,6 +35,7 @@ import com.hc.logic.creature.Monster;
 import com.hc.logic.creature.Player;
 import com.hc.logic.dao.impl.PlayerDaoImpl;
 import com.hc.logic.domain.CopyEntity;
+import com.hc.logic.domain.EmailEntity;
 import com.hc.logic.domain.Equip;
 import com.hc.logic.domain.GoodsEntity;
 import com.hc.logic.domain.PlayerEntity;
@@ -59,9 +60,6 @@ public class World implements ApplicationContextAware{
 	private Map<Integer, Map<Integer, Copys>> allCopys = new HashMap<>();
 	//注册的玩家，
 	private List<Player> allRegisteredPlayer = new ArrayList<>();
-	//所有玩家实体，在启动时，从数据库加载
-	//private List<PlayerEntity> allPlayerEntity = new ArrayList<>();
-	//private List<PlayerEntity> allPlayerEntity = new LinkedList<>();
 	//玩家实体缓存。key：玩家名；value：实体
 	Cache<String, PlayerEntity> cache = CacheBuilder.newBuilder()
 		                                             .maximumSize(1000)
@@ -111,7 +109,6 @@ public class World implements ApplicationContextAware{
 	 * 加载的场景都缓存在Wolrd类的sceneResource字段中
 	 * 加载场景配置文件时，也要加载场景中的怪物，npc和传送阵等实体。
 	 * 
-	 * bornPlace和VillageOfFrashman等硬编码场景可以删掉了
 	 */
 	public void configAllScene() {
 	    SceneParse sceneP = context.getBean("sceneParse", SceneParse.class);
@@ -131,10 +128,10 @@ public class World implements ApplicationContextAware{
 			}
 			
 			//设置传送阵
-			for(int i : sConfig.getTeleports()) {
+			for(int tid : sConfig.getTeleports()) {
 				TelepParse tp = sceneP.getTeleps();
-				TelepConfig tc = tp.getTelepConfigById(i);
-				scene.addTeleport(tc.getDescription()); //场景中存放的只有传送阵的描述
+				TelepConfig tc = tp.getTelepConfigById(tid);
+				scene.addTeleport(tc.getDescription(), tid, tc.getSceneid()); //场景中存放的只有传送阵的描述
 			}
 			//将所有场景信息放入sceneResource字段中
 			addSceneResource(scene.getId(), scene);
@@ -335,10 +332,14 @@ public class World implements ApplicationContextAware{
 		}
 		String hql = "select pe from PlayerEntity pe where name "
 				+ "like : name";
-		List<PlayerEntity> pe = new PlayerDaoImpl().find(hql, name);
-		if(pe.size() == 1) {
-			cache.put(name, pe.get(0));
-			return pe.get(0);
+		List<PlayerEntity> pes = new PlayerDaoImpl().find(hql, name);
+		if(pes.size() == 1) {
+			PlayerEntity pe = pes.get(0);
+			String hql1 = "from EmailEntity em where playerName like : name ";
+			List<EmailEntity> list = new PlayerDaoImpl().find(hql1, pe.getName());
+			pe.setEmails(list);
+			cache.put(name, pe);
+			return pe;
 		}
 		return null;
 	}
@@ -357,7 +358,10 @@ public class World implements ApplicationContextAware{
 	public int getMaxId() {
 		String hql = "select max(pe.id) from PlayerEntity pe";
 		List<Integer> pes = new PlayerDaoImpl().find(hql);
-		int result = pes.get(0);
+		int result = 0;
+		if(pes != null && pes.get(0) != null) {
+			result = pes.get(0);
+		}
 		return result + 1;
 	}
 

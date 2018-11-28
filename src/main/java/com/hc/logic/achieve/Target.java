@@ -17,7 +17,7 @@ public interface Target {
 	String taskProgessDesc(TaskConfig taskConfig);
 	/**
 	 * 添加任务进度，也就是完成的项
-	 * @param id
+	 * @param id.相应的id。如怪物id，物品id，副本id
 	 */
 	void addComplete(int id);
 	

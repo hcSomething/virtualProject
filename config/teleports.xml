@@ -2,19 +2,79 @@
 
 <teleports>
 	<teleport id="1">
-		<description>新手村【2】</description>
+		<description>医院【4】</description>
+		<sceneid>4</sceneid>
 	</teleport>
 
 	<teleport id="2">
-		<description>出生地【1】</description>
+		<description>居民区【6】</description>
+		<sceneid>6</sceneid>
 	</teleport>
 
 	<teleport id="3">
-		<description>青云镇【3】</description>
+		<description>书店【3】</description>
+		<sceneid>3</sceneid>
+	</teleport>
+	
+	<teleport id="4">
+		<description>食堂【2】</description>
+		<sceneid>2</sceneid>
 	</teleport>
 
-
-
-
+    <teleport id="5">
+		<description>学校【7】</description>
+		<sceneid>7</sceneid>
+	</teleport>
+	
+	<teleport id="6">
+		<description>小食街【5】</description>
+		<sceneid>5</sceneid>
+	</teleport>
+	
+	<teleport id="7">
+		<description>广场【1】</description>
+		<sceneid>1</sceneid>
+	</teleport>
+	
+	<!-- ddddddddddddddddddddddddddddddddddddddddddddddddd-->
+	<teleport id="8">
+		<description>觉醒之城【8】</description>
+		<sceneid>8</sceneid>
+		<level>3</level>       <!-- 等级限制 。只有大于等于这个等级才能使用-->
+		<task>3</task>         <!-- 任务限制。只有完成某个任务后，才能使用 -->		
+	</teleport>
+	
+	<teleport id="9">
+		<description>太平洋之心【13】</description>
+		<sceneid>13</sceneid>
+	</teleport>
+	
+	<teleport id="10">
+		<description>空中要塞【11】</description>
+		<sceneid>11</sceneid>
+	</teleport>
+	
+	<teleport id="11">
+		<description>历史之城【10】</description>
+		<sceneid>10</sceneid>
+	</teleport>
+	
+	<teleport id="12">
+		<description>聚裂之源【12】</description>
+		<sceneid>12</sceneid>
+	</teleport>
+	
+	<teleport id="13">
+		<description>科技之城【9】</description>
+		<sceneid>9</sceneid>
+	</teleport>
+	
+   <!-- dgdjjjjjjjjjjjjjjjjjjjjjjjjjjjjj -->
+    <teleport id="14">
+		<description>泰山之巅【14】</description>
+		<sceneid>14</sceneid>
+		<level>6</level>       <!-- 等级限制 。只有大于等于这个等级才能使用-->
+		<task>14</task>         <!-- 任务限制。只有完成某个任务后，才能使用 -->		
+	</teleport>
 
 </teleports>

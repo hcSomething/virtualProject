@@ -14,6 +14,8 @@ public class Monster extends LiveCreature{
 	private boolean isAlive = true; //初始时，默认是活的
 	private Lock lock = new ReentrantLock();
 	
+	private long lastDeadtime = 0l;
+	
 	MonstConfig monstConfig;	
 	
 	public Monster(int mId) {
@@ -34,7 +36,6 @@ public class Monster extends LiveCreature{
 	 */
 	public int canAttack(int skillid, Player player) {
 		int reduce = player.AllAttack(skillid);
-		System.out.println("------------Monster.canAttack-------");
 	    return attack(reduce);
 	}
 	/**
@@ -48,6 +49,7 @@ public class Monster extends LiveCreature{
 	public int attack(int attack) {
 		lock.lock();
 		try {
+			if(!reviveMonster()) return -1;
 			int diff = Hp - attack;
 		    if(Hp > 0) {  //未死，可以攻击
 		    	if(diff > 0) {
@@ -55,6 +57,7 @@ public class Monster extends LiveCreature{
 		    	}else {
 		    		Hp = 0;
 		    		isAlive = false;
+		    		lastDeadtime = System.currentTimeMillis();
 		    		return 1;
 		    	}
 		    	return 0;
@@ -62,10 +65,28 @@ public class Monster extends LiveCreature{
 		    	return -1;
 		    }
 		}finally {
+			System.out.println("----释放锁");
 			lock.unlock();
 		}
 	}
 	
+	/**
+	 * 怪物自动复活
+	 * @return true:活了
+	 */
+	private boolean reviveMonster() {
+		if(isAlive) return true;
+		long cur = System.currentTimeMillis();
+		int reviv = Context.getSceneParse().getMonsters().getMonstConfgById(monstId).getRevive();
+		long reviveTime = reviv * 1000;
+		if(cur - lastDeadtime > reviveTime) {
+			this.isAlive = true;
+			this.Hp = Context.getSceneParse().getMonsters().getMonstConfgById(monstId).getHp();
+			lastDeadtime = cur;
+			return true;
+		}
+		return false;
+	}
 	
 	public int pAttackM() {
 		return 0;
@@ -114,7 +135,14 @@ public class Monster extends LiveCreature{
 		Hp = hp;
 	}
     public boolean isAlive() {
-		return isAlive;
+    	lock.lock();
+    	try {
+    		//判断是否可以复活
+        	reviveMonster();
+    		return isAlive;
+    	}finally {
+    		lock.unlock();
+    	}
 	}
 	public void setAlive(boolean isAlive) {
 		this.isAlive = isAlive;

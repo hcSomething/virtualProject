@@ -19,9 +19,8 @@ public class AwardService {
 	 */
 	public void obtainAward(Player player, Monster monst) {
 		//增加经验
-		System.out.println("---------击杀怪物获得奖励--"+ player.getExp() + ", 获得" + monst.getExp());
 		player.addExp(monst.getExp());
-		System.out.println("---------击杀怪物获得奖励----后-"+ player.getExp());
+		System.out.println("击杀怪物获得经验："+ player.getExp());
 		//TODO 获得金币，武器等等（待续）
 		
 		

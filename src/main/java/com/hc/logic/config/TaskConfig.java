@@ -43,6 +43,7 @@ public class TaskConfig {
 				needed.put(Integer.parseInt(item[0]), Integer.parseInt(item[1]));
 			}
 		}
+		//System.out.println("任务类型：" + id + name +"，needed= " + needed.toString());
 	}
 	private void convertAward() {
 		awardit = new HashMap<>();

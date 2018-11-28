@@ -63,6 +63,10 @@ public class NpcParse implements ParseXml{
 						npc.setReceive(Integer.parseInt(child.getStringValue()));
 					}else if(nodeName.equals("checkout")) {
 						npc.setCheckout(Integer.parseInt(child.getStringValue()));
+					}else if(nodeName.equals("goods")) {
+						npc.setGoodId(Integer.parseInt(child.getStringValue()));
+					}else if(nodeName.equals("copys")) {
+						npc.setCopyId(Integer.parseInt(child.getStringValue()));
 					}
 				}
 				

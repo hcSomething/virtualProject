@@ -2,11 +2,12 @@
 
 <monsters>
 	<monster id="1">
-		<name>麻雀【1】</name>
-		<description>我是一只灰色的麻雀，整天叽叽喳喳的</description>
-		<hp>10</hp>
-		<attack>0</attack>                                            <!-- 攻击力 -->
-		<exp>5</exp>                                                  <!-- 击杀获得的经验 -->
+		<name>虚弱的监管者【1】</name>
+		<description>看看这个世界，看看这些人，他们永远都不知道什么是真实！哈..哈..哈哈。我得赶快走了，没能量了</description>
+		<hp>100</hp>
+		<attack>30</attack>                                            <!-- 攻击力 -->
+		<exp>100</exp>                                                  <!-- 击杀获得的经验 -->
+		<revive>50</revive>                                            <!-- （秒）复活时间 -->
 	</monster>
 
 	<monster id="2">
@@ -15,15 +16,91 @@
 		<hp>40</hp>
 		<attack>3</attack>
 		<exp>15</exp>
+		<revive>7</revive> 
 	</monster>
 	
 	<monster id="3">
 		<name>微冥【3】</name>
 		<description>及其微小的生物，以鲜血为食</description>
 		<hp>40</hp>
-		<attack>3</attack>
-		<exp>15</exp>
+		<attack>8</attack>
+		<exp>3000</exp>
+		<revive>30</revive> 
 	</monster>
+	
+	<monster id="4">
+		<name>老鼠【4】</name>
+		<description>身为四害之一，果然名不虚传</description>
+		<hp>7</hp>
+		<attack>1</attack>
+		<exp>8</exp>
+		<revive>12</revive> 
+	</monster>
+
+	<monster id="5">
+		<name>三体监视机器人【5】</name>
+		<description>我是当今科技巅峰的代表，可以变幻为任何形态，还不用充电-)</description>
+		<hp>170</hp>
+		<attack>40</attack>
+		<exp>50</exp>
+		<revive>20</revive> 
+	</monster>
+	
+	<monster id="6">
+		<name>三体闯入者【6】</name>
+		<description>这是哪里，为什么我不认识你们</description>
+		<hp>290</hp>
+		<attack>22</attack>
+		<exp>100</exp>
+		<revive>40</revive> 
+	</monster>
+	
+	<monster id="7">
+		<name>反叛者【7】</name>
+		<description>我受够这里了，我要毁灭这里，哈哈哈</description>
+		<hp>360</hp>
+		<attack>32</attack>
+		<exp>300</exp>
+		<revive>70</revive> 
+	</monster>
+	
+	<monster id="8">
+		<name>间谍【8】</name>
+		<description>为什么总是我来做这种事，真倒霉！</description>
+		<hp>499</hp>
+		<attack>43</attack>
+		<exp>500</exp>
+		<revive>70</revive> 
+	</monster>
+	
+	<monster id="9">
+		<name>外星人【9】</name>
+		<description>真奇妙，这个星球上居然有两个统治者！</description>
+		<hp>600</hp>
+		<attack>70</attack>
+		<exp>700</exp>
+		<revive>80</revive> 
+	</monster>
+	
+	<monster id="10">
+		<name>短路的机器人【10】</name>
+		<description>我脑袋好混乱，，，我是谁，，我要干什么</description>
+		<hp>100</hp>
+		<attack>18</attack>
+		<exp>80</exp>
+		<revive>20</revive> 
+	</monster>
+	
+	<monster id="11">
+		<name>变异麻雀【11】</name>
+		<description>我可是有辐射的哟，呵呵</description>
+		<hp>100</hp>
+		<attack>20</attack>
+		<exp>90</exp>
+		<revive>20</revive> 
+	</monster>
+	
+	
 	
 	
 	
@@ -37,6 +114,7 @@
 	    <attackP>0</attackP>                         <!-- 是否会主动攻击玩家。0：不会，1：会 -->      
 	    <skills>100,101,102,103</skills>             <!-- boss所拥有的技能 -->
 	    <gold>100</gold>                             <!-- 击杀boss的金币奖励 -->
+	    <revive>10000</revive>
 	</monster>
 	
 	<monster id="101">
@@ -47,8 +125,41 @@
 	    <attackP>0</attackP>                         <!-- 是否会主动攻击玩家。0：不会，1：会 -->      
 	    <skills>100,101,102</skills>                 <!-- boss所拥有的技能 -->
 	    <gold>100</gold>                             <!-- 击杀boss的金币奖励 -->
+	    <revive>10000</revive>
 	</monster>
 	
+	<monster id="102">
+	    <name>机器人-灭世【102】</name>
+	    <description>高科技的机器人，和猎豹一样灵活，战斗力惊人</description>
+	    <hp>1000</hp>
+	    <exp>800</exp>
+	    <attackP>0</attackP>                         <!-- 是否会主动攻击玩家。0：不会，1：会 -->      
+	    <skills>103,104,105</skills>                     <!-- boss所拥有的技能 -->
+	    <gold>3000</gold>                             <!-- 击杀boss的金币奖励 -->
+	    <revive>10000</revive>
+	</monster>
+	
+	<monster id="103">
+	    <name>母舰【103】</name>
+	    <description>三体人登陆的主舰</description>
+	    <hp>2000</hp>
+	    <exp>1200</exp>
+	    <attackP>0</attackP>                         <!-- 是否会主动攻击玩家。0：不会，1：会 -->      
+	    <skills>103,106,107</skills>                     <!-- boss所拥有的技能 -->
+	    <gold>4000</gold>                             <!-- 击杀boss的金币奖励 -->
+	    <revive>10000</revive>
+	</monster>
+	
+	<monster id="104">
+	    <name>二相箔【104】</name>
+	    <description>威力强大的空间武器，应尽快消灭</description>
+	    <hp>3500</hp>
+	    <exp>2200</exp>
+	    <attackP>0</attackP>                         <!-- 是否会主动攻击玩家。0：不会，1：会 -->      
+	    <skills>103,108,109</skills>                     <!-- boss所拥有的技能 -->
+	    <gold>4000</gold>                             <!-- 击杀boss的金币奖励 -->
+	    <revive>10000</revive>
+	</monster>
 	
 
 

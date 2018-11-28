@@ -18,6 +18,7 @@ import com.hc.logic.config.GoodsConfig;
 public class GoodsParse implements ParseXml{
 
 	private List<GoodsConfig> goodslList = null;
+	private List<GoodsConfig> storeGoodsList = new ArrayList<>();
 	private GoodsConfig goods = null;
 
 	public GoodsParse() {
@@ -77,10 +78,13 @@ public class GoodsParse implements ParseXml{
 					}else if(nodeName.equals("price")) {
 						String sPric = child.getStringValue();
 						goods.setPrice(Integer.parseInt(sPric));
+					}else if(nodeName.equals("shop")) {
+						goods.setInshop(Integer.parseInt(child.getStringValue()));
 					}
 				}
 				
 				goodslList.add(goods);
+				if(goods.getInshop() == 1) storeGoodsList.add(goods);
 				goods.convert();
 				goods = null;
 				
@@ -113,6 +117,14 @@ public class GoodsParse implements ParseXml{
 	public List<GoodsConfig> getGoodsList(){
 		return goodslList;
 	}
+	/**
+	 * 返回所有可以在商店卖的物品配置列表
+	 * @return
+	 */
+	public List<GoodsConfig> getShopGoodsList(){
+		return storeGoodsList;
+	}
+
 
 	
 }

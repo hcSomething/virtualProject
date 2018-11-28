@@ -37,7 +37,6 @@ public enum Order {
 			String password = args[2];
 			//new Register(playerName, password).register(session);;
 			Context.getRegister().register(session, playerName, password);
-			System.out.println("----------这里是注册------------");
 		}
 	},
 	LOGIN("login", "登陆"){
@@ -48,7 +47,6 @@ public enum Order {
 				return;
 			}
 			new Login(args[1], args[2]).login(session);
-			System.out.println("----------这里是登陆------------");
 		}
 	},
 	ENTERWORLD("enterWorld", "进入世界"){
@@ -225,7 +223,7 @@ public enum Order {
 				session.sendMessage("命令参数不正确");
 				return;
 			}
-			boolean learnIt = session.getPlayer().addSkill(Integer.parseInt(args[1]));
+			boolean learnIt = session.getPlayer().addSkillByBook(Integer.parseInt(args[1]));
 			if(learnIt) session.sendMessage("学习技能成功");
 		}
 	},
@@ -245,6 +243,10 @@ public enum Order {
 	ECOPY("eCopy", "请求进入副本"){
 		@Override 
 		public void doService(String[] args, Session session) {
+			if(session != null) {
+				session.sendMessage("没有这个命令，需要从npc处进入副本");
+				return;
+			}
 			//现在默认是只有一个玩家进入副本
 			if(!OrderVerifyService.ontInt(args)) {
 				session.sendMessage("命令参数不正确");
@@ -368,6 +370,20 @@ public enum Order {
 		@Override 
 		public void doService(String[] args, Session session) {
 			Context.getTaskService().desOrder(session, args);
+		}
+	},
+	REVIVE("revive", "复活"){
+		@Override 
+		public void doService(String[] args, Session session) {
+			if(!OrderVerifyService.noPara(args)) {
+				session.sendMessage("命令参数不正确");
+				return;
+			}
+			if(session.getPlayer().isAlive()) {
+				session.sendMessage("没有死亡，不用复活");
+				return;
+			}
+			Context.getTransferService().reAlive(session.getPlayer());
 		}
 	};
 	

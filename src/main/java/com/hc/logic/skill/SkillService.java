@@ -18,6 +18,8 @@ import com.hc.logic.creature.Player;
 @Component
 public class SkillService {
 	
+	private final int ALL_ATTACK = 0;   //表示群体攻击
+	
 	/**
 	 * 解析命令
 	 * @param session
@@ -85,7 +87,7 @@ public class SkillService {
 		Player player = session.getPlayer();		
 		//玩家技能验证
 		if(!skillValid(session, skillId)) return;
-		if(Context.getSkillParse().getSkillConfigById(skillId).getScope() == 0) {
+		if(Context.getSkillParse().getSkillConfigById(skillId).getScope() == ALL_ATTACK) {
 			session.sendMessage("此技能是全范围攻击！将攻击所有敌人");
 			attackAllMonster( session, skillId);
 			return;
@@ -266,7 +268,7 @@ public class SkillService {
 	 * @param skillId 技能id
 	 */
 	public void updateWeapon(Player player, int skillId) {
-		System.out.println("---------updatewapon更新技能和武器");
+		System.out.println("更新技能和武器");
 		SkillConfig skillConf = Context.getSkillParse().getSkillConfigById(skillId);
 		//该技能对应的武器的物品id
 		int wId = Context.getSkillParse().getSkillConfigById(skillId).getWeapon();
@@ -276,7 +278,7 @@ public class SkillService {
 		
 		//更新技能cd
 		player.updateCdById(skillId);
-		System.out.println("-----=----更新cd时间---" + player.getCdTimeByid(skillId));
+		//System.out.println("-----=----更新cd时间---" + player.getCdTimeByid(skillId));
 		
 		//更新武器耐久度. wid==0表示此技能不需要武器
 		if(wId != 0) player.minusContT(wId);
@@ -341,7 +343,6 @@ public class SkillService {
 	    long nTime = System.currentTimeMillis();
 	    long diff = nTime - pTime;
 	    long di = Context.getSkillParse().getSkillConfigById(sId).getCd() * 1000; //需要扩大1000倍，化为毫秒
-	    System.out.println(pTime + "=--" + nTime +", "+ diff+ ", cd=" + di);
 	    if(di > diff)
 	    	return false;
 	    return true;

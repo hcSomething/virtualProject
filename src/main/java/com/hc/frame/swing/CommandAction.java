@@ -23,6 +23,7 @@ public class CommandAction implements ActionListener{
 	private String backOrder; //服务器的输出
 	private static Channel channel;
 	private String playerName = "*****"; 
+	private boolean hasConnect = false;
 	
 	private static CommandAction instance;
 	
@@ -41,12 +42,13 @@ public class CommandAction implements ActionListener{
 		//将指令分解一下
 		String[] splitOrder = playerOrder.split(" ");
 		//用于启动客户端
-		/**
-		if(splitOrder[0].equals("ip")) {
-			MyClient.start(splitOrder[1], Integer.parseInt(splitOrder[2]));
+		System.out.println("客户端");
+		
+		if(!hasConnect && splitOrder[0].equals("ip")) {
+			clientStart(splitOrder);
 			return;
 		}
-		*/
+		
 		//用于显示器显示用户名
 		if(splitOrder[0].equals("login")) {
 			playerName = splitOrder[1];
@@ -56,6 +58,18 @@ public class CommandAction implements ActionListener{
 		playerOrder = "-----------------" + playerName + "--发出指令: " + playerOrder;
 		//将输入栏的内容加到输出栏
 		myPanel.getOut().append(playerOrder + "\n"); 
+	}
+	
+	private void clientStart(String[] args) {
+		new Thread(new Runnable() {
+			@Override
+			public void run() {
+				MyClient.start(args[1], Integer.parseInt(args[2]));
+			}
+		}).start();
+		myPanel.getOut().append("连接服务器成功！请登陆或注册" + "\n"); 
+		channel = MyClient.clientChannel;
+		hasConnect = true;
 	}
 	
 	/**

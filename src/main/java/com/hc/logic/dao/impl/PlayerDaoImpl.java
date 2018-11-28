@@ -125,6 +125,33 @@ public class PlayerDaoImpl{
 		return plaers;
 
 	}
+	
+	public  List find(String hql, Integer id){
+		Session session = SessionUtil.getSession();
+        //Transaction ts = session.beginTransaction();
+        
+		//这里的查询语句以后可以用参数传进来，这个方法就可以复用了,
+		//这里用的时hql
+		Transaction ts;
+		Query query;  //这里用的不是表名，而是表对应的类名
+		List plaers = null;
+
+		try {
+			ts = session.beginTransaction();
+			query = session.createQuery(hql)
+					.setParameter("name", id);
+			plaers = query.list();
+			ts.commit();
+		}catch(Exception e) {
+			e.printStackTrace();
+		}finally {
+			session.close();
+		}
+
+
+		return plaers;
+
+	}
 
 }
 

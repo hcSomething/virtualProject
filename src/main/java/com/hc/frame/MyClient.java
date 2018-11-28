@@ -30,7 +30,7 @@ public class MyClient {
 	//private static int port = 1; //int port = 4001;
 	static GameDisplay gameDisplay;
 	static CommandAction action;
-	static Channel channel;
+	public static Channel clientChannel;
 	
 	private static AtomicBoolean isStart = new AtomicBoolean(false);
 
@@ -41,14 +41,10 @@ public class MyClient {
 		gameDisplay = new GameDisplay();
 		gameDisplay.startGame(); //启动显示器
 		if(isStart.get() == false) {
-			Channel channel = new MyClient().start("127.0.0.1", 4001);
+			//Channel channel = new MyClient().start("127.0.0.1", 4001);
 		}
 		
 		
-		//channels.add(channel);
-	
-		//action = gameDisplay.getCommandAction();
-		//ClientContext.getMap().put(channel, action);
 	}
 	
 	
@@ -81,6 +77,7 @@ public class MyClient {
 			
 			
 			Channel channel = f.channel();
+			clientChannel  = channel;
 			//重要
 			action = gameDisplay.getCommandAction();
 			ClientContext.getMap().put(channel, action);

@@ -19,7 +19,7 @@ public class NpcService {
 	 * @param args
 	 */
 	public void desOrder(Session session, String[] args) {
-		if(args.length != 2 && args.length != 4) {
+		if(args.length < 2 || args.length > 4) {
 			session.sendMessage("命令参数错误");
 			return;
 		}
@@ -29,6 +29,14 @@ public class NpcService {
 		}
 		//验证npc是否在同一场景，当在副本中时也没有这个npc
 		if(!isOnScene(session, Integer.parseInt(args[1]))) {
+			return;
+		}
+		if(args.length == 3) {
+			if(OrderVerifyService.isDigit(args[2])) {
+				buyGoodsFromNpc(session, args);
+				return;
+			}
+			enterCopys(session, args);
 			return;
 		}
 		if(args.length == 2) {
@@ -68,6 +76,37 @@ public class NpcService {
 	}
 
 	/**
+	 * 通过npc进入副本
+	 * @param session
+	 * @param args: npc npcId c
+	 */
+	public void enterCopys(Session session, String[] args) {
+		if(!Context.getCopyService().canEnterCopy(session.getPlayer())) return;
+		int npcId = Integer.parseInt(args[1]);
+		int copyId = Context.getSceneParse().getNpcs().getNpcConfigById(npcId).getCopyId();
+		Context.getCopyService().enterCopy(copyId, session.getPlayer(), session, 0);
+	}
+	
+	/**
+	 * 从npc处卖东西
+	 * @param session
+	 * @param args: npc npcId 物品id。默认一次只能买一个
+	 */
+	public void buyGoodsFromNpc(Session session, String[] args) {
+		int npcid = Integer.parseInt(args[1]);
+		int goodsid = Integer.parseInt(args[2]);
+		if(Context.getSceneParse().getNpcs().getNpcConfigById(npcid).getGoodId() != goodsid) {
+			session.sendMessage("没有相应的物品可以卖");
+			return;
+		}
+		boolean secc = Context.getStore().buyGood(session.getPlayer(), goodsid, 1);  //在npc处买东西，默认一次只能买一个
+		if(secc) {
+			session.sendMessage("购买成功");
+		}else {
+			session.sendMessage("购买失败，请检查是否有足够的金币");
+		}
+	}
+	/**
 	 * 完整的介绍当前npc
 	 * @param id npc的id
 	 */
@@ -86,6 +125,14 @@ public class NpcService {
 			sb.append("可验收的任务：" + ctc.getName());
 		}else {
 			sb.append("没有可验收的任务");
+		}
+		if(nc.getGoodId() != 0) {
+			String name = Context.getGoodsParse().getGoodsConfigById(nc.getGoodId()).getName();
+			sb.append("\n可卖的物品：" + name);
+		}
+		if(nc.getCopyId() > 0) {
+			String name = Context.getCopysParse().getCopysConfById(nc.getCopyId()).getName();
+			sb.append("\n可进入的副本：" + name +"【" + nc.getCopyId() + "】");
 		}
 		session.sendMessage(sb.toString());
 	}

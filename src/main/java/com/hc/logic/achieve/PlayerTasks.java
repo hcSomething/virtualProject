@@ -2,11 +2,14 @@ package com.hc.logic.achieve;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 
 import com.hc.frame.Context;
+import com.hc.logic.config.TaskConfig;
 import com.hc.logic.creature.Player;
 import com.hc.logic.domain.TaskEntity;
 
@@ -52,6 +55,7 @@ public class PlayerTasks {
 					mpgs.get(new Integer(tid)).put(id, num);
 				}
 			}
+			System.out.println("数据库中，未完成的任务：" + mpgs.toString());
 			for(Entry<Integer, Map<Integer, Integer>> ent : mpgs.entrySet()) {
 				progressTask.add(new Task(ent.getKey(), ent.getValue()));
 			}
@@ -93,7 +97,12 @@ public class PlayerTasks {
 		if(completeTask.contains(new Integer(tid)) ||
 				awardedTask.contains(new Integer(tid))) {
 			return true;
-		};
+		}
+		for(Task task : progressTask) {
+			if(task.getTid() == tid) {
+				return true;
+			}
+		}
 		return false;
 	}
 	
@@ -107,7 +116,7 @@ public class PlayerTasks {
 			progressTask.remove(task);
 		}	
 	}
-	public int isTaskComplete(int tid) {
+	private int isTaskComplete(int tid) {
 		for(int id : completeTask) {
 			if(id == tid) {
 				return id;
@@ -121,7 +130,7 @@ public class PlayerTasks {
 	 * @param tid
 	 * @return
 	 */
-	public void isTaskComplete(List<Task> tasks) {
+	private void isTaskComplete(List<Task> tasks) {
 		List<Task> completed = new ArrayList<>();
 		for(Task task : tasks) {
 			if(task.checkTaskComplete()) {
@@ -148,9 +157,10 @@ public class PlayerTasks {
 	}
 	/**
 	 * 记录玩家副本完成数量
-	 * @param cid
+	 * @param cid 副本id
 	 */
 	public void copyRecord(int cid) {
+		System.out.println("当前玩家副本的记录：" + cid2amount.toString());
 		cid2amount.put(cid, cid2amount.getOrDefault(new Integer(cid), 0) + 1);
 		updateTask(3, cid);
 	}
@@ -161,8 +171,9 @@ public class PlayerTasks {
 	 * @param id
 	 */
 	private void updateTask(int taskType, int id) {
-		System.out.println("--更新任务进度--" + taskType + ", " + id);
+		//System.out.println("更新任务进度，任务类型：" + taskType + ", " + id);
 		List<Task> updatedtasks = new ArrayList<>();
+		System.out.println("进行任务更新： " + progressTask.toString());
 		for(Task task : progressTask) {
 			if(task.isSameTaskType(taskType)) {
 				task.addComplete(id);
@@ -182,16 +193,29 @@ public class PlayerTasks {
 		awardedTask.add(tid);
 		completeTask.remove(new Integer(tid));
 		getAward(player, tid);  //发奖励
+		delSerchGoods(player, tid);  //删除需要提交任务的采集物品
 		return true;
 	}
 	private void getAward(Player player, int tid) {
 		Map<Integer, Integer> award = Context.getTaskParse().getTaskConfigByid(tid).getAwardit();
 		Context.getAwardService().obtainAward(player, award);
 	}
+	//tid: 任务id
+	private void delSerchGoods(Player player, int tid) {  //提交采集任务时，需要删除采集到的物品
+		TaskConfig taskConfig = Context.getTaskParse().getTaskConfigByid(tid);
+		if(taskConfig.getType() != TargetType.getTargetTypeById(taskConfig.getType())) { //只有采集型任务菜肴删除搜寻的物品
+			return;
+		}
+		for(Map.Entry<Integer, Integer> ent : taskConfig.getNeeded().entrySet()) {
+			player.delGoods(ent.getKey(), ent.getValue());
+		}
+		
+	}
 	
 	
 
 	public List<Task> getProgressTask() {
+		//System.out.println("----------任务进程----" + progressTask.size());
 		return progressTask;
 	}
 
@@ -202,7 +226,18 @@ public class PlayerTasks {
 	public List<Integer> getAwardedTask() {
 		return awardedTask;
 	}
-
+	/**
+	 * 验证是否完成，并且提交了这个任务
+	 * @param tid 任务id
+	 * @return
+	 */
+	public boolean taskAwarded(int tid) {
+		for(int i : awardedTask) {
+			if(i == tid)
+				return true;
+		}
+		return false;
+	}
 
 	
 	

@@ -59,7 +59,7 @@ public class Store {
 	public boolean isValiedPage(Player player, int page) {
 		if(page < 1) return false;
 		int start = PAGENUM * (page-1) + 1;
-		int volum = Context.getGoodsParse().getGoodsList().size();
+		int volum = Context.getGoodsParse().getShopGoodsList().size();
 		if(start > volum) return false;	
 		int playerPage = player.getPageNumber();
 		if(page != playerPage && page != (playerPage + 1) && page != (playerPage - 1)) return false;
@@ -85,7 +85,7 @@ public class Store {
 	 * @return
 	 */
 	private List<GoodsConfig> aPage(int page){
-		List<GoodsConfig> goods = Context.getGoodsParse().getGoodsList();
+		List<GoodsConfig> goods = Context.getGoodsParse().getShopGoodsList();
 		sortGoods(goods);
 		List<GoodsConfig> result = new ArrayList<>();
 		int start = PAGENUM * (page-1);

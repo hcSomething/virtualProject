@@ -55,6 +55,12 @@ public class TelepParse implements ParseXml{
 					String nodeName = child.getName();
 					if(nodeName.equals("description")) {
 						telep.setDescription(child.getStringValue());
+					}else if(nodeName.equals("level")) {
+						telep.setLevel(Integer.parseInt(child.getStringValue()));
+					}else if(nodeName.equals("task")) {
+						telep.setTask(Integer.parseInt(child.getStringValue()));
+					}else if(nodeName.equals("sceneid")) {
+						telep.setSceneid(Integer.parseInt(child.getStringValue()));
 					}
 				}
 				

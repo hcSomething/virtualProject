@@ -6,6 +6,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToOne;
 
 @Entity
 public class EmailEntity {
@@ -20,7 +21,10 @@ public class EmailEntity {
 	@Column
 	private long sendTime;  //发送邮件的时间
 	
-	@ManyToOne
+	@Column
+	private String playerName;
+	
+	@OneToOne
 	private PlayerEntity playerEntity;
 
 	
@@ -31,6 +35,7 @@ public class EmailEntity {
 	
 	public EmailEntity(String content, PlayerEntity pe) {
 		this.content = content;
+		this.playerName = pe.getName();
 		this.playerEntity = pe;
 		this.sendTime = System.currentTimeMillis();
 	}
@@ -59,6 +64,19 @@ public class EmailEntity {
 		this.sendTime = sendTime;
 	}
 
+
+
+	
+
+
+	public String getPlayerName() {
+		return playerName;
+	}
+
+	public void setPlayerName(String playerName) {
+		this.playerName = playerName;
+	}
+
 	public PlayerEntity getPlayerEntity() {
 		return playerEntity;
 	}
@@ -67,7 +85,6 @@ public class EmailEntity {
 		this.playerEntity = playerEntity;
 	}
 
-	
 	@Override
 	public String toString() {
 		return "email {content=" + content

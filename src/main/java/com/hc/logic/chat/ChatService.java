@@ -26,6 +26,9 @@ public class ChatService {
 		}
 		String content = chatFormat(session.getPlayer(), bindMessage(delPart(args)));
 		Player tagPla = Context.getOnlinPlayer().getPlayerById(tagPlaId);
+		if(tagPla.getName().endsWith(session.getPlayer().getName())) {
+			session.sendMessage("不能发送信息给自己");
+		}
 		System.out.println("--------privateChat----" + content + ", args= " + args.toString());
 		tagPla.getSession().sendMessage(content);
 		session.sendMessage("发送成功！");

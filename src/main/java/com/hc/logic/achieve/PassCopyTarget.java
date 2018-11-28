@@ -20,14 +20,19 @@ public class PassCopyTarget implements Target{
 	 * 此任务完成项。对应于相应任务配置中的need项。对于副本任务，value只有0，1两种
 	 * 对于type=3的副本通关任务：key：副本id，value：0
 	 */
-	private Map<Integer, Integer> taskComplete = new HashMap<>();
+	private Map<Integer, Integer> taskComplete;
 
+	public PassCopyTarget() {
+		taskComplete = new HashMap<>();
+	}
 	
 	@Override
 	public boolean checkTaskComplete(TaskConfig taskConfig) {
-		for(Map.Entry<Integer, Integer> ent : taskComplete.entrySet()) {
+		for(Map.Entry<Integer, Integer> ent : taskConfig.getNeeded().entrySet()) {
 			int amount = ent.getValue();
-			if(amount != 1) return false;
+			System.out.println("----副本任务allthing" + taskComplete.toString());
+			if(taskComplete.get(ent.getKey()) == null) return false;
+			if(taskComplete.get(ent.getKey()) <amount) return false;
 		}
 		return true;
 	}
@@ -36,21 +41,23 @@ public class PassCopyTarget implements Target{
 	public String taskProgessDesc(TaskConfig taskConfig) {
 		StringBuilder sb = new StringBuilder();
 		sb.append("任务[" + taskConfig.getName() +"]的进度如下: \n");
-		for(Map.Entry<Integer, Integer> ent : taskComplete.entrySet()) {
-			int cid = ent.getKey();
+		System.out.println("-----------副本任务描述---" + taskComplete == null);
+		for(Map.Entry<Integer, Integer> ent : taskConfig.getNeeded().entrySet()) {
+			System.out.println("-----------副本任务描述---" + taskComplete.toString());
+			Integer cid = ent.getKey();
 			CopysConfig cConfig = Context.getCopysParse().getCopysConfById(cid);
-			int amount = ent.getValue();
-			if(amount == 0) {
-				sb.append("副本["+cConfig.getName()+"] 完成\n");
-			}else{
-				sb.append("副本["+cConfig.getName()+"] 未完成\n");
-			}
+			int num = 0;
+			if(taskComplete.get(cid) != null) num = taskComplete.get(cid);
+			sb.append("完成副本["+cConfig.getName()+"]：" + num + " /1 \n");
 		}
 		return sb.toString();
 	}
 	
 	@Override
 	public void addComplete(int id) {
+		System.out.println("验证是否是这个任务的目标: " + id);
+		System.out.println("验证是否是这个任务的目标: " + taskComplete.toString());
+		if(!taskComplete.containsKey(new Integer(id))) return;
 		taskComplete.put(id, 1);
 	}
 
@@ -59,7 +66,12 @@ public class PassCopyTarget implements Target{
 	}
 
 	public void setTaskComplete(Map<Integer, Integer> taskComplete) {
-		this.taskComplete = taskComplete;
+		//this.taskComplete = taskComplete;
+		for(Map.Entry<Integer, Integer> ent : taskComplete.entrySet()) {
+			for(int i = 0; i < ent.getValue(); i++) {
+				addComplete(ent.getKey());
+			}
+		}
 	}
 	
 	

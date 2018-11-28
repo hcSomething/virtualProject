@@ -1,6 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <skills>
+
+    <skill id="0">
+		<name>铁拳【0】</name>                                    <!-- 技能名 -->
+		<description>向敌人挥舞拳头，攻击对方</description>        <!-- 技能描述 -->
+		<cd>5</cd>                                                <!-- 冷却时间 -->
+		<attack>3</attack>                                        <!-- 对对手造成的伤害 -->
+		<protect>0</protect>                                      <!-- 技能对自身有什么保护(待续)，0：没有 -->
+		<cure>0</cure>                                            <!-- 恢复生命值 -->
+		<mp>0</mp>                                                <!-- 消耗法力 -->
+		<continue>0</continue>                                    <!-- 技能持续时间 -->
+		<scope>1</scope>                                          <!-- 技能范围.0：所有，.. -->
+		<weapon>0</weapon>                                        <!-- 使用该技能需要的武器(物品id), 0表示不需要 -->
+    	<profession>10</profession>                               <!-- 10：所有人都可以学。0，1，2，3：战士，牧师，法师，召唤师。只能哪种职业的玩家学，其他职业学不了 -->
+	</skill>
+	
 	<skill id="1">
 		<name>平砍【1】</name>                                    <!-- 技能名 -->
 		<description>普通攻击，只是向前挥动武器</description>      <!-- 技能描述 -->
@@ -19,13 +34,13 @@
 		<name>青云剑诀【2】</name>
 		<description>很厉害的内功，学会之后，前途不可限量</description>
 		<cd>15</cd>
-		<attack>20</attack>
+		<attack>90</attack>
 		<protect>0</protect>
 		<cure>0</cure> 
-		<mp>20</mp>
+		<mp>70</mp>
 		<continue>0</continue>
 		<scope>1</scope>
-		<weapon>4</weapon>
+		<weapon>8</weapon>
 		<profession>0</profession>              <!-- 0表示只有战士可以学 -->
 	</skill>
 
@@ -47,11 +62,11 @@
 		<name>虚无烈焰【4】</name>
 		<description>利用法力产生无边的火海，对所有处于祸害中的敌人造成巨大伤害</description>
 		<cd>15</cd>
-		<attack>8</attack>
+		<attack>30</attack>
 		<protect>0</protect>
 		<cure>0</cure> 
 		<mp>20</mp>
-		<continue>10</continue>
+		<continue>5</continue>
 		<scope>0</scope>
 		<weapon>0</weapon>
 		<profession>2</profession>                <!-- 2表示只有法师可以学 -->
@@ -62,8 +77,8 @@
 		<description>只要处于圣光的照耀下，就会恢复生命值</description>
 		<cd>15</cd>
 		<attack>0</attack>
-		<protect>10</protect>
-		<cure>20</cure>                        <!-- 每秒恢复队友和自己的生命值，用于牧师 -->
+		<protect>30</protect>
+		<cure>30</cure>                        <!-- 每秒恢复队友和自己的生命值，用于牧师 -->
 		<mp>20</mp>
 		<continue>10</continue>
 		<scope>0</scope>
@@ -83,9 +98,51 @@
 		<continue>0</continue>
 		<scope>0</scope>
 		<weapon>0</weapon>
+		<profession>3</profession>              <!-- 1表示只有召唤师可以学 -->
+	</skill>
+	
+	<skill id="7">
+		<name>顶级召唤术【7】</name>
+		<description>召唤出一只最强大的boss</description>
+		<cd>20</cd>
+		<attack>0</attack>
+		<protect>40</protect>
+		<cure>0</cure>                        <!-- 每秒恢复队友和自己的生命值，用于牧师 -->
+		<summon>101</summon>                  <!-- 可以召唤的boss id -->
+		<mp>20</mp>
+		<continue>0</continue>
+		<scope>0</scope>
+		<weapon>0</weapon>
 		<profession>3</profession>              <!-- 1表示只有牧师可以学 -->
 	</skill>
 	
+	<skill id="8">
+		<name>神圣之光【8】</name>
+		<description>只要处于圣光的照耀下，就会恢复生命值</description>
+		<cd>25</cd>
+		<attack>0</attack>
+		<protect>60</protect>
+		<cure>70</cure>                        <!-- 每秒恢复队友和自己的生命值，用于牧师 -->
+		<mp>50</mp>
+		<continue>9</continue>
+		<scope>0</scope>
+		<weapon>0</weapon>
+		<profession>1</profession>              <!-- 1表示只有牧师可以学 -->
+	</skill>
+	
+	<skill id="9">
+		<name>纯阳之火【9】</name>
+		<description>利用法力产生无边的火海，对所有处于祸害中的敌人造成巨大伤害</description>
+		<cd>30</cd>
+		<attack>50</attack>
+		<protect>0</protect>
+		<cure>0</cure> 
+		<mp>50</mp>
+		<continue>10</continue>
+		<scope>0</scope>
+		<weapon>0</weapon>
+		<profession>2</profession>                <!-- 2表示只有法师可以学 -->
+	</skill>
 	
 	
 	
@@ -96,7 +153,7 @@
 	   <name>野蛮冲撞【100】</name>
 	   <description>朝着某个方向疯狂冲撞，对路径上的敌人造成巨大伤害</description>
 	   <cd>10</cd>
-	   <attack>5</attack>
+	   <attack>30</attack>
 	   <protect>0</protect>
 	   <continue>0</continue>
 	   <scope>1</scope>             <!-- 能同时攻击多少个玩家；0：所有，.. -->	   
@@ -107,7 +164,7 @@
 	   <name>音波吼【101】</name>
 	   <description>仰天长啸，形成无法躲避的音波攻击。在受到伤害的同时，玩家眩晕3秒</description>
 	   <cd>20</cd>
-	   <attack>6</attack>
+	   <attack>40</attack>
 	   <protect>0</protect>
 	   <continue>0</continue>
 	   <scope>0</scope> 
@@ -118,7 +175,7 @@
 	   <name>地狱业火【102】</name>
 	   <description>召唤来自地狱深处的业火，在一段时间内，持续造成伤害</description>
 	   <cd>30</cd>
-	   <attack>3</attack>
+	   <attack>10</attack>
 	   <protect>0</protect>
        <continue>8</continue>
 	   <scope>0</scope>
@@ -127,13 +184,79 @@
 	
 	<skill id="103">
 	   <name>眩晕【103】</name>
-	   <description>召唤来自地狱深处的业火，在一段时间内，持续造成伤害</description>
+	   <description>使敌人眩晕，不能攻击</description>
 	   <cd>30</cd>
 	   <attack>0</attack>
 	   <protect>0</protect>
        <continue>0</continue>
 	   <scope>1</scope>  
 	   <dizziness>6</dizziness>           	   
+	</skill>
+	
+	<skill id="104">
+	   <name>毁灭激光【104】</name>
+	   <description>朝着某个方向发射激光束，对照射到的敌人造成致命伤害</description>
+	   <cd>8</cd>
+	   <attack>100</attack>
+	   <protect>0</protect>
+	   <continue>0</continue>
+	   <scope>1</scope>             <!-- 能同时攻击多少个玩家；0：所有，.. -->	   
+	   <dizziness>0</dizziness>     <!-- 眩晕时间(秒)，击中玩家后，在一定时间不能使用技能 -->
+	</skill>
+	
+	<skill id="105">
+	   <name>灭世能量炮【105】</name>
+	   <description>积聚能量，一次性发射，对范围内的所有敌人造成伤害，并眩晕敌人3秒</description>
+	   <cd>35</cd>
+	   <attack>80</attack>
+	   <protect>0</protect>
+	   <continue>12</continue>
+	   <scope>0</scope> 
+	   <dizziness>3</dizziness>              	   
+	</skill>
+	
+	<skill id="106">
+	   <name>等离子激光【106】</name>
+	   <description>积聚能量，一次性发射，单体</description>
+	   <cd>28</cd>
+	   <attack>150</attack>
+	   <protect>0</protect>
+	   <continue>0</continue>
+	   <scope>1</scope> 
+	   <dizziness>0</dizziness>              	   
+	</skill>
+	
+	<skill id="107">
+	   <name>时空坍缩【107】</name>
+	   <description>积聚能量，一次性发射，对范围内的所有敌人造成伤害</description>
+	   <cd>30</cd>
+	   <attack>100</attack>
+	   <protect>0</protect>
+	   <continue>12</continue>
+	   <scope>0</scope> 
+	   <dizziness>0</dizziness>              	   
+	</skill>
+	
+	<skill id="108">
+	   <name>时间之匙【108】</name>
+	   <description>积聚能量，一次性发射，对范围内的所有敌人造成伤害，眩晕</description>
+	   <cd>30</cd>
+	   <attack>200</attack>
+	   <protect>0</protect>
+	   <continue>6</continue>
+	   <scope>0</scope> 
+	   <dizziness>8</dizziness>              	   
+	</skill>
+	
+	<skill id="109">
+	   <name>反物质能量束【109】</name>
+	   <description>积聚能量，一次性发射，群攻</description>
+	   <cd>40</cd>
+	   <attack>300</attack>
+	   <protect>0</protect>
+	   <continue>0</continue>
+	   <scope>1</scope> 
+	   <dizziness>0</dizziness>              	   
 	</skill>
 	
 	

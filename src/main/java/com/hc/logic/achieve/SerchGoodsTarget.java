@@ -4,23 +4,18 @@ import java.util.HashMap;
 import java.util.Map;
 
 import com.hc.frame.Context;
+import com.hc.logic.config.GoodsConfig;
 import com.hc.logic.config.MonstConfig;
 import com.hc.logic.config.TaskConfig;
 
-/**
- * 攻击怪物目标
- * @author hc
- *
- */
-public class AttackMonstTarget implements Target {
+public class SerchGoodsTarget implements Target {
 
 	/**
 	 * 此任务完成项。对应于相应任务配置中的need项。
-	 * 对于type=1的击杀任务：key：怪物id，value：数量
+	 * 对于type=1的击杀任务：key：需要采集的物品id，value：数量
 	 */
 	private Map<Integer, Integer> taskComplete = new HashMap<>();
 
-	
 	@Override
 	public boolean checkTaskComplete(TaskConfig taskConfig) {
 		for(Map.Entry<Integer, Integer> ent : taskConfig.getNeeded().entrySet()) {
@@ -34,15 +29,17 @@ public class AttackMonstTarget implements Target {
 	
 	@Override
 	public String taskProgessDesc(TaskConfig taskConfig) {
+		System.out.println("----------taskprogerss---serchgoodstask");
 		StringBuilder sb = new StringBuilder();
 		sb.append("任务[" + taskConfig.getName() +"]的进度如下: \n");
 		for(Map.Entry<Integer, Integer> ent :taskConfig.getNeeded().entrySet()) {
-			int mid = ent.getKey();
-			MonstConfig mConfig = Context.getSceneParse().getMonsters().getMonstConfgById(mid);
+			int gid = ent.getKey();
+			//MonstConfig mConfig = Context.getSceneParse().getMonsters().getMonstConfgById(mid);
+			GoodsConfig gConfig = Context.getGoodsParse().getGoodsConfigById(gid);
 			int amount = ent.getValue();
-			taskComplete.get(new Integer(mid));
-			int nam = ((taskComplete.get(new Integer(mid)) == null) ? 0 : taskComplete.get(new Integer(mid))) ;
-			sb.append("击杀["+mConfig.getName()+"]: "+ nam +"/" + amount +"\n");
+			taskComplete.get(new Integer(gid));
+			int nam = ((taskComplete.get(new Integer(gid)) == null) ? 0 : taskComplete.get(new Integer(gid))) ;
+			sb.append("采集[" + gConfig.getName() + "]: " + nam + "/" + amount +"\n");
 		}
 
 		return sb.toString();
@@ -50,8 +47,6 @@ public class AttackMonstTarget implements Target {
 	
 	@Override
 	public void addComplete(int id) {
-		System.out.println("验证是否是这个任务的目标: " + id);
-		System.out.println("验证是否是这个任务的目标: " + taskComplete.toString());
 		if(!taskComplete.containsKey(new Integer(id))) return;
 		taskComplete.put(id, taskComplete.getOrDefault(id, 0) + 1);
 	}
@@ -61,12 +56,11 @@ public class AttackMonstTarget implements Target {
 	}
 
 	public void setTaskComplete(Map<Integer, Integer> taskComplete) {
-		//this.taskComplete = taskComplete;
 		for(Map.Entry<Integer, Integer> ent : taskComplete.entrySet()) {
 			for(int i = 0; i < ent.getValue(); i++) {
 				addComplete(ent.getKey());
 			}
 		}
 	}
-	
+
 }

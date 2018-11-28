@@ -2,6 +2,7 @@ package com.hc.logic.domain;
 
 import com.hc.logic.base.Session;
 import com.hc.logic.creature.Player;
+import com.hc.logic.dao.impl.PlayerDaoImpl;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -31,7 +32,7 @@ import javax.persistence.Transient;
 public class PlayerEntity{
 	
 	@Id
-	private int id;
+	private Integer id;
     //名字
 	@Column
 	private String name;
@@ -80,7 +81,7 @@ public class PlayerEntity{
 	private Set<GoodsEntity> goods = new HashSet<>();  //都用list会出现错误
 	
 	//邮件
-	@OneToMany(orphanRemoval = true, cascade = CascadeType.ALL,fetch=FetchType.EAGER)
+	@OneToMany(orphanRemoval = true, cascade = CascadeType.ALL,fetch=FetchType.LAZY)
 	private List<EmailEntity> emails = new ArrayList<>();
 	//所有装备/武器，不包括已经穿戴的//orphanRemoval：在这个自段中删除Equip时，会在Equip表中删除相应的Equip
 
@@ -125,7 +126,7 @@ public class PlayerEntity{
 	 */
 	public Player createPlayer(Session session) {
 		String[] sk = skills.split(",");
-		System.out.println("createPlayer--" + skills + "-8888-");
+		//System.out.println("createPlayer--" + skills + "-8888-");
 		int[] re = {};
 		if(sk != null && sk.length > 0 && !skills.equals("")) {
 			re = new int[sk.length];

@@ -1,10 +1,14 @@
 package com.hc.logic.basicService;
+import java.util.List;
+
 import org.springframework.stereotype.Component;
 
 import com.hc.frame.Context;
 import com.hc.frame.Scene;
 import com.hc.logic.base.Session;
 import com.hc.logic.base.Teleport;
+import com.hc.logic.config.TaskConfig;
+import com.hc.logic.config.TelepConfig;
 import com.hc.logic.copys.Copys;
 import com.hc.logic.creature.Player;
 import com.hc.logic.dao.impl.CopyPersist;
@@ -25,10 +29,11 @@ public class TransferService implements Teleport{
 		if(sourceId !=0) {
 			if(session.getPlayer().isInPK()) Context.getPkService().giveUp(session);
 			//对于在普通场景中传送
-			if(!Context.getWorld().getSceneById(sourceId).hasTelepId(targetId)) {
+			if(!Context.getWorld().getSceneById(sourceId).hasTargetSceneId(targetId)) {
 				session.sendMessage("没有这个传送阵，不能传送");
 				return;
 			}
+			if(!transferQualifi(targetId, session)) return;
 			transfer(session.getPlayer(), sourceId, targetId);
 			return;
 		}
@@ -40,6 +45,27 @@ public class TransferService implements Teleport{
 		}
 		transferCopy( session.getPlayer(), copyId);
 
+	}
+	/**
+	 * 是否有资格进行传送
+	 * @return
+	 */
+	private boolean transferQualifi(int targetSceneId, Session session) {
+		Player player = session.getPlayer();
+		int tid = player.getScene().getTelepIdsByTid(targetSceneId);
+		TelepConfig teleConfig = Context.getSceneParse().getTeleps().getTelepConfigById(tid);
+		int level = teleConfig.getLevel();
+		if(player.getLevel() < level) {
+			session.sendMessage("等级需要到达：" + level + ", 才能使用这个传送阵");
+			return false;
+		}
+		int taskId = teleConfig.getTask();
+		TaskConfig taskConfig = Context.getTaskParse().getTaskConfigByid(taskId);
+		if(taskId != 0 && !player.getPlayerTasks().taskAwarded(taskId)) {
+			session.sendMessage("需要完成任务：" + taskConfig.getName() + ", 并且提交后，才能使用这个传送阵");
+		    return false;
+		}
+		return true;
 	}
 
 	/**
@@ -171,5 +197,18 @@ public class TransferService implements Teleport{
 		return sb.toString();
 	}
 
+	/**
+	 * 复活
+	 */
+	public void reAlive(Player player) {
+		player.setAlive(true);
+		player.setHp(Context.getLevelParse().getLevelConfigById(player.getLevel()).getHpByProf(player.getProfIndex()));
+		if(player.getSceneId() == 0) { //副本中死亡，请求复活，则视为主动离开场景
+			int scecid = player.getScene().getId();
+			transferCopy(player, scecid);
+		}
+		player.getSession().sendMessage("复活成功");
+		transfer(player, player.getSceneId(), 1);  //复活时，默认回到出生地
+	}
 	
 }

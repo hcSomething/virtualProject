@@ -137,7 +137,7 @@ public class EmailService {
 	}
 	
 	
-	//构造邮件，只更离线玩家的数据库
+	//构造邮件，只更新离线玩家的数据库
 	private void createEmail(String tPName , String content) {
 		PlayerEntity tpe = Context.getWorld().getPlayerEntityByName(tPName);
 		if(tpe == null) {
@@ -155,10 +155,8 @@ public class EmailService {
 		System.out.println("-------------createEmail()---------" + tpe.getEmails().toString());
 		//更新数据库，只有不在线的目标玩家才需要立即更新
 		if(tPlayer == null) {
-			//new UpdateTask(tpe);
 			System.out.println("**********************************进行更新了吗--前");
 			new PlayerDaoImpl().update(tpe);
-			System.out.println("**********************************进行更新了吗--后");
 		}
 	}
 	

@@ -18,8 +18,6 @@ public class ClientDisplayHandler extends ChannelInboundHandlerAdapter{
 	public void channelActive(ChannelHandlerContext ctx) {
 		commandAction = CommandAction.getInstance();
 		System.out.println("这里是ClientH的channelActive");
-		//将action发送到服务端保存
-		//ctx.writeAndFlush(ClientContext.getMap().get(ctx.channel()));
 	}
 
 	//接收从服务端发来的信息，并进行显示

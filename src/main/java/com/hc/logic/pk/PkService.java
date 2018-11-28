@@ -53,6 +53,10 @@ public class PkService {
 			session.sendMessage("您在pk状态下，或对方在pk状态下，不能pk！");
 			return;
 		}
+		if(tPlayer.getName().equals(player.getName())) {
+			session.sendMessage("不能可自己pk");
+			return;
+		}
 		Context.getChatService().privateChat(session, tPlayer.getId(), PK_INIT);
 		player.setPkTarget(tName);
 	}

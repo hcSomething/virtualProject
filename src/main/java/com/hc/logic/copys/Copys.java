@@ -2,9 +2,12 @@ package com.hc.logic.copys;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 import com.hc.frame.Context;
 import com.hc.frame.Scene;
+import com.hc.logic.achieve.Achievement;
 import com.hc.logic.base.Session;
 import com.hc.logic.basicService.TransferService;
 import com.hc.logic.creature.Monster;
@@ -30,6 +33,8 @@ public class Copys extends Scene{
 	private CopyEntity copyEntity;
 	//多人副本中，剩余的玩家
 	private List<Player> availablePlayer;
+	
+	private Lock lock = new ReentrantLock();
     
     public Copys(int id, String name, String desc, List<Player> players, int bossInd) {
     	super(2);
@@ -46,24 +51,26 @@ public class Copys extends Scene{
     	if(bosses.size() == 0) createBoss(allBoss.get(bossIndex)); 
     	this.openTime = System.currentTimeMillis();  //副本开启时，记录开启时间
     	//exe(2, "copys"+id + players.get(0).getId()); //启动一个周期性调度器，周期2秒
-    	Context.getTaskConsume().exe(2, "copys"+id + players.get(0).getId(), this);
+    	Context.getTaskConsume().exe(1, "copys"+id + players.get(0).getId(), this);
     }
     
     
 	//这个方法会被自动周期性调用
     @Override
     public void run() {
-    	//System.out.println("-------------------aaaaaaaaa");
-    	//玩家每秒恢复的血量和法力
-    	//recoverHpMp();
-    	super.letPlayerProgress();
-    	//刷新boss
-    	//System.out.println("刷新boss列表" + System.currentTimeMillis());
-    	haveAvailableBoss();
-    	//判断在副本中待的时间
-    	if(isTimeOut()) {
-    		//超时，则强制离开副本
-    		complete();
+    	try {
+    		//System.out.println("------副本心跳" + id);
+    		//玩家每秒恢复的血量和法力
+        	super.letPlayerProgress();
+        	//刷新boss
+        	haveAvailableBoss();
+        	//判断在副本中待的时间
+        	if(isTimeOut()) {
+        		//超时，则强制离开副本
+        		complete();
+        	}
+    	}catch(Exception e) {
+    		e.printStackTrace();
     	}
     }
     
@@ -74,17 +81,19 @@ public class Copys extends Scene{
     
     @Override
     public void allThing(Session session) {
-		session.sendMessage("所有boss: " + bossNameList());
-		session.sendMessage("所有玩家" + getPlayers() + "\n");
+    	StringBuilder sb = new StringBuilder();
+		sb.append("所有boss: " + bossNameList());
+		sb.append("所有玩家" + getPlayers() + "\n");
 		int scecid = Context.getCopysParse().getCopysConfById(id).getPlace();
 		String name = Context.getSceneParse().getSceneById(scecid).getName();
-		session.sendMessage("所有可传送目标：" + name + "【" + scecid + "】");
+		sb.append("所有可传送目标：" + name + "【" + scecid + "】");
+		session.sendMessage(sb.toString());
     }
     
     @Override
     public boolean hasMonst(int mId) {
-    	for(int i : allBoss) {
-    		if(i == mId)
+    	for(Boss boss : bosses) {
+    		if(boss.getId() == mId)
     			return true;
     	}
     	return false;
@@ -130,6 +139,8 @@ public class Copys extends Scene{
     	//启动Boss的周期性调度线程，1秒
     	//boss.exe(1, "boss"+bid+players.get(0).getId());
     	Context.getTaskConsume().exe(1, "boss"+bid+players.get(0).getId(), boss);
+    	Monster mons = new Monster(bid);  //
+		monsters.add(mons);
     	return boss;
     }
     
@@ -220,7 +231,8 @@ public class Copys extends Scene{
     	for(int i = (players.size()-1); i >=0 ; i--) {
     		Player player = players.get(i);
     		System.out.println("-----------------complete--进行传送" + players.toString());
-    		transferService.transferCopy(player, id); //从副本中传送出来   		
+    		transferService.transferCopy(player, id); //从副本中传送出来   
+    		Achievement.getService(player, "copys", id);
     	}
     }
     
@@ -276,9 +288,10 @@ public class Copys extends Scene{
 	}
 	
 	public void initMonst() {
-		for(int bid : allBoss) {
-			Monster boss = new Monster(bid);
-			monsters.add(boss);
+		for(Boss boss : bosses) {
+			int bid = boss.getId();
+			Monster mons = new Monster(bid);
+			monsters.add(mons);
 		}
 		//System.out.println("---copys中的intitMonst--------------------------" + monsters.toString());
 	}
@@ -325,16 +338,11 @@ public class Copys extends Scene{
 		}
 	}
 	public void playerComeback(Player player) {
-		System.out.println("-----players--" + players.toString());
-		System.out.println("-----availablePlayer--" + availablePlayer.toString());
-
 		this.availablePlayer.add(player);
 		this.players.add(player);
 		for(Boss bs : bosses) {
 			bs.addPlayer(player);
 		}
-		System.out.println("-----players-后-" + players.toString());
-		System.out.println("-----availablePlayer-后-" + availablePlayer.toString());
 		
 	}
 

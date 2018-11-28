@@ -1,17 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<goods>          <!-- 物品类型，1：丹药类；2：装备类；3：武器 -->
+<goods>          <!-- 物品类型，1：丹药类；2：装备类；3：武器 ；4：技能书-->
 	<good id="1">                                                      <!-- 物品id -->
 		<type>1</type>                                                    <!-- 类型id，用来需分不同种类的物品 -->
 		<name>太乙丹【1】</name>                                           <!-- 物品名称 -->
 		<description>恢复类丹药，在一定时间内持续恢复法力</description>      <!-- 物品介绍 -->
-		<continue>5</continue>                                           <!-- 使用后效果持续时间, 对于非药品类，这个属性的意思是最大耐久度 -->
+		<continue>5</continue>                                           <!-- 使用后效果持续时间, 对于非药品类，这个属性的意思是最大耐久度，技能书的continue表示相应的技能id -->
 		<mp>5</mp>                                                        <!-- 每次恢复法力 -->
 		<hp>0</hp>                                                        <!-- 每次恢复血量 -->
 		<protect>0</protect>                                              <!-- 增加防御 -->
 		<attack>0</attack>                                                <!-- 增加攻击 -->
 		<superposition>99</superposition>                                 <!-- 在背包的一个格子中的可叠加数量 -->
-		<price>6</price>                                                  <!-- 价格(待续) -->
+		<price>6</price>                                                  <!-- 价格 -->
+		<shop>1</shop>                                                    <!-- 是否在商店中卖：0：不卖；1：卖 -->
 	</good>	
 
 	<good id="2">
@@ -25,6 +26,7 @@
 		<attack>0</attack>
 		<superposition>99</superposition>
 		<price>7</price>
+		<shop>1</shop>
 	</good>
 
 	<good id="3">
@@ -38,75 +40,223 @@
 		<attack>0,0,0,0</attack>
 		<superposition>1</superposition>
 		<price>6</price>
+		<shop>1</shop>
 	</good>
 
 	<good id="4">
 		<type>3</type>
 		<name>诛仙剑【4】</name>
-		<description>神器，极大的增加杀伤力</description>
+		<description>极大的增加杀伤力</description>
 		<continue>50</continue>
 		<mp>0</mp>
 		<hp>0</hp>
 		<protect>0,0,0,0</protect>
 		<attack>18,16,15,14</attack>
 		<superposition>1</superposition>
-		<price>20</price>
+		<price>90</price>
+		<shop>1</shop>
 	</good>
 	
 	<good id="5">
 		<type>1</type>
 		<name>大还丹【5】</name>
 		<description>恢复类，瞬间恢复500点血量</description>
-		<continue>0</continue>
+		<continue>4</continue>
 		<mp>0</mp>
 		<hp>500</hp>
 		<protect>0</protect>
 		<attack>0</attack>
 		<superposition>99</superposition>
-		<price>20</price>
+		<price>600</price>
+		<shop>1</shop>
 	</good>
 	
 	<good id="6">
 		<type>1</type>
 		<name>金丹【6】</name>
-		<description>恢复类，瞬间恢复500点法力</description>
-		<continue>0</continue>
-		<mp>500</mp>
+		<description>恢复类，每秒恢复400点法力</description>
+		<continue>4</continue>
+		<mp>400</mp>
 		<hp>0</hp>
 		<protect>0</protect>
 		<attack>0</attack>
 		<superposition>99</superposition>
-		<price>20</price>
+		<price>800</price>
+		<shop>1</shop>
 	</good>
 	
 	<good id="7">
 		<type>2</type>
 		<name>黄金甲【7】</name>
 		<description>防御型装备，能有效减少10点攻击</description>
-		<continue>30</continue>
+		<continue>100</continue>
 		<mp>0</mp>
 		<hp>0</hp>
-		<protect>7,6,5,5</protect>
+		<protect>60,60,60,60</protect>
 		<attack>0,0,0,0</attack>
 		<superposition>1</superposition>
-		<price>35</price>
+		<price>900</price>
+		<shop>1</shop>
 	</good>
 	
 	<good id="8">
 		<type>3</type>
 		<name>天邪剑【8】</name>
 		<description>攻击性武器，提升攻击力18点</description>
-		<continue>30</continue>
+		<continue>50</continue>
 		<mp>0</mp>
 		<hp>0</hp>
 		<protect>0,0,0,0</protect>
-		<attack>19,15,13,10</attack>
+		<attack>90,40,46,30</attack>
 		<superposition>1</superposition>
-		<price>37</price>
+		<price>900</price>
+		<shop>1</shop>
 	</good>
 	
+	<good id="9">
+		<type>1</type>
+		<name>牛肉面【9】</name>
+		<description>热气腾腾的牛肉面，好吃又实惠！</description>
+		<continue>5</continue>
+		<mp>0</mp>
+		<hp>2</hp>
+		<protect>0</protect>
+		<attack>0</attack>
+		<superposition>1</superposition>
+		<price>3</price>
+		<shop>0</shop>
+	</good>
 	
+	<good id="10">
+		<type>1</type>
+		<name>炒花生【10】</name>
+		<description>好吃的花生，要不要来一打</description>
+		<continue>3</continue>
+		<mp>0</mp>
+		<hp>2</hp>
+		<protect>0</protect>
+		<attack>0</attack>
+		<superposition>1</superposition>
+		<price>2</price>
+		<shop>0</shop>
+	</good>
+	
+	<good id="11">
+		<type>2</type>
+		<name>普通衣服【11】</name>
+		<description>一件普通的外套，真的很普通！</description>
+		<continue>5</continue>
+		<mp>0</mp>
+		<hp>0</hp>
+		<protect>1,1,1,1</protect>
+		<attack>0,0,0,0</attack>
+		<superposition>1</superposition>
+		<price>3</price>
+		<shop>0</shop>
+	</good>
 
-
+    <good id="12">
+		<type>1</type>
+		<name>一袋炒花生【12】</name>
+		<description>经典美食，要不要来一打</description>
+		<continue>4</continue>
+		<mp>0</mp>
+		<hp>2</hp>
+		<protect>0</protect>
+		<attack>0</attack>
+		<superposition>1</superposition>
+		<price>3</price>
+		<shop>0</shop>
+	</good>
+	
+	<good id="13">
+	    <type>4</type>                                     <!-- 表示技能书 -->
+	    <name>技能书-平砍【13】</name>
+	    <description>可以学习技能平砍【1】, 适用于战士</description>
+	    <continue>1</continue>                             <!--  技能书的continue表示相应的技能id-->
+	    <superposition>1</superposition>
+	    <price>1000</price>
+	    <shop>1</shop>
+	</good>
+	
+	<good id="14">
+	    <type>4</type>                                     
+	    <name>技能书-青云剑诀【14】</name>
+	    <description>可以学习技能青云剑诀【2】，适用于战士</description>
+	    <continue>2</continue>                             <!--  技能书的continue表示相应的技能id-->
+	    <superposition>1</superposition>
+	    <price>3000</price>
+	    <shop>1</shop>
+	</good>
+	
+	<good id="15">
+	    <type>4</type>                                     
+	    <name>技能书-护盾【15】，适用于所有职业</name>
+	    <description>可以学习技能护盾【3】</description>
+	    <continue>3</continue>                             <!--  技能书的continue表示相应的技能id-->
+	    <superposition>1</superposition>
+	    <price>1000</price>
+	    <shop>1</shop>
+	</good>
+	
+	<good id="16">
+	    <type>4</type>                                     
+	    <name>技能书-虚无烈焰【16】，适用于法师</name>
+	    <description>可以学习技能虚无烈焰【4】</description>
+	    <continue>4</continue>                             <!--  技能书的continue表示相应的技能id-->
+	    <superposition>1</superposition>
+	    <price>1000</price>
+	    <shop>1</shop>
+	</good>
+	
+	<good id="17">
+	    <type>4</type>                                     
+	    <name>技能书-圣光照耀【17】，适用于牧师</name>
+	    <description>可以学习技能圣光照耀【5】</description>
+	    <continue>5</continue>                             <!--  技能书的continue表示相应的技能id-->
+	    <superposition>1</superposition>
+	    <price>1000</price>
+	    <shop>1</shop>
+	</good>	
+	
+	<good id="18">
+	    <type>4</type>                                     
+	    <name>技能书-顶级召唤术【18】，，适用于召唤师</name>
+	    <description>可以学习技能顶级召唤术【6】</description>
+	    <continue>7</continue>                             <!--  技能书的continue表示相应的技能id-->
+	    <superposition>1</superposition>
+	    <price>2500</price>
+	    <shop>1</shop>
+	</good>
+	
+	<good id="19">
+	    <type>4</type>                                     
+	    <name>技能书-神圣之光【19】，适用于牧师</name>
+	    <description>可以学习技能神圣之光【5】</description>
+	    <continue>8</continue>                             <!--  技能书的continue表示相应的技能id-->
+	    <superposition>1</superposition>
+	    <price>2600</price>
+	    <shop>1</shop>
+	</good>
+	
+	<good id="20">
+	    <type>4</type>                                     
+	    <name>技能书-纯阳之火【20】，适用于法师</name>
+	    <description>可以学习技能纯阳之火【4】</description>
+	    <continue>9</continue>                             <!--  技能书的continue表示相应的技能id-->
+	    <superposition>1</superposition>
+	    <price>2700</price>
+	    <shop>1</shop>
+	</good>
+	
+	<good id="21">
+	    <type>4</type>                                     
+	    <name>技能书-召唤术【21】，，适用于召唤师</name>
+	    <description>可以学习技能召唤术【6】</description>
+	    <continue>6</continue>                             <!--  技能书的continue表示相应的技能id-->
+	    <superposition>1</superposition>
+	    <price>1000</price>
+	    <shop>1</shop>
+	</good>
 
 </goods>

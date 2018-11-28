@@ -46,7 +46,17 @@ public class ServerHandler extends ChannelInboundHandlerAdapter{
 		
 		//解析命令
 		String[] st = order.split(" ");
-
+		if(st.length > 0 && (st[0].equals("register")||st[0].equals("login"))) {
+			Player player = Context.getOrderService().hasAccount(ctx.channel());
+			if(player != null) {
+				player.getSession().sendMessage("请先退出当前账号");
+				return;
+			}
+		}
+		if(st.length > 0 && !st[0].equals("revive")) {
+			if(!Context.getOrderService().aliveBeforeOrder( Context.getSessionByChannel(ctx.channel())))
+				return;
+		}
 		Order.getService(st, Context.getSessionByChannel(ctx.channel()));
 		
 		ReferenceCountUtil.release(msg);

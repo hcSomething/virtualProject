@@ -11,6 +11,7 @@ import java.util.Stack;
 import com.hc.frame.Context;
 import com.hc.logic.base.Constants;
 import com.hc.logic.creature.Player;
+import com.hc.logic.dao.impl.PlayerDaoImpl;
 import com.hc.logic.domain.EmailEntity;
 import com.hc.logic.domain.PlayerEntity;
 
@@ -63,7 +64,9 @@ public class Email {
 		//key: 在邮箱list中的位置+1， value：相应的主题
 		Map<Integer, String> result = new HashMap<>();
 		int start = PAGENUM * (page-1);
-		int stop = PAGENUM + start;System.out.println("------------ 内容---- " + start +" " + stop);
+		int stop = PAGENUM + start;
+		System.out.println("------------ 内容---- " + start +" " + stop);
+		System.out.println("email的缓存内容：" + emails.size());
 		for(int i = start; i < stop; i++) {
 			if(i >= emails.size()) break; //不足一页
 			result.put(i+1, emails.get(i).get(0)); //只显示邮件主题
@@ -136,12 +139,17 @@ public class Email {
 		PlayerEntity tpe = player.getPlayerEntity();
 		for(EmailEntity ee : tpe.getEmails()) {
 			if(ee.getContent().equals(content)) {
-				tpe.delEmail(ee);
+				delEmailEntity(tpe, ee);
 				return;
 			}
 		}
 	}
 
+	private void delEmailEntity(PlayerEntity playerEntity, EmailEntity emailEntity) {
+		playerEntity.delEmail(emailEntity);
+		emailEntity.setPlayerEntity(null);
+		new PlayerDaoImpl().update(playerEntity);		
+	}
 	
 	
 	/**

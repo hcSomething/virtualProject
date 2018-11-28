@@ -32,9 +32,10 @@ public class TaskService {
 	
 	/**
 	 * 展示所有未完成任务的状态
-	 * @param session, npc p
+	 * @param session, task p
 	 */
 	public void inProgressTasks(Session session) {
+		System.out.println("-------所有任务-------");
 		Player player = session.getPlayer();
 		List<Task> progressTask = new ArrayList<>(player.getPlayerTasks().getProgressTask());
 		StringBuilder sb = new StringBuilder();
@@ -47,7 +48,7 @@ public class TaskService {
 	
 	/**
 	 * 获得玩家所有任务的名称
-	 * @param session npc n
+	 * @param session task n
 	 */
 	public void allProgressTask(Session session) {
 		Player player = session.getPlayer();

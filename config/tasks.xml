@@ -1,25 +1,111 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<tasks>
+<tasks>                     <!-- 任务的类型。1：击杀怪物 ,2:采集类型的任务,3:副本型的任务-->
     <task id="1">
         <type>1</type>           <!-- 任务的类型。1：击杀怪物 -->
-        <name>击杀两只树妖【1】</name>
-        <need>2:2</need>         <!-- 格式：怪物id：数量；。。。 -->
-        <award>0:5;1:2</award>/  <!-- 奖励格式：物品id：数量；其中0表示金币 -->
+        <name>消灭老鼠【1】</name>
+        <need>4:2</need>         <!-- 格式：怪物id：数量；。。。 -->
+        <award>0:20</award>/  <!-- 奖励格式：物品id：数量；其中0表示金币 -->
     </task>
     
     <task id="2">
         <type>2</type>       <!-- 2:采集类型的任务 -->
-        <name>采集树枝两个【2】</name>
-        <need>2:2</need>     <!-- 格式： 物品id:数量-->
-        <award>1:2;2:3</award>
+        <name>天凉了，为居民区的一位老奶奶买一碗面【2】</name>
+        <need>9:1</need>     <!-- 格式： 物品id:数量-->
+        <award>0:20;1:2</award>
     </task>
     
     <task id="3">
         <type>3</type>          <!-- 3:副本型的任务 -->
         <name>通过副本坠魔谷【3】</name>  
         <need>1</need>         <!-- 格式：副本id，。。。 -->
-        <award>0:15</award>
+        <award>0:200</award>
     </task>
+    
+    <task id="4">
+        <type>2</type>       <!-- 2:采集类型的任务 -->
+        <name>为小明买一串糖葫芦【4】</name>
+        <need>10:1</need>     <!-- 格式： 物品id:数量-->
+        <award>0:20;1:2</award>
+    </task>
+    
+    <task id="5">
+        <type>2</type>       <!-- 2:采集类型的任务 -->
+        <name>取衣服【5】</name>
+        <need>11:1</need>     <!-- 格式： 物品id:数量-->
+        <award>0:10;1:2</award>
+    </task>
+    
+    <task id="6">
+        <type>2</type>       <!-- 2:采集类型的任务 -->
+        <name>买炒花生【6】</name>
+        <need>12:1</need>     <!-- 格式： 物品id:数量-->
+        <award>0:10;1:2</award>
+    </task>
+    
+    <task id="7">
+        <type>1</type>           <!-- 任务的类型。1：击杀怪物 -->
+        <name>击杀监管者【7】</name>
+        <need>1:1</need>         <!-- 格式：怪物id：数量；。。。 -->
+        <award>0:80</award>/  <!-- 奖励格式：物品id：数量；其中0表示金币 -->
+    </task>
+    
+    <task id="8">
+        <type>1</type>           <!-- 任务的类型。1：击杀怪物 -->
+        <name>击杀微冥【8】</name>
+        <need>3:10</need>         <!-- 格式：怪物id：数量；。。。 -->
+        <award>0:50</award>/  <!-- 奖励格式：物品id：数量；其中0表示金币 -->
+    </task>
+    
+<!-- dddddddddddddddddddddddddddddd-->
+    <task id="9">
+        <type>1</type>           <!-- 任务的类型。1：击杀怪物 -->
+        <name>消灭监视者【9】</name>
+        <need>5:4</need>         <!-- 格式：怪物id：数量；。。。 -->
+        <award>0:300</award>/  <!-- 奖励格式：物品id：数量；其中0表示金币 -->
+    </task>
+    
+    <task id="10">
+        <type>1</type>           <!-- 任务的类型。1：击杀怪物 -->
+        <name>消灭间谍【10】</name>
+        <need>8:4</need>         <!-- 格式：怪物id：数量；。。。 -->
+        <award>0:500</award>/  <!-- 奖励格式：物品id：数量；其中0表示金币 -->
+    </task>
+    
+    <task id="11">
+        <type>1</type>           <!-- 任务的类型。1：击杀怪物 -->
+        <name>消灭外星人【11】</name>
+        <need>9:4</need>         <!-- 格式：怪物id：数量；。。。 -->
+        <award>0:1000</award>/  <!-- 奖励格式：物品id：数量；其中0表示金币 -->
+    </task>
+       
+    <task id="12">
+        <type>1</type>           <!-- 任务的类型。1：击杀怪物 -->
+        <name>消灭闯入者【12】</name>
+        <need>6:10</need>         <!-- 格式：怪物id：数量；。。。 -->
+        <award>0:1000</award>/  <!-- 奖励格式：物品id：数量；其中0表示金币 -->
+    </task>
+        
+    <task id="13">
+        <type>1</type>           <!-- 任务的类型。1：击杀怪物 -->
+        <name>消灭反叛者【13】</name>
+        <need>7:11</need>         <!-- 格式：怪物id：数量；。。。 -->
+        <award>0:1000</award>/  <!-- 奖励格式：物品id：数量；其中0表示金币 -->
+    </task>
+    
+    <task id="14">
+        <type>3</type>          <!-- 3:副本型的任务 -->
+        <name>通过副本试炼地【14】</name>  
+        <need>2</need>         <!-- 格式：副本id，。。。 -->
+        <award>0:1000</award>
+    </task>
+    
+    <task id="15">
+        <type>3</type>          <!-- 3:副本型的任务 -->
+        <name>通过副本51区【15】</name>  
+        <need>3</need>         <!-- 格式：副本id，。。。 -->
+        <award>0:1000</award>
+    </task>
+    
 
 </tasks>

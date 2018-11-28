@@ -24,7 +24,7 @@
 		<description>及其微小的生物，以鲜血为食</description>
 		<hp>40</hp>
 		<attack>8</attack>
-		<exp>3000</exp>
+		<exp>30</exp>
 		<revive>30</revive> 
 	</monster>
 	

@@ -6,7 +6,7 @@
 		<name>太乙丹【1】</name>                                           <!-- 物品名称 -->
 		<description>恢复类丹药，在一定时间内持续恢复法力</description>      <!-- 物品介绍 -->
 		<continue>5</continue>                                           <!-- 使用后效果持续时间, 对于非药品类，这个属性的意思是最大耐久度，技能书的continue表示相应的技能id -->
-		<mp>5</mp>                                                        <!-- 每次恢复法力 -->
+		<mp>9</mp>                                                        <!-- 每次恢复法力 -->
 		<hp>0</hp>                                                        <!-- 每次恢复血量 -->
 		<protect>0</protect>                                              <!-- 增加防御 -->
 		<attack>0</attack>                                                <!-- 增加攻击 -->
@@ -36,10 +36,10 @@
 		<continue>7</continue>                                    <!-- 耐久度 -->
 		<mp>0</mp>
 		<hp>0</hp>
-		<protect>4,3,3,3</protect>
+		<protect>10,10,10,10</protect>
 		<attack>0,0,0,0</attack>
 		<superposition>1</superposition>
-		<price>6</price>
+		<price>20</price>
 		<shop>1</shop>
 	</good>
 
@@ -53,7 +53,7 @@
 		<protect>0,0,0,0</protect>
 		<attack>18,16,15,14</attack>
 		<superposition>1</superposition>
-		<price>90</price>
+		<price>200</price>
 		<shop>1</shop>
 	</good>
 	
@@ -63,7 +63,7 @@
 		<description>恢复类，瞬间恢复500点血量</description>
 		<continue>4</continue>
 		<mp>0</mp>
-		<hp>500</hp>
+		<hp>260</hp>
 		<protect>0</protect>
 		<attack>0</attack>
 		<superposition>99</superposition>
@@ -76,7 +76,7 @@
 		<name>金丹【6】</name>
 		<description>恢复类，每秒恢复400点法力</description>
 		<continue>4</continue>
-		<mp>400</mp>
+		<mp>250</mp>
 		<hp>0</hp>
 		<protect>0</protect>
 		<attack>0</attack>
@@ -129,8 +129,8 @@
 	
 	<good id="10">
 		<type>1</type>
-		<name>炒花生【10】</name>
-		<description>好吃的花生，要不要来一打</description>
+		<name>糖葫芦【10】</name>
+		<description>好吃的糖葫芦，要不要来一根</description>
 		<continue>3</continue>
 		<mp>0</mp>
 		<hp>2</hp>
@@ -151,7 +151,7 @@
 		<protect>1,1,1,1</protect>
 		<attack>0,0,0,0</attack>
 		<superposition>1</superposition>
-		<price>3</price>
+		<price>0</price>
 		<shop>0</shop>
 	</good>
 
@@ -195,7 +195,7 @@
 	    <description>可以学习技能护盾【3】</description>
 	    <continue>3</continue>                             <!--  技能书的continue表示相应的技能id-->
 	    <superposition>1</superposition>
-	    <price>1000</price>
+	    <price>700</price>
 	    <shop>1</shop>
 	</good>
 	

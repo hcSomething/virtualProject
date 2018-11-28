@@ -5,56 +5,56 @@
         <type>1</type>           <!-- 任务的类型。1：击杀怪物 -->
         <name>消灭老鼠【1】</name>
         <need>4:2</need>         <!-- 格式：怪物id：数量；。。。 -->
-        <award>0:20</award>/  <!-- 奖励格式：物品id：数量；其中0表示金币 -->
+        <award>0:25</award>/  <!-- 奖励格式：物品id：数量；其中0表示金币 -->
     </task>
     
     <task id="2">
         <type>2</type>       <!-- 2:采集类型的任务 -->
-        <name>天凉了，为居民区的一位老奶奶买一碗面【2】</name>
+        <name>天凉了，为老奶奶买一碗面【2】</name>
         <need>9:1</need>     <!-- 格式： 物品id:数量-->
-        <award>0:20;1:2</award>
+        <award>0:50;1:2</award>
     </task>
     
     <task id="3">
         <type>3</type>          <!-- 3:副本型的任务 -->
         <name>通过副本坠魔谷【3】</name>  
         <need>1</need>         <!-- 格式：副本id，。。。 -->
-        <award>0:200</award>
+        <award>0:800</award>
     </task>
     
     <task id="4">
         <type>2</type>       <!-- 2:采集类型的任务 -->
         <name>为小明买一串糖葫芦【4】</name>
         <need>10:1</need>     <!-- 格式： 物品id:数量-->
-        <award>0:20;1:2</award>
+        <award>0:30;1:2</award>
     </task>
     
     <task id="5">
         <type>2</type>       <!-- 2:采集类型的任务 -->
         <name>取衣服【5】</name>
         <need>11:1</need>     <!-- 格式： 物品id:数量-->
-        <award>0:10;1:2</award>
+        <award>0:40;1:2</award>
     </task>
     
     <task id="6">
         <type>2</type>       <!-- 2:采集类型的任务 -->
         <name>买炒花生【6】</name>
         <need>12:1</need>     <!-- 格式： 物品id:数量-->
-        <award>0:10;1:2</award>
+        <award>0:40;1:2</award>
     </task>
     
     <task id="7">
         <type>1</type>           <!-- 任务的类型。1：击杀怪物 -->
         <name>击杀监管者【7】</name>
-        <need>1:1</need>         <!-- 格式：怪物id：数量；。。。 -->
-        <award>0:80</award>/  <!-- 奖励格式：物品id：数量；其中0表示金币 -->
+        <need>1:4</need>         <!-- 格式：怪物id：数量；。。。 -->
+        <award>0:500</award>/  <!-- 奖励格式：物品id：数量；其中0表示金币 -->
     </task>
     
     <task id="8">
         <type>1</type>           <!-- 任务的类型。1：击杀怪物 -->
         <name>击杀微冥【8】</name>
         <need>3:10</need>         <!-- 格式：怪物id：数量；。。。 -->
-        <award>0:50</award>/  <!-- 奖励格式：物品id：数量；其中0表示金币 -->
+        <award>0:300</award>/  <!-- 奖励格式：物品id：数量；其中0表示金币 -->
     </task>
     
 <!-- dddddddddddddddddddddddddddddd-->

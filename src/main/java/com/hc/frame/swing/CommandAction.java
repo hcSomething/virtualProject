@@ -42,10 +42,12 @@ public class CommandAction implements ActionListener{
 		//将指令分解一下
 		String[] splitOrder = playerOrder.split(" ");
 		//用于启动客户端
-		System.out.println("客户端");
 		
 		if(!hasConnect && splitOrder[0].equals("ip")) {
 			clientStart(splitOrder);
+			return;
+		}else if(!hasConnect) {
+			myPanel.getOut().append("请先输入ip地址和断开号" + "\n");
 			return;
 		}
 		
@@ -61,6 +63,9 @@ public class CommandAction implements ActionListener{
 	}
 	
 	private void clientStart(String[] args) {
+		if(args.length != 3) {
+			return;
+		}
 		new Thread(new Runnable() {
 			@Override
 			public void run() {
